@@ -50,7 +50,8 @@ You need these *before* Day 1. Be honest; the plan assumes them.
 - [ ] **Terminal comfort**: you can debug an install failure without panicking
 - [ ] **Reading docs**: you'd rather read the provider's API reference than watch a tutorial
 
-Missing two or more? Spend 3–5 days on them first. Starting this plan without Python
+Missing two or more? Start with Week 0 below — everything the gate checks is taught
+there, and you take only the days you're missing. Starting this plan without Python
 fluency is the single most common way it fails.
 
 **Budget:** ~$50–100 of API credits across the 30 days. Iterate on small/cheap models,
@@ -96,6 +97,49 @@ That `LOG.md` becomes your Day 29 write-up. Start it on Day 1.
 
 Add orchestration (LangGraph, LlamaIndex, Pydantic AI) **only** when you have personally
 hit the problem it solves. That moment arrives around Day 16 for most people.
+
+---
+
+## Week 0 — The base layer (take only what you're missing)
+**Outcome: "I have the foundations the 30 days assume."**
+
+Run the Day 0 gate first. Everything it checks is taught here — skip any day you
+already pass, and do the ones you don't, in order. All five from zero is the 3–5 days
+the gate warned you about, at the normal daily rhythm.
+
+### Day 0.1 — The terminal
+- [ ] Navigation, paths, flags, pipes and redirection; `PATH` and environment variables
+- [ ] Reading error messages top to bottom; `--help` and `man` before a search engine
+- [ ] **Build:** a drill — create a project tree, search it with `grep`/`find`, break an install on purpose and fix it
+- [ ] **Done when:** you can debug an install failure without panicking
+
+### Day 0.2 — Python, the parts you'll use
+- [ ] Functions, modules and imports, classes where they earn their place, comprehensions
+- [ ] Type hints, and why they pay off the moment Pydantic arrives in Week 1
+- [ ] Isolated environments with `uv`: create, install, freeze, delete
+- [ ] **Build:** a small typed CLI that reads any text file and reports words, lines, and the ten most common tokens
+- [ ] **Done when:** fresh environment, one install command, and the CLI runs on the first try
+
+### Day 0.3 — Errors, async, and tests
+- [ ] Exceptions raised and caught narrowly; context managers for cleanup
+- [ ] `async`/`await`: what the event loop does, why it helps I/O and not math
+- [ ] `pytest` basics: test functions, asserts, running one file
+- [ ] **Build:** a downloader fetching ten URLs concurrently, with tests for the success and failure paths
+- [ ] **Done when:** you can explain why the async version is faster, and both tests pass
+
+### Day 0.4 — HTTP, JSON, and secrets
+- [ ] Request anatomy: method, path, headers, body; the status-code families
+- [ ] JSON in and out of Python; where auth lives — bearer tokens and API keys
+- [ ] Secret hygiene: env vars, `.env`, `.gitignore` — why keys never go in code
+- [ ] **Build:** call a real public API with the key from an env var, handling 404 and 429 explicitly
+- [ ] **Done when:** you can open a provider's API reference and know where the auth goes
+
+### Day 0.5 — Git, GitHub, and reading docs
+- [ ] Commits as snapshots; branch, push, pull, and what a PR actually is
+- [ ] Create a merge conflict on purpose and resolve it
+- [ ] Documentation as a skill: reference vs guide; finding the answer faster than a video could
+- [ ] **Build:** a practice repo with a branch, a PR, and one resolved conflict
+- [ ] **Done when:** the word "conflict" no longer raises your pulse
 
 ---
 
