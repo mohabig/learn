@@ -3,9 +3,10 @@
 - [The 80/20 AI Engineer — a 30-Day Plan](ai-engineer-30-day-plan.md) — the fastest realistic path to
   employable AI engineer: model API fluency → RAG → agents & evals → production, with four shipped
   projects by Day 30.
-- [site/index.html](site/index.html) — the full course as a self-contained website: every day taught
-  with diagrams, plus progress tracking, search, export/import and a printable day view. Open the
-  file directly in a browser, or serve it with GitHub Pages.
+- **[learn.167-233-170-107.sslip.io](https://learn.167-233-170-107.sslip.io)** — the full course as a
+  self-contained website, live: every day taught with diagrams, plus progress tracking, search,
+  export/import and a printable day view. The source is [site/index.html](site/index.html), which also
+  works opened straight off disk.
 - [LOG.md](LOG.md) — daily learning log for the plan. Each day page on the site has a
   **Copy log entry** button that fills this template in for you.
 
@@ -29,13 +30,20 @@ drifted from the data. The **Check plan** GitHub Actions workflow runs it on eve
 
 ## Publishing the site
 
-`.github/workflows/pages.yml` publishes the `site/` folder to GitHub Pages on every push to `main`
-that touches it. To turn it on once:
+The site is hosted on the VPS by [Openship](https://openship.io), a self-hosted deployment platform,
+and is public at **<https://learn.167-233-170-107.sslip.io>**.
 
-**Settings → Pages → Build and deployment → Source: GitHub Actions.**
+Openship watches this repository and redeploys the `site/` folder on every push to `main`, so
+publishing a change is just merging it. There is no build step: `site/index.html` and
+`site/course-data.js` are served as they are.
 
-No other setup is needed — the workflow uploads `site/` as the Pages artifact, so the folder does
-not have to be renamed to `docs/` or moved to the repo root.
+The hostname is the VPS address written in [sslip.io](https://sslip.io) form, which is the default
+domain Openship hands out and needs no DNS setup. To put the site on a real domain, add it to the
+app in the Openship dashboard and point the domain's DNS at the VPS; Openship issues the TLS
+certificate itself.
+
+This repo has no GitHub Pages workflow and Pages is not enabled on it. The only GitHub Actions
+workflow is **Check plan** (see above).
 
 ## Layout
 
@@ -46,5 +54,5 @@ Makefile                     make plan / make check-plan
 scripts/build_plan.py        generator, stdlib only
 site/index.html              the course site, self-contained
 site/course-data.js          the checklist, single source of truth
-.github/workflows/           check-plan (PRs) and pages (deploy)
+.github/workflows/           check-plan (PRs and pushes to main)
 ```
