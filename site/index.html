@@ -239,6 +239,68 @@
   .close .kicker{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:22px; color:var(--ink); margin-bottom:12px}
   footer{padding:34px 0 0; border-top:1px solid var(--rule-soft); margin-top:44px; color:var(--muted); font-size:13px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+  /* ---------- bar tools: resume, today, export / import ---------- */
+  .bar-tools{display:flex; gap:6px; flex-wrap:wrap}
+  .today{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); border:0; white-space:nowrap; padding:5px 0}
+  .today:hover{color:var(--accent-ink); border:0}
+  .today b{font-weight:500; color:var(--ink)}
+  .today .tl{font-style:normal}
+  /* Four new controls must not make the sticky bar taller on a phone. Reflow to
+     three rows — name + meter, tabs + today, tools — the same height the bar had
+     before them. */
+  @media (max-width:560px){
+    .bar-name{order:1}
+    .meter{order:2; flex:1 1 110px; min-width:110px}
+    .pct{min-width:8ch}
+    .tabs{order:3}
+    .today{order:4; margin-left:auto}
+    .today .tl{display:none}
+    .bar-tools{order:5; flex-basis:100%}
+  }
+
+  /* ---------- day search ---------- */
+  .daysearch{display:flex; align-items:center; gap:12px; margin-bottom:22px}
+  .daysearch input{flex:1 1 auto; min-width:0; font:inherit; font-size:15px; color:var(--ink); background:var(--raised); border:1px solid var(--rule); border-radius:7px; padding:10px 13px; -webkit-appearance:none; appearance:none}
+  .daysearch input::placeholder{color:var(--muted)}
+  .daysearch input:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+  .daysearch-count{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums}
+
+  /* ---------- copy a LOG.md entry ---------- */
+  .logrow{margin-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+  .logrow .note{font-size:12.5px; color:var(--muted)}
+  .logout{width:100%; margin-top:12px; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; line-height:1.6; color:var(--ink); background:var(--raised); border:1px solid var(--rule); border-radius:7px; padding:12px 14px; min-height:190px; resize:vertical}
+
+  /* ---------- print: one day, on paper ---------- */
+  @media print{
+    /* the palette is pinned light — a reader whose OS is in dark mode should not
+       get a page of white text on white paper */
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]){
+      --ground:#FFFFFF; --surface:#FFFFFF; --raised:#FFFFFF;
+      --ink:#151915; --ink-2:#3B443A; --muted:#5C6553;
+      --rule:#BFC6B7; --rule-soft:#DDE2D7;
+      --accent:#1F45C8; --accent-ink:#1735A0; --accent-wash:#EEF1FB;
+      --signal:#9A5312; --signal-wash:#F8F0E6; --good:#2C6B3C; --good-wash:#EAF1EB;
+      --dg-ink:#2E352C; --dg-muted:#6C7563; --dg-line:#9AA391;
+      --dg-accent:#1F45C8; --dg-wash:#EEF1FB;
+      --dg-accent2:#9A5312; --dg-wash2:#F8F0E6; --dg-good:#2C6B3C;
+      --shadow:none; color-scheme:light;
+    }
+    @page{margin:16mm}
+    body{background:#fff; font-size:11pt}
+    /* the router already hides every view and day but the current one */
+    .bar, .pager, .crumbs, .daysearch, .bar-tools, footer{display:none!important}
+    .logrow, .logout{display:none!important}
+    .wrap{max-width:none; padding:0}
+    .view > .chunk{padding:0; border-top:0}
+    a{color:inherit; border-bottom:0}
+    .day-check{background:none; border:1px solid var(--rule)}
+    /* diagrams print whole: no scroll box, no floor width, never split across pages */
+    .day-content .diagram{overflow:visible; break-inside:avoid; page-break-inside:avoid; max-width:100%}
+    .day-content .diagram svg{min-width:0}
+    .day-content .concept, .day-check, figure, table, pre{break-inside:avoid; page-break-inside:avoid}
+    h1,h2,h3,h4{break-after:avoid; page-break-after:avoid}
+  }
 </style>
 </head>
 
@@ -256,7 +318,14 @@
       <div class="track"><div class="fill" id="fill"></div></div>
       <div class="pct" id="pct">0 / 0</div>
     </div>
-    <button class="btn" id="reset" type="button">Reset</button>
+    <a class="today" id="today" href="#/course" hidden></a>
+    <div class="bar-tools">
+      <button class="btn" id="resume" type="button" title="Jump to where you left off">Resume</button>
+      <button class="btn" id="export" type="button" title="Download your progress as a JSON file">Export</button>
+      <button class="btn" id="import" type="button" title="Restore progress from an exported file">Import</button>
+      <button class="btn" id="reset" type="button">Reset</button>
+      <input id="import-file" type="file" accept="application/json,.json" hidden>
+    </div>
   </div>
 </div>
 
@@ -265,7 +334,7 @@
   <!-- ============ OVERVIEW ============ -->
   <section class="view" data-view="overview">
     <div class="chunk hero">
-      <div class="eyebrow">30-day course · started 29 Aug 2026</div>
+      <div class="eyebrow" data-start="2026-08-29">30-day course · started 29 Aug 2026</div>
       <h1>Become an AI engineer by cutting <em>80%</em> of the curriculum.</h1>
       <p class="sub">Find the fifth of the field that produces most of the real-world results, learn it properly, and build in it every single day. Four shipped projects by Day 30.</p>
       <a class="cta" href="#/day/1">Start Day 1 →</a>
@@ -377,7 +446,14 @@
         <h2>Thirty days</h2>
         <p class="lede">Each day: the concepts taught properly, a step-by-step build, and a checklist with a "done when" you can answer yes or no to. Week 0 is optional — run the gate on the Overview and take only what you're missing. Progress saves in this browser.</p>
       </div>
+      <div class="daysearch">
+        <input id="daysearch" type="search" autocomplete="off" spellcheck="false"
+               placeholder="Filter the days — try &quot;eval&quot;, &quot;retrieval&quot;, &quot;prompt injection&quot;"
+               aria-label="Filter the days by title or task">
+        <span class="daysearch-count" id="daysearch-count" hidden></span>
+      </div>
       <div id="course-weeks"></div>
+      <p class="placeholder" id="daysearch-empty" hidden>No day matches that.</p>
     </div>
   </section>
 
@@ -5835,6 +5911,23 @@ const slugOf = d => d.replace("–","-").replace(".","-");
 const DAYS = [];
 WEEKS.forEach(w => w.days.forEach(day => DAYS.push({ w, day, slug: slugOf(day.d) })));
 
+const dayLabel = d => (d.includes("–") ? "Days " : "Day ") + d;
+
+/* Task text carries the inline HTML the page renders. plain() strips it for
+   search and for the clipboard; markdownish() keeps <b>/<code> as markdown for
+   the LOG.md entry. Both decode entities through the parser rather than a table. */
+const decoder = document.createElement("textarea");
+function decode(t){ decoder.innerHTML = t; return decoder.value; }
+function plain(t){ return decode(String(t).replace(/<[^>]+>/g, "")); }
+function markdownish(t){
+  return decode(String(t)
+    .replace(/<code>(.*?)<\/code>/g, "`$1`")
+    .replace(/<b>(.*?)<\/b>/g, "**$1**")
+    .replace(/<(?:i|em)>(.*?)<\/(?:i|em)>/g, "*$1*")
+    .replace(/<[^>]+>/g, ""));
+}
+const esc = t => String(t).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
 /* ---------- course index ---------- */
 const courseHost = document.getElementById("course-weeks");
 WEEKS.forEach(w => {
@@ -5845,7 +5938,8 @@ WEEKS.forEach(w => {
     if (day.lever) tags.push('<span class="tag lever">high leverage</span>');
     if (day.ship) tags.push('<span class="tag ship">ship it</span>');
     const label = day.d.includes("–") ? "Days " + day.d : "Day " + day.d;
-    return `<li><a class="dayrow" data-slug="${slugOf(day.d)}" href="#/day/${slugOf(day.d)}">
+    const haystack = plain([day.t, ...day.tasks, day.done || ""].join(" ")).toLowerCase();
+    return `<li><a class="dayrow" data-slug="${slugOf(day.d)}" data-search="${esc(haystack)}" href="#/day/${slugOf(day.d)}">
       <span class="dn">${label}</span><span class="dt">${day.t}</span>${tags.join("")}
       <span class="day-prog"></span></a></li>`;
   }).join("");
@@ -5884,6 +5978,10 @@ DAYS.forEach(({ w, day, slug }, i) => {
       <h4>Today's checklist</h4>
       <ul class="checks">${items}</ul>
       <div class="day-done"><b>Done when</b>${day.done}</div>
+      <div class="logrow">
+        <button class="btn copylog" type="button">Copy log entry</button>
+        <span class="note">A LOG.md entry for today, with everything you've ticked under “Built:”.</span>
+      </div>
     </div>
     <nav class="pager">
       ${prev ? `<a href="#/day/${prev.slug}"><span class="plabel">← Previous</span><span class="pname">${prev.day.t}</span></a>` : `<span></span>`}
@@ -5979,6 +6077,226 @@ function route(){
   window.scrollTo(0, 0);
 }
 window.addEventListener("hashchange", route);
+
+/* ---------- resume: where did I leave off? ---------- */
+function dayState(entry){
+  let checked = 0;
+  entry.day.tasks.forEach((_, j) => { if (state[`d${entry.day.d}:${j}`]) checked++; });
+  return { checked, total: entry.day.tasks.length };
+}
+
+/* A day you started but did not finish is where you were. Failing that, the day
+   after the furthest one you have touched — so skipping Week 0 does not park you
+   on Day 0.1 forever. Nothing ticked at all falls back to the first day; a fully
+   ticked course falls back to the index. */
+function resumeTarget(){
+  const stats = DAYS.map(dayState);
+  for (let i = 0; i < DAYS.length; i++){
+    if (stats[i].checked > 0 && stats[i].checked < stats[i].total) return DAYS[i];
+  }
+  let last = -1;
+  for (let i = 0; i < DAYS.length; i++) if (stats[i].checked > 0) last = i;
+  if (last === -1) return DAYS[0];
+  for (let i = last + 1; i < DAYS.length; i++) if (stats[i].checked < stats[i].total) return DAYS[i];
+  return null;
+}
+
+document.getElementById("resume").addEventListener("click", () => {
+  const target = resumeTarget();
+  location.hash = target ? "#/day/" + target.slug : "#/course";
+});
+
+/* ---------- which day should I be on today? ---------- */
+/* Read the start date off the hero rather than repeating it here. Week 0 is not
+   counted: the clock starts at Day 1 and stops at Day 30. */
+const startEl = document.querySelector("[data-start]");
+function todayISO(){
+  const n = new Date();
+  const p = v => String(v).padStart(2, "0");
+  return n.getFullYear() + "-" + p(n.getMonth() + 1) + "-" + p(n.getDate());
+}
+function scheduledDay(){
+  if (!startEl) return null;
+  const parts = startEl.dataset.start.split("-").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+  const start = new Date(parts[0], parts[1] - 1, parts[2]);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const elapsed = Math.round((today - start) / 86400000);
+  return Math.min(30, Math.max(1, elapsed + 1));
+}
+(function showToday(){
+  const n = scheduledDay();
+  const el = document.getElementById("today");
+  if (n === null) return;
+  const entry = DAYS.find(d => d.day.d === String(n)) ||
+                DAYS.find(d => d.day.d.split("–")[0] === String(n));
+  el.innerHTML = '<i class="tl">Today · </i><b>Day ' + n + "</b>";
+  el.title = "By the schedule you started on " + startEl.dataset.start + ", today is day " + n + " of 30";
+  if (entry) el.href = "#/day/" + entry.slug;
+  el.hidden = false;
+})();
+
+/* ---------- copy a LOG.md entry ---------- */
+/* Mirrors the template at the top of LOG.md exactly, with the ticked tasks
+   listed under "Built:". */
+function logEntry(entry){
+  const built = entry.day.tasks
+    .filter((_, j) => state[`d${entry.day.d}:${j}`])
+    .map(t => "  - " + markdownish(t));
+  return [
+    "## " + dayLabel(entry.day.d) + " — " + plain(entry.day.t) + "  (" + todayISO() + ", Xh)",
+    "- Built:",
+    ...built,
+    "- Worked:",
+    "- Surprised me:",
+    "- Still fuzzy:",
+    "- Numbers: cost/request $X.XX · p95 XXXms · eval score X.XX",
+    ""
+  ].join("\n");
+}
+
+/* Clipboard access can be refused outright on a file:// page, so fall back to
+   execCommand and then to a textarea the reader can select and copy by hand. */
+function showFallback(row, text){
+  let ta = row.parentNode.querySelector(".logout");
+  if (!ta) {
+    ta = document.createElement("textarea");
+    ta.className = "logout";
+    ta.setAttribute("aria-label", "Log entry — select and copy");
+    ta.spellcheck = false;
+    row.parentNode.insertBefore(ta, row.nextSibling);
+  }
+  ta.value = text;
+  ta.hidden = false;
+  ta.focus();
+  ta.select();
+}
+
+function flash(btn, msg){
+  const original = btn.dataset.label || btn.textContent;
+  btn.dataset.label = original;
+  btn.textContent = msg;
+  clearTimeout(btn._t);
+  btn._t = setTimeout(() => { btn.textContent = btn.dataset.label; }, 1800);
+}
+
+document.querySelectorAll(".copylog").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const sec = btn.closest(".day-page");
+    const entry = DAYS.find(d => d.slug === sec.dataset.slug);
+    const text = logEntry(entry);
+    const row = btn.closest(".logrow");
+    const existing = row.parentNode.querySelector(".logout");
+    if (existing) existing.hidden = true;
+
+    const legacyCopy = () => {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      ta.remove();
+      return ok;
+    };
+
+    const done = () => flash(btn, "Copied ✓");
+    const failed = () => { showFallback(row, text); flash(btn, "Select & copy"); };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => { legacyCopy() ? done() : failed(); });
+    } else {
+      legacyCopy() ? done() : failed();
+    }
+  });
+});
+
+/* ---------- export / import progress ---------- */
+/* The file wraps the very same map that lives under the ai80-20-v1 key, so a
+   plain dump of that key imports too. */
+document.getElementById("export").addEventListener("click", () => {
+  const payload = {
+    app: "ai80-20",
+    key: KEY,
+    exported: new Date().toISOString(),
+    checked: Object.keys(state).length,
+    progress: state
+  };
+  const href = "data:application/json;charset=utf-8," +
+               encodeURIComponent(JSON.stringify(payload, null, 2));
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = "ai80-20-progress-" + todayISO() + ".json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+const importFile = document.getElementById("import-file");
+document.getElementById("import").addEventListener("click", () => { importFile.value = ""; importFile.click(); });
+
+importFile.addEventListener("change", () => {
+  const file = importFile.files && importFile.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); } catch (e) { data = null; }
+    const map = data && typeof data === "object"
+      ? (data.progress && typeof data.progress === "object" ? data.progress : data)
+      : null;
+    if (!map || Array.isArray(map)) { alert("That file isn't a progress export."); return; }
+
+    const known = new Set(boxes.map(b => b.dataset.k));
+    const next = {};
+    let matched = 0, unknown = 0;
+    Object.keys(map).forEach(k => {
+      if (!map[k]) return;
+      next[k] = 1;
+      if (known.has(k)) matched++; else unknown++;
+    });
+
+    const warn = unknown ? "\n" + unknown + " entries don't match any task on this page and will be kept as-is." : "";
+    if (!confirm("Replace the progress in this browser with " + matched + " ticked task" +
+                 (matched === 1 ? "" : "s") + " from " + file.name + "?" + warn)) return;
+
+    state = next;
+    save();
+    boxes.forEach(b => { b.checked = !!state[b.dataset.k]; });
+    refresh();
+  };
+  reader.onerror = () => alert("Could not read that file.");
+  reader.readAsText(file);
+});
+
+/* ---------- filter the day list ---------- */
+const searchInput = document.getElementById("daysearch");
+const searchCount = document.getElementById("daysearch-count");
+const searchEmpty = document.getElementById("daysearch-empty");
+const dayRows = Array.from(document.querySelectorAll(".dayrow"));
+
+function runSearch(){
+  const q = searchInput.value.trim().toLowerCase();
+  let shown = 0;
+  dayRows.forEach(row => {
+    const hit = !q || row.dataset.search.indexOf(q) !== -1 ||
+                row.querySelector(".dn").textContent.toLowerCase().indexOf(q) !== -1;
+    row.parentNode.hidden = !hit;
+    if (hit) shown++;
+  });
+  document.querySelectorAll(".week-block").forEach(block => {
+    block.hidden = !!q && !block.querySelector(".daylist > li:not([hidden])");
+  });
+  searchCount.textContent = shown + " of " + dayRows.length;
+  searchCount.hidden = !q;
+  searchEmpty.hidden = shown !== 0;
+}
+searchInput.addEventListener("input", runSearch);
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Escape" && searchInput.value) { searchInput.value = ""; runSearch(); }
+});
 
 refresh();
 route();
