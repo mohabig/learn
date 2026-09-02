@@ -3,13 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-</head>
-<body>
 <title>The 80/20 AI Engineer</title>
+<meta name="description" content="A 30-day course to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening — with four shipped projects by Day 30.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The 80/20 AI Engineer">
+<meta property="og:description" content="A 30-day course to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening — with four shipped projects by Day 30.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%231F45C8'/><text x='32' y='45' text-anchor='middle' font-family='Georgia,serif' font-size='33' fill='%23EDF0EA'>80</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<!-- Fonts load non-render-blocking: the sheet is fetched as print media, then
+     promoted to all once it arrives. Without a network the page paints immediately
+     on the fallback stacks instead of waiting on the request to time out. -->
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap"></noscript>
 <style>
   :root{
     --ground:#EDF0EA; --surface:#F8FAF6; --raised:#FFFFFF;
@@ -54,7 +62,10 @@
   }
 
   *{box-sizing:border-box}
+  img{max-width:100%}
+  [hidden]{display:none!important}
   body{
+    margin:0;
     background:var(--ground); color:var(--ink);
     font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
@@ -66,12 +77,12 @@
   code,.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
   code{font-size:.86em; background:var(--rule-soft); padding:.12em .38em; border-radius:3px}
   :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
-  .eyebrow{font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  .eyebrow{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
 
   /* ---------- top bar ---------- */
   .bar{position:sticky; top:0; z-index:30; background:color-mix(in srgb, var(--ground) 90%, transparent); backdrop-filter:saturate(1.3) blur(10px); border-bottom:1px solid var(--rule)}
   .bar-in{max-width:1060px; margin:0 auto; padding:10px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap}
-  .bar-name{font-family:"Newsreader",serif; font-size:17px; white-space:nowrap; border:0; color:var(--ink)}
+  .bar-name{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:17px; white-space:nowrap; border:0; color:var(--ink)}
   .tabs{display:flex; gap:2px}
   .tab{font-size:13.5px; color:var(--muted); border:0; padding:5px 10px; border-radius:5px; white-space:nowrap}
   .tab:hover{color:var(--ink); background:var(--rule-soft)}
@@ -79,8 +90,8 @@
   .meter{flex:1 1 160px; min-width:130px; display:flex; align-items:center; gap:10px}
   .track{flex:1; height:6px; background:var(--rule); border-radius:99px; overflow:hidden}
   .fill{height:100%; width:0%; background:var(--accent); border-radius:99px; transition:width .35s ease}
-  .pct{font-family:"JetBrains Mono",monospace; font-size:12px; font-variant-numeric:tabular-nums; color:var(--muted); min-width:9ch; text-align:right}
-  .btn{font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:var(--muted); border:1px solid var(--rule); padding:5px 10px; border-radius:5px; cursor:pointer}
+  .pct{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; font-variant-numeric:tabular-nums; color:var(--muted); min-width:9ch; text-align:right}
+  .btn{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:var(--muted); border:1px solid var(--rule); padding:5px 10px; border-radius:5px; cursor:pointer}
   .btn:hover{color:var(--ink); border-color:var(--muted)}
 
   .wrap{max-width:1060px; margin:0 auto; padding:0 24px 96px}
@@ -96,28 +107,28 @@
   .hero h1{font-size:clamp(38px,6.4vw,62px); line-height:1.03; letter-spacing:-.028em; margin:14px 0 0}
   .hero h1 em{font-style:italic; color:var(--accent-ink)}
   .hero .sub{margin-top:20px; font-size:18.5px; line-height:1.55; color:var(--ink-2); max-width:56ch}
-  .cta{display:inline-block; margin-top:24px; font-family:"JetBrains Mono",monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; background:var(--accent); color:var(--ground); border:0; padding:11px 18px; border-radius:6px}
+  .cta{display:inline-block; margin-top:24px; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; background:var(--accent); color:var(--ground); border:0; padding:11px 18px; border-radius:6px}
   .cta:hover{background:var(--accent-ink); color:var(--ground)}
   .facts{display:flex; flex-wrap:wrap; margin-top:32px; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule)}
   .fact{flex:1 1 130px; padding:14px 18px 14px 0; border-right:1px solid var(--rule-soft)}
   .fact:last-child{border-right:0}
-  .fact b{display:block; font-family:"JetBrains Mono",monospace; font-size:21px; font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .fact b{display:block; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:21px; font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
   .fact span{display:block; font-size:12.5px; color:var(--muted); margin-top:3px}
   .thesis{margin-top:32px; padding:20px 24px; background:var(--accent-wash); border-left:3px solid var(--accent); border-radius:0 6px 6px 0}
-  .thesis p{font-family:"Newsreader",serif; font-size:20px; line-height:1.45; color:var(--ink)}
-  .thesis .why{font-family:"Public Sans",sans-serif; font-size:14.5px; color:var(--ink-2); margin-top:10px}
+  .thesis p{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:20px; line-height:1.45; color:var(--ink)}
+  .thesis .why{font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:14.5px; color:var(--ink-2); margin-top:10px}
 
   /* ---------- keep / skip ---------- */
   .split{display:grid; grid-template-columns:1fr; gap:22px}
   @media (min-width:680px){.split{grid-template-columns:1.15fr .85fr; gap:32px}}
   .keep{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; counter-reset:k}
   .keep li{display:grid; grid-template-columns:26px 1fr; gap:12px; align-items:start}
-  .keep li::before{counter-increment:k; content:counter(k,decimal-leading-zero); font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--accent); padding-top:4px; letter-spacing:.04em}
+  .keep li::before{counter-increment:k; content:counter(k,decimal-leading-zero); font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--accent); padding-top:4px; letter-spacing:.04em}
   .keep b{display:block; font-weight:600; font-size:15.5px}
   .keep span{display:block; grid-column:2; font-size:14px; color:var(--muted); line-height:1.5}
   .skip{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px}
   .skip li{font-size:14px; color:var(--muted); padding-left:20px; position:relative}
-  .skip li::before{content:"—"; position:absolute; left:0; color:var(--rule); font-family:"JetBrains Mono",monospace}
+  .skip li::before{content:"—"; position:absolute; left:0; color:var(--rule); font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
   .panel{background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:20px 22px}
   .panel h3{font-size:19px; margin-bottom:12px}
 
@@ -134,13 +145,13 @@
   .rules{list-style:none; margin:0; padding:0}
   .rules li{display:grid; grid-template-columns:auto 1fr; gap:14px; padding:12px 0; border-bottom:1px solid var(--rule-soft); align-items:baseline}
   .rules li:first-child{border-top:1px solid var(--rule-soft)}
-  .rules b{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--accent); letter-spacing:.06em}
+  .rules b{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--accent); letter-spacing:.06em}
   .rules span{font-size:15px}
   .rules strong{font-weight:600; color:var(--ink)}
   .tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
   table{border-collapse:collapse; width:100%; min-width:520px; font-size:14.5px}
   th,td{text-align:left; padding:10px 16px 10px 0; border-bottom:1px solid var(--rule-soft); vertical-align:top}
-  th{font-family:"JetBrains Mono",monospace; font-size:10.5px; font-weight:500; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); border-bottom-color:var(--rule)}
+  th{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10.5px; font-weight:500; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); border-bottom-color:var(--rule)}
   td:first-child{font-weight:600; white-space:nowrap; padding-right:24px}
   td.note{color:var(--muted)}
 
@@ -149,21 +160,21 @@
   .week-block:first-child{margin-top:0}
   .week-head{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; padding-bottom:12px; border-bottom:2px solid var(--ink); margin-bottom:4px}
   .week-head h3{font-size:25px; letter-spacing:-.02em}
-  .week-head .wmeta{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; font-variant-numeric:tabular-nums}
+  .week-head .wmeta{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; font-variant-numeric:tabular-nums}
   .minitrack{height:3px; background:var(--rule); border-radius:99px; margin:10px 0 0; overflow:hidden}
   .minifill{height:100%; width:0%; background:var(--good); border-radius:99px; transition:width .3s ease}
-  .outcome{font-family:"Newsreader",serif; font-style:italic; font-size:16.5px; color:var(--ink-2); margin:14px 0 6px; max-width:60ch}
+  .outcome{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-style:italic; font-size:16.5px; color:var(--ink-2); margin:14px 0 6px; max-width:60ch}
   .week-intro-slot{max-width:68ch; margin-bottom:8px}
   .week-intro-slot p{font-size:14.5px; color:var(--muted); line-height:1.6; margin:8px 0}
   .daylist{list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:8px}
   .dayrow{display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:var(--raised); border:1px solid var(--rule-soft); border-radius:8px; padding:12px 16px; box-shadow:var(--shadow); color:var(--ink); border-bottom-width:1px}
   .dayrow:hover{border-color:var(--accent)}
   .dayrow.is-done{background:var(--surface); box-shadow:none}
-  .dayrow .dn{font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:500; letter-spacing:.08em; color:var(--muted); background:var(--rule-soft); padding:3px 7px; border-radius:4px; white-space:nowrap}
-  .dayrow .dt{font-family:"Newsreader",serif; font-size:17.5px; flex:1 1 auto; min-width:160px}
-  .dayrow .day-prog{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; margin-left:auto}
+  .dayrow .dn{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; font-weight:500; letter-spacing:.08em; color:var(--muted); background:var(--rule-soft); padding:3px 7px; border-radius:4px; white-space:nowrap}
+  .dayrow .dt{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:17.5px; flex:1 1 auto; min-width:160px}
+  .dayrow .day-prog{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; margin-left:auto}
   .dayrow.is-done .day-prog{color:var(--good)}
-  .tag{font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:4px; white-space:nowrap}
+  .tag{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:4px; white-space:nowrap}
   .tag.lever{background:var(--signal-wash); color:var(--signal)}
   .tag.ship{background:var(--accent-wash); color:var(--accent-ink)}
 
@@ -175,15 +186,20 @@
   .day-title-row{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-top:8px}
   .day-page h2.day-title{font-size:clamp(28px,4.5vw,40px); letter-spacing:-.02em}
   .day-content{margin-top:8px}
-  .day-content .day-lede{font-family:"Newsreader",serif; font-size:19.5px; line-height:1.5; color:var(--ink-2); margin:18px 0 6px; max-width:60ch}
+  .day-content .day-lede{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:19.5px; line-height:1.5; color:var(--ink-2); margin:18px 0 6px; max-width:60ch}
   .day-content h4{font-size:21px; margin:30px 0 10px}
   .day-content p{margin:10px 0; color:var(--ink-2); font-size:15.5px; max-width:68ch}
   .day-content ul, .day-content ol{margin:10px 0; padding-left:24px; color:var(--ink-2); font-size:15px; max-width:66ch}
   .day-content li{margin:6px 0; line-height:1.55}
   .day-content pre{background:var(--rule-soft); padding:12px 14px; border-radius:6px; overflow-x:auto; font-size:13px; line-height:1.5; max-width:100%}
   .day-content pre code{background:transparent; padding:0}
-  .day-content .diagram{margin:20px 0; background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:18px 18px 12px; max-width:680px}
-  .day-content .diagram svg{width:100%; height:auto; display:block; font-family:"Public Sans",-apple-system,sans-serif}
+  /* Diagrams are drawn on a 640-unit viewBox with 13-unit type. Scaling one down to a
+     phone-width column renders that type at ~6px. Instead of shrinking, the figure
+     scrolls: the svg keeps a floor width so its text never falls below ~11px. On any
+     column wider than the floor, width:100% wins and desktop rendering is unchanged. */
+  .day-content .diagram{margin:20px 0; background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:18px 18px 12px; max-width:680px; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:thin}
+  .day-content .diagram svg{width:100%; min-width:560px; height:auto; display:block; font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .day-content .diagram figcaption{position:sticky; left:0}
   .day-content .diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px; line-height:1.5}
   .day-content .walkthrough{margin:28px 0 0; padding:16px 20px; background:var(--surface); border-left:3px solid var(--accent); border-radius:0 8px 8px 0}
   .day-content .walkthrough h4{margin:0 0 6px; font-size:19px}
@@ -192,12 +208,12 @@
   .day-check{margin-top:28px}
   .day-check h4{font-size:19px; margin-bottom:12px}
   .day-done{margin-top:16px; padding:12px 15px; background:var(--surface); border-radius:6px; border:1px dashed var(--rule); font-size:14px; color:var(--ink-2)}
-  .day-done b{font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:4px}
+  .day-done b{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:4px}
   .day-page.all-done .day-done{background:var(--good-wash); border-style:solid; border-color:color-mix(in srgb, var(--good) 30%, transparent)}
   .pager{display:flex; justify-content:space-between; gap:14px; margin-top:36px; padding-top:20px; border-top:1px solid var(--rule)}
   .pager a{border:0; max-width:46%}
-  .pager .plabel{display:block; font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
-  .pager .pname{font-family:"Newsreader",serif; font-size:17px; color:var(--ink)}
+  .pager .plabel{display:block; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
+  .pager .pname{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:17px; color:var(--ink)}
   .pager a:hover .pname{color:var(--accent-ink)}
   .pager .next{text-align:right; margin-left:auto}
 
@@ -205,7 +221,7 @@
   .qs{list-style:none; margin:0; padding:0; counter-reset:q; display:grid; grid-template-columns:1fr; gap:0}
   @media (min-width:700px){.qs{grid-template-columns:1fr 1fr; column-gap:32px}}
   .qs li{counter-increment:q; display:grid; grid-template-columns:24px 1fr; gap:10px; padding:9px 0; border-bottom:1px solid var(--rule-soft); font-size:14.5px; color:var(--ink-2); align-items:start}
-  .qs li::before{content:counter(q); font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); padding-top:3px; font-variant-numeric:tabular-nums}
+  .qs li::before{content:counter(q); font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--muted); padding-top:3px; font-variant-numeric:tabular-nums}
   .cards{display:grid; grid-template-columns:1fr; gap:14px}
   @media (min-width:640px){.cards{grid-template-columns:1fr 1fr 1fr}}
   .vcard{background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:18px}
@@ -214,16 +230,19 @@
   .res{list-style:none; margin:0; padding:0}
   .res li{padding:12px 0; border-bottom:1px solid var(--rule-soft); display:grid; grid-template-columns:1fr; gap:3px}
   @media (min-width:620px){.res li{grid-template-columns:150px 1fr; gap:20px; align-items:baseline}}
-  .res .cat{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
+  .res .cat{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
   .res .what{font-size:14.5px; color:var(--ink-2)}
   .res .what b{font-weight:600; color:var(--ink)}
   .close{margin-top:36px; padding:26px 28px; border:1px solid var(--rule); border-radius:9px; background:var(--surface)}
   .close p{font-size:15.5px; color:var(--ink-2); max-width:62ch}
   .close p + p{margin-top:12px}
-  .close .kicker{font-family:"Newsreader",serif; font-size:22px; color:var(--ink); margin-bottom:12px}
+  .close .kicker{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:22px; color:var(--ink); margin-bottom:12px}
   footer{padding:34px 0 0; border-top:1px solid var(--rule-soft); margin-top:44px; color:var(--muted); font-size:13px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
 </style>
+</head>
+
+<body>
 
 <div class="bar">
   <div class="bar-in">
@@ -464,7 +483,7 @@
         <p class="kicker">Honest expectations</p>
         <p>Thirty focused days gets you to <b>junior-to-mid AI engineer, employable, with proof</b> — someone who can own an LLM feature end to end. It does not make you senior; that comes from production incidents, real users and scale, which take months you can't compress. Anyone selling the second outcome in 30 days is selling something.</p>
         <p>What the plan really buys you is the part that compounds: four systems shipped, measured, and broken on purpose. From there every new model release is a small delta on a foundation you own — instead of one more thing you feel behind on.</p>
-        <p style="font-family:'Newsreader',serif; font-size:19px; color:var(--ink); margin-top:18px">Start today. Day 1 is a CLI that summarizes a file. Go.</p>
+        <p style="font-family:'Newsreader',Georgia,'Times New Roman',serif; font-size:19px; color:var(--ink); margin-top:18px">Start today. Day 1 is a CLI that summarizes a file. Go.</p>
       </div>
     </div>
   </section>
