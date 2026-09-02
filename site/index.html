@@ -3,13 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-</head>
-<body>
 <title>The 80/20 AI Engineer</title>
+<meta name="description" content="A 30-day course to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening — with four shipped projects by Day 30.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The 80/20 AI Engineer">
+<meta property="og:description" content="A 30-day course to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening — with four shipped projects by Day 30.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%231F45C8'/><text x='32' y='45' text-anchor='middle' font-family='Georgia,serif' font-size='33' fill='%23EDF0EA'>80</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<!-- Fonts load non-render-blocking: the sheet is fetched as print media, then
+     promoted to all once it arrives. Without a network the page paints immediately
+     on the fallback stacks instead of waiting on the request to time out. -->
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap"></noscript>
 <style>
   :root{
     --ground:#EDF0EA; --surface:#F8FAF6; --raised:#FFFFFF;
@@ -54,7 +62,10 @@
   }
 
   *{box-sizing:border-box}
+  img{max-width:100%}
+  [hidden]{display:none!important}
   body{
+    margin:0;
     background:var(--ground); color:var(--ink);
     font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
@@ -66,12 +77,12 @@
   code,.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
   code{font-size:.86em; background:var(--rule-soft); padding:.12em .38em; border-radius:3px}
   :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
-  .eyebrow{font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  .eyebrow{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
 
   /* ---------- top bar ---------- */
   .bar{position:sticky; top:0; z-index:30; background:color-mix(in srgb, var(--ground) 90%, transparent); backdrop-filter:saturate(1.3) blur(10px); border-bottom:1px solid var(--rule)}
   .bar-in{max-width:1060px; margin:0 auto; padding:10px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap}
-  .bar-name{font-family:"Newsreader",serif; font-size:17px; white-space:nowrap; border:0; color:var(--ink)}
+  .bar-name{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:17px; white-space:nowrap; border:0; color:var(--ink)}
   .tabs{display:flex; gap:2px}
   .tab{font-size:13.5px; color:var(--muted); border:0; padding:5px 10px; border-radius:5px; white-space:nowrap}
   .tab:hover{color:var(--ink); background:var(--rule-soft)}
@@ -79,8 +90,8 @@
   .meter{flex:1 1 160px; min-width:130px; display:flex; align-items:center; gap:10px}
   .track{flex:1; height:6px; background:var(--rule); border-radius:99px; overflow:hidden}
   .fill{height:100%; width:0%; background:var(--accent); border-radius:99px; transition:width .35s ease}
-  .pct{font-family:"JetBrains Mono",monospace; font-size:12px; font-variant-numeric:tabular-nums; color:var(--muted); min-width:9ch; text-align:right}
-  .btn{font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:var(--muted); border:1px solid var(--rule); padding:5px 10px; border-radius:5px; cursor:pointer}
+  .pct{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; font-variant-numeric:tabular-nums; color:var(--muted); min-width:9ch; text-align:right}
+  .btn{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:var(--muted); border:1px solid var(--rule); padding:5px 10px; border-radius:5px; cursor:pointer}
   .btn:hover{color:var(--ink); border-color:var(--muted)}
 
   .wrap{max-width:1060px; margin:0 auto; padding:0 24px 96px}
@@ -96,28 +107,28 @@
   .hero h1{font-size:clamp(38px,6.4vw,62px); line-height:1.03; letter-spacing:-.028em; margin:14px 0 0}
   .hero h1 em{font-style:italic; color:var(--accent-ink)}
   .hero .sub{margin-top:20px; font-size:18.5px; line-height:1.55; color:var(--ink-2); max-width:56ch}
-  .cta{display:inline-block; margin-top:24px; font-family:"JetBrains Mono",monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; background:var(--accent); color:var(--ground); border:0; padding:11px 18px; border-radius:6px}
+  .cta{display:inline-block; margin-top:24px; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; background:var(--accent); color:var(--ground); border:0; padding:11px 18px; border-radius:6px}
   .cta:hover{background:var(--accent-ink); color:var(--ground)}
   .facts{display:flex; flex-wrap:wrap; margin-top:32px; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule)}
   .fact{flex:1 1 130px; padding:14px 18px 14px 0; border-right:1px solid var(--rule-soft)}
   .fact:last-child{border-right:0}
-  .fact b{display:block; font-family:"JetBrains Mono",monospace; font-size:21px; font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .fact b{display:block; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:21px; font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
   .fact span{display:block; font-size:12.5px; color:var(--muted); margin-top:3px}
   .thesis{margin-top:32px; padding:20px 24px; background:var(--accent-wash); border-left:3px solid var(--accent); border-radius:0 6px 6px 0}
-  .thesis p{font-family:"Newsreader",serif; font-size:20px; line-height:1.45; color:var(--ink)}
-  .thesis .why{font-family:"Public Sans",sans-serif; font-size:14.5px; color:var(--ink-2); margin-top:10px}
+  .thesis p{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:20px; line-height:1.45; color:var(--ink)}
+  .thesis .why{font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:14.5px; color:var(--ink-2); margin-top:10px}
 
   /* ---------- keep / skip ---------- */
   .split{display:grid; grid-template-columns:1fr; gap:22px}
   @media (min-width:680px){.split{grid-template-columns:1.15fr .85fr; gap:32px}}
   .keep{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; counter-reset:k}
   .keep li{display:grid; grid-template-columns:26px 1fr; gap:12px; align-items:start}
-  .keep li::before{counter-increment:k; content:counter(k,decimal-leading-zero); font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--accent); padding-top:4px; letter-spacing:.04em}
+  .keep li::before{counter-increment:k; content:counter(k,decimal-leading-zero); font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--accent); padding-top:4px; letter-spacing:.04em}
   .keep b{display:block; font-weight:600; font-size:15.5px}
   .keep span{display:block; grid-column:2; font-size:14px; color:var(--muted); line-height:1.5}
   .skip{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px}
   .skip li{font-size:14px; color:var(--muted); padding-left:20px; position:relative}
-  .skip li::before{content:"—"; position:absolute; left:0; color:var(--rule); font-family:"JetBrains Mono",monospace}
+  .skip li::before{content:"—"; position:absolute; left:0; color:var(--rule); font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
   .panel{background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:20px 22px}
   .panel h3{font-size:19px; margin-bottom:12px}
 
@@ -134,13 +145,13 @@
   .rules{list-style:none; margin:0; padding:0}
   .rules li{display:grid; grid-template-columns:auto 1fr; gap:14px; padding:12px 0; border-bottom:1px solid var(--rule-soft); align-items:baseline}
   .rules li:first-child{border-top:1px solid var(--rule-soft)}
-  .rules b{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--accent); letter-spacing:.06em}
+  .rules b{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--accent); letter-spacing:.06em}
   .rules span{font-size:15px}
   .rules strong{font-weight:600; color:var(--ink)}
   .tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
   table{border-collapse:collapse; width:100%; min-width:520px; font-size:14.5px}
   th,td{text-align:left; padding:10px 16px 10px 0; border-bottom:1px solid var(--rule-soft); vertical-align:top}
-  th{font-family:"JetBrains Mono",monospace; font-size:10.5px; font-weight:500; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); border-bottom-color:var(--rule)}
+  th{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10.5px; font-weight:500; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); border-bottom-color:var(--rule)}
   td:first-child{font-weight:600; white-space:nowrap; padding-right:24px}
   td.note{color:var(--muted)}
 
@@ -149,21 +160,21 @@
   .week-block:first-child{margin-top:0}
   .week-head{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; padding-bottom:12px; border-bottom:2px solid var(--ink); margin-bottom:4px}
   .week-head h3{font-size:25px; letter-spacing:-.02em}
-  .week-head .wmeta{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; font-variant-numeric:tabular-nums}
+  .week-head .wmeta{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; font-variant-numeric:tabular-nums}
   .minitrack{height:3px; background:var(--rule); border-radius:99px; margin:10px 0 0; overflow:hidden}
   .minifill{height:100%; width:0%; background:var(--good); border-radius:99px; transition:width .3s ease}
-  .outcome{font-family:"Newsreader",serif; font-style:italic; font-size:16.5px; color:var(--ink-2); margin:14px 0 6px; max-width:60ch}
+  .outcome{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-style:italic; font-size:16.5px; color:var(--ink-2); margin:14px 0 6px; max-width:60ch}
   .week-intro-slot{max-width:68ch; margin-bottom:8px}
   .week-intro-slot p{font-size:14.5px; color:var(--muted); line-height:1.6; margin:8px 0}
   .daylist{list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:8px}
   .dayrow{display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:var(--raised); border:1px solid var(--rule-soft); border-radius:8px; padding:12px 16px; box-shadow:var(--shadow); color:var(--ink); border-bottom-width:1px}
   .dayrow:hover{border-color:var(--accent)}
   .dayrow.is-done{background:var(--surface); box-shadow:none}
-  .dayrow .dn{font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:500; letter-spacing:.08em; color:var(--muted); background:var(--rule-soft); padding:3px 7px; border-radius:4px; white-space:nowrap}
-  .dayrow .dt{font-family:"Newsreader",serif; font-size:17.5px; flex:1 1 auto; min-width:160px}
-  .dayrow .day-prog{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; margin-left:auto}
+  .dayrow .dn{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; font-weight:500; letter-spacing:.08em; color:var(--muted); background:var(--rule-soft); padding:3px 7px; border-radius:4px; white-space:nowrap}
+  .dayrow .dt{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:17.5px; flex:1 1 auto; min-width:160px}
+  .dayrow .day-prog{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; margin-left:auto}
   .dayrow.is-done .day-prog{color:var(--good)}
-  .tag{font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:4px; white-space:nowrap}
+  .tag{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:4px; white-space:nowrap}
   .tag.lever{background:var(--signal-wash); color:var(--signal)}
   .tag.ship{background:var(--accent-wash); color:var(--accent-ink)}
 
@@ -175,15 +186,20 @@
   .day-title-row{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-top:8px}
   .day-page h2.day-title{font-size:clamp(28px,4.5vw,40px); letter-spacing:-.02em}
   .day-content{margin-top:8px}
-  .day-content .day-lede{font-family:"Newsreader",serif; font-size:19.5px; line-height:1.5; color:var(--ink-2); margin:18px 0 6px; max-width:60ch}
+  .day-content .day-lede{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:19.5px; line-height:1.5; color:var(--ink-2); margin:18px 0 6px; max-width:60ch}
   .day-content h4{font-size:21px; margin:30px 0 10px}
   .day-content p{margin:10px 0; color:var(--ink-2); font-size:15.5px; max-width:68ch}
   .day-content ul, .day-content ol{margin:10px 0; padding-left:24px; color:var(--ink-2); font-size:15px; max-width:66ch}
   .day-content li{margin:6px 0; line-height:1.55}
   .day-content pre{background:var(--rule-soft); padding:12px 14px; border-radius:6px; overflow-x:auto; font-size:13px; line-height:1.5; max-width:100%}
   .day-content pre code{background:transparent; padding:0}
-  .day-content .diagram{margin:20px 0; background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:18px 18px 12px; max-width:680px}
-  .day-content .diagram svg{width:100%; height:auto; display:block; font-family:"Public Sans",-apple-system,sans-serif}
+  /* Diagrams are drawn on a 640-unit viewBox with 13-unit type. Scaling one down to a
+     phone-width column renders that type at ~6px. Instead of shrinking, the figure
+     scrolls: the svg keeps a floor width so its text never falls below ~11px. On any
+     column wider than the floor, width:100% wins and desktop rendering is unchanged. */
+  .day-content .diagram{margin:20px 0; background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:18px 18px 12px; max-width:680px; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:thin}
+  .day-content .diagram svg{width:100%; min-width:560px; height:auto; display:block; font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .day-content .diagram figcaption{position:sticky; left:0}
   .day-content .diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px; line-height:1.5}
   .day-content .walkthrough{margin:28px 0 0; padding:16px 20px; background:var(--surface); border-left:3px solid var(--accent); border-radius:0 8px 8px 0}
   .day-content .walkthrough h4{margin:0 0 6px; font-size:19px}
@@ -192,12 +208,12 @@
   .day-check{margin-top:28px}
   .day-check h4{font-size:19px; margin-bottom:12px}
   .day-done{margin-top:16px; padding:12px 15px; background:var(--surface); border-radius:6px; border:1px dashed var(--rule); font-size:14px; color:var(--ink-2)}
-  .day-done b{font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:4px}
+  .day-done b{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:4px}
   .day-page.all-done .day-done{background:var(--good-wash); border-style:solid; border-color:color-mix(in srgb, var(--good) 30%, transparent)}
   .pager{display:flex; justify-content:space-between; gap:14px; margin-top:36px; padding-top:20px; border-top:1px solid var(--rule)}
   .pager a{border:0; max-width:46%}
-  .pager .plabel{display:block; font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
-  .pager .pname{font-family:"Newsreader",serif; font-size:17px; color:var(--ink)}
+  .pager .plabel{display:block; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
+  .pager .pname{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:17px; color:var(--ink)}
   .pager a:hover .pname{color:var(--accent-ink)}
   .pager .next{text-align:right; margin-left:auto}
 
@@ -205,7 +221,7 @@
   .qs{list-style:none; margin:0; padding:0; counter-reset:q; display:grid; grid-template-columns:1fr; gap:0}
   @media (min-width:700px){.qs{grid-template-columns:1fr 1fr; column-gap:32px}}
   .qs li{counter-increment:q; display:grid; grid-template-columns:24px 1fr; gap:10px; padding:9px 0; border-bottom:1px solid var(--rule-soft); font-size:14.5px; color:var(--ink-2); align-items:start}
-  .qs li::before{content:counter(q); font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); padding-top:3px; font-variant-numeric:tabular-nums}
+  .qs li::before{content:counter(q); font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--muted); padding-top:3px; font-variant-numeric:tabular-nums}
   .cards{display:grid; grid-template-columns:1fr; gap:14px}
   @media (min-width:640px){.cards{grid-template-columns:1fr 1fr 1fr}}
   .vcard{background:var(--surface); border:1px solid var(--rule-soft); border-radius:8px; padding:18px}
@@ -214,16 +230,81 @@
   .res{list-style:none; margin:0; padding:0}
   .res li{padding:12px 0; border-bottom:1px solid var(--rule-soft); display:grid; grid-template-columns:1fr; gap:3px}
   @media (min-width:620px){.res li{grid-template-columns:150px 1fr; gap:20px; align-items:baseline}}
-  .res .cat{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
+  .res .cat{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
   .res .what{font-size:14.5px; color:var(--ink-2)}
   .res .what b{font-weight:600; color:var(--ink)}
   .close{margin-top:36px; padding:26px 28px; border:1px solid var(--rule); border-radius:9px; background:var(--surface)}
   .close p{font-size:15.5px; color:var(--ink-2); max-width:62ch}
   .close p + p{margin-top:12px}
-  .close .kicker{font-family:"Newsreader",serif; font-size:22px; color:var(--ink); margin-bottom:12px}
+  .close .kicker{font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:22px; color:var(--ink); margin-bottom:12px}
   footer{padding:34px 0 0; border-top:1px solid var(--rule-soft); margin-top:44px; color:var(--muted); font-size:13px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+  /* ---------- bar tools: resume, today, export / import ---------- */
+  .bar-tools{display:flex; gap:6px; flex-wrap:wrap}
+  .today{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); border:0; white-space:nowrap; padding:5px 0}
+  .today:hover{color:var(--accent-ink); border:0}
+  .today b{font-weight:500; color:var(--ink)}
+  .today .tl{font-style:normal}
+  /* Four new controls must not make the sticky bar taller on a phone. Reflow to
+     three rows — name + meter, tabs + today, tools — the same height the bar had
+     before them. */
+  @media (max-width:560px){
+    .bar-name{order:1}
+    .meter{order:2; flex:1 1 110px; min-width:110px}
+    .pct{min-width:8ch}
+    .tabs{order:3}
+    .today{order:4; margin-left:auto}
+    .today .tl{display:none}
+    .bar-tools{order:5; flex-basis:100%}
+  }
+
+  /* ---------- day search ---------- */
+  .daysearch{display:flex; align-items:center; gap:12px; margin-bottom:22px}
+  .daysearch input{flex:1 1 auto; min-width:0; font:inherit; font-size:15px; color:var(--ink); background:var(--raised); border:1px solid var(--rule); border-radius:7px; padding:10px 13px; -webkit-appearance:none; appearance:none}
+  .daysearch input::placeholder{color:var(--muted)}
+  .daysearch input:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+  .daysearch-count{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums}
+
+  /* ---------- copy a LOG.md entry ---------- */
+  .logrow{margin-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+  .logrow .note{font-size:12.5px; color:var(--muted)}
+  .logout{width:100%; margin-top:12px; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; line-height:1.6; color:var(--ink); background:var(--raised); border:1px solid var(--rule); border-radius:7px; padding:12px 14px; min-height:190px; resize:vertical}
+
+  /* ---------- print: one day, on paper ---------- */
+  @media print{
+    /* the palette is pinned light — a reader whose OS is in dark mode should not
+       get a page of white text on white paper */
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]){
+      --ground:#FFFFFF; --surface:#FFFFFF; --raised:#FFFFFF;
+      --ink:#151915; --ink-2:#3B443A; --muted:#5C6553;
+      --rule:#BFC6B7; --rule-soft:#DDE2D7;
+      --accent:#1F45C8; --accent-ink:#1735A0; --accent-wash:#EEF1FB;
+      --signal:#9A5312; --signal-wash:#F8F0E6; --good:#2C6B3C; --good-wash:#EAF1EB;
+      --dg-ink:#2E352C; --dg-muted:#6C7563; --dg-line:#9AA391;
+      --dg-accent:#1F45C8; --dg-wash:#EEF1FB;
+      --dg-accent2:#9A5312; --dg-wash2:#F8F0E6; --dg-good:#2C6B3C;
+      --shadow:none; color-scheme:light;
+    }
+    @page{margin:16mm}
+    body{background:#fff; font-size:11pt}
+    /* the router already hides every view and day but the current one */
+    .bar, .pager, .crumbs, .daysearch, .bar-tools, footer{display:none!important}
+    .logrow, .logout{display:none!important}
+    .wrap{max-width:none; padding:0}
+    .view > .chunk{padding:0; border-top:0}
+    a{color:inherit; border-bottom:0}
+    .day-check{background:none; border:1px solid var(--rule)}
+    /* diagrams print whole: no scroll box, no floor width, never split across pages */
+    .day-content .diagram{overflow:visible; break-inside:avoid; page-break-inside:avoid; max-width:100%}
+    .day-content .diagram svg{min-width:0}
+    .day-content .concept, .day-check, figure, table, pre{break-inside:avoid; page-break-inside:avoid}
+    h1,h2,h3,h4{break-after:avoid; page-break-after:avoid}
+  }
 </style>
+</head>
+
+<body>
 
 <div class="bar">
   <div class="bar-in">
@@ -237,7 +318,14 @@
       <div class="track"><div class="fill" id="fill"></div></div>
       <div class="pct" id="pct">0 / 0</div>
     </div>
-    <button class="btn" id="reset" type="button">Reset</button>
+    <a class="today" id="today" href="#/course" hidden></a>
+    <div class="bar-tools">
+      <button class="btn" id="resume" type="button" title="Jump to where you left off">Resume</button>
+      <button class="btn" id="export" type="button" title="Download your progress as a JSON file">Export</button>
+      <button class="btn" id="import" type="button" title="Restore progress from an exported file">Import</button>
+      <button class="btn" id="reset" type="button">Reset</button>
+      <input id="import-file" type="file" accept="application/json,.json" hidden>
+    </div>
   </div>
 </div>
 
@@ -246,7 +334,7 @@
   <!-- ============ OVERVIEW ============ -->
   <section class="view" data-view="overview">
     <div class="chunk hero">
-      <div class="eyebrow">30-day course · started 29 Aug 2026</div>
+      <div class="eyebrow" data-start="2026-08-29">30-day course · started 29 Aug 2026</div>
       <h1>Become an AI engineer by cutting <em>80%</em> of the curriculum.</h1>
       <p class="sub">Find the fifth of the field that produces most of the real-world results, learn it properly, and build in it every single day. Four shipped projects by Day 30.</p>
       <a class="cta" href="#/day/1">Start Day 1 →</a>
@@ -358,7 +446,14 @@
         <h2>Thirty days</h2>
         <p class="lede">Each day: the concepts taught properly, a step-by-step build, and a checklist with a "done when" you can answer yes or no to. Week 0 is optional — run the gate on the Overview and take only what you're missing. Progress saves in this browser.</p>
       </div>
+      <div class="daysearch">
+        <input id="daysearch" type="search" autocomplete="off" spellcheck="false"
+               placeholder="Filter the days — try &quot;eval&quot;, &quot;retrieval&quot;, &quot;prompt injection&quot;"
+               aria-label="Filter the days by title or task">
+        <span class="daysearch-count" id="daysearch-count" hidden></span>
+      </div>
       <div id="course-weeks"></div>
+      <p class="placeholder" id="daysearch-empty" hidden>No day matches that.</p>
     </div>
   </section>
 
@@ -464,7 +559,7 @@
         <p class="kicker">Honest expectations</p>
         <p>Thirty focused days gets you to <b>junior-to-mid AI engineer, employable, with proof</b> — someone who can own an LLM feature end to end. It does not make you senior; that comes from production incidents, real users and scale, which take months you can't compress. Anyone selling the second outcome in 30 days is selling something.</p>
         <p>What the plan really buys you is the part that compounds: four systems shipped, measured, and broken on purpose. From there every new model release is a small delta on a foundation you own — instead of one more thing you feel behind on.</p>
-        <p style="font-family:'Newsreader',serif; font-size:19px; color:var(--ink); margin-top:18px">Start today. Day 1 is a CLI that summarizes a file. Go.</p>
+        <p style="font-family:'Newsreader',Georgia,'Times New Roman',serif; font-size:19px; color:var(--ink); margin-top:18px">Start today. Day 1 is a CLI that summarizes a file. Go.</p>
       </div>
     </div>
   </section>
@@ -5795,210 +5890,17 @@
 
 </div>
 
+<!-- The checklist data lives in one file, shared with the markdown plan via
+     scripts/build_plan.py. A classic <script src> is used rather than fetch()
+     so the page still works opened straight off disk as a file:// URL. -->
+<script src="course-data.js"></script>
 <script>
-const WEEKS = [
-  { n:0, title:"The base layer", range:"Days 0.1–0.5 · optional",
-    outcome:"I have the foundations the 30 days assume — or I've confirmed I already did.",
-    days:[
-      { d:"0.1", t:"The terminal", tasks:[
-        "Navigate and manipulate files from the shell: paths, flags, pipes, redirection",
-        "Read error messages top to bottom; <code>--help</code> and <code>man</code> before a search engine",
-        "Understand <code>PATH</code> and environment variables — where \"command not found\" comes from",
-        "<b>Build:</b> a drill — create a project tree, search it with <code>grep</code>/<code>find</code>, break an install on purpose and fix it"],
-        done:"You can debug an install failure without panicking." },
-      { d:"0.2", t:"Python, the parts you'll use", tasks:[
-        "Functions, modules and imports, classes where they earn their place, comprehensions",
-        "Type hints — and why they pay off the moment Pydantic arrives in Week 1",
-        "Isolated environments with <code>uv</code>: create, install, freeze, delete",
-        "<b>Build:</b> a small typed CLI that reads any text file and reports words, lines, and the ten most common tokens"],
-        done:"Fresh environment, one install command, and the CLI runs on the first try." },
-      { d:"0.3", t:"Errors, async, and tests", tasks:[
-        "Exceptions raised and caught narrowly; context managers for cleanup",
-        "<code>async</code>/<code>await</code>: what the event loop does, why it helps I/O and not math",
-        "<code>pytest</code> basics: test functions, asserts, running one file",
-        "<b>Build:</b> a downloader fetching ten URLs concurrently, with tests for the success and failure paths"],
-        done:"You can explain why the async version is faster, and both tests pass." },
-      { d:"0.4", t:"HTTP, JSON, and secrets", tasks:[
-        "Request anatomy: method, path, headers, body; the status-code families",
-        "JSON in and out of Python; where auth lives — bearer tokens and API keys",
-        "Secret hygiene: env vars, <code>.env</code>, <code>.gitignore</code> — why keys never go in code",
-        "<b>Build:</b> call a real public API with the key from an env var, handling 404 and 429 explicitly"],
-        done:"You can open a provider's API reference and know where the auth goes." },
-      { d:"0.5", t:"Git, GitHub, and reading docs", tasks:[
-        "Commits as snapshots; branch, push, pull, and what a PR actually is",
-        "Create a merge conflict on purpose and resolve it",
-        "Documentation as a skill: reference vs guide; finding the answer faster than a video could",
-        "<b>Build:</b> a practice repo with a branch, a PR, and one resolved conflict"],
-        done:"The word \"conflict\" no longer raises your pulse." }
-    ]},
-  { n:1, title:"Model fluency", range:"Days 1–7",
-    outcome:"I can make a model do what I want, reliably and cheaply — and prove exactly what it cost.",
-    days:[
-      { d:"1", t:"First-principles calls", tasks:[
-        "Set up the repo, a <code>uv</code> env, API keys in env vars — never in code",
-        "Raw SDK: messages, system prompt, temperature, <code>max_tokens</code>, stop sequences",
-        "Count input and output tokens; compute the exact cost of a call",
-        "Measure latency: time-to-first-token vs total",
-        "<b>Build:</b> a CLI that takes a URL or file and returns a structured summary"],
-        done:"You can state, to the cent, what one run of your CLI costs — and why." },
-      { d:"2", t:"Prompting that survives contact with users", tasks:[
-        "Few-shot examples, task decomposition, explicit output contracts, negative instructions",
-        "When step-by-step reasoning helps, and when it just burns tokens",
-        "Prompts live in versioned files, not f-strings scattered through the code",
-        "<b>Build:</b> a prompt module plus a 20-case input file you can run any prompt across"],
-        done:"You can change a prompt and immediately see which of the 20 cases moved." },
-      { d:"3", t:"Structured output", lever:true, tasks:[
-        "JSON schema / tool-based structured output, with Pydantic models as the contract",
-        "Validation, retry-on-invalid, repair prompts, streaming partial JSON",
-        "<b>Build:</b> an extractor turning messy text — invoices, emails, résumés, job posts — into typed objects"],
-        done:"At least 95% of 50 real inputs parse into valid objects on the first or second attempt." },
-      { d:"4", t:"Long context and multimodal", tasks:[
-        "Images and PDFs as input; document understanding with no retrieval pipeline at all",
-        "Context-window budgeting; prompt caching and what it does to cost",
-        "When stuffing the whole document into the prompt beats RAG — more often than people admit",
-        "<b>Build:</b> PDF in, structured cited summary out"],
-        done:"You can say which documents belong in the prompt and which need retrieval." },
-      { d:"5", t:"Cost, latency, streaming", tasks:[
-        "Stream tokens end-to-end (SSE) from a FastAPI endpoint to a client",
-        "Model routing: cheap model first, escalate on low confidence or failure",
-        "Prompt caching plus a response cache — then measure the hit rate",
-        "<b>Build:</b> a streaming API endpoint with caching"],
-        done:"You have a table of p50/p95 latency and cost per request, cached vs uncached." },
-      { d:"6", t:"Failure modes", tasks:[
-        "Hallucination, truncation, refusal, rate limits, timeouts, provider outages",
-        "Retries with exponential backoff and jitter, idempotency, circuit breaking, degraded responses",
-        "<b>Build:</b> harden yesterday's service, then break it on purpose — bad keys, huge inputs, cut network"],
-        done:"Every failure path returns something useful instead of a stack trace." },
-      { d:"7", t:"Ship #1", ship:true, tasks:[
-        "Deploy the tool publicly",
-        "README: what it does, architecture, cost per request, p95 latency",
-        "Take a half day off — burnout on Day 19 costs more than a Sunday does"],
-        done:"A stranger can use it from a link, and read what it costs to run." }
-    ]},
-  { n:2, title:"Context engineering &amp; RAG", range:"Days 8–14",
-    outcome:"I can make a model answer from my data — and prove that retrieval got better, not just different.",
-    days:[
-      { d:"8", t:"Embeddings from scratch, no database", tasks:[
-        "Embeddings, cosine similarity, dimensionality, exact vs approximate nearest neighbour",
-        "<b>Build:</b> a complete RAG system in ~200 lines with numpy and a list. No vector database."],
-        done:"You can explain, without hand-waving, exactly what a vector DB is doing for you." },
-      { d:"9", t:"Ingestion and chunking", tasks:[
-        "Parsing PDF, HTML, Markdown, code — the parsing is usually the hard part, not the AI",
-        "Chunk size and overlap; structural vs semantic chunking; keeping headings with their content",
-        "Metadata, stable document IDs, dedupe, incremental re-indexing",
-        "<b>Build:</b> an ingestion pipeline over a corpus you genuinely care about"],
-        done:"Re-running ingestion on a changed corpus updates only what changed." },
-      { d:"10", t:"Retrieval that actually works", tasks:[
-        "Move into a real vector store",
-        "Hybrid search (BM25 + dense) — and why pure vector search fails on names, IDs and rare terms",
-        "Metadata filters, MMR/diversity, reranking, query rewriting and multi-query",
-        "<b>Build:</b> upgrade yesterday's pipeline to hybrid plus a reranker"],
-        done:"You have before/after recall numbers, not a feeling." },
-      { d:"11", t:"Retrieval evaluation", lever:true, tasks:[
-        "Hand-build a golden set: 30–50 questions with known correct source chunks",
-        "Metrics: recall@k, MRR, faithfulness/groundedness, answer relevance",
-        "Ragas or a hand-rolled harness — understanding the metric is the point"],
-        done:"You can write: \"hybrid + rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set.\" That sentence is worth more in an interview than a month of tutorials." },
-      { d:"12", t:"Generation over retrieved context", tasks:[
-        "Inline citations, grounding, refusing to answer outside the corpus",
-        "Conflicting sources, stale sources, context ordering and lost-in-the-middle",
-        "<b>Build:</b> answers where every claim links back to its source chunk"],
-        done:"You can click any sentence in an answer through to the text it came from." },
-      { d:"13", t:"RAG in production", tasks:[
-        "Freshness and re-index strategy; permissions and multi-tenancy — whose documents can this user see?",
-        "Index versioning and rollback; cost per query",
-        "Latency budget across embed → search → rerank → generate",
-        "<b>Build:</b> add auth and per-user document scoping"],
-        done:"Two users with different permissions get different answers to the same question." },
-      { d:"14", t:"Ship #2", ship:true, tasks:[
-        "Deploy the RAG app",
-        "README carries the Day 11 eval table",
-        "Treat this one carefully — it's usually the strongest portfolio piece of the month"],
-        done:"The README leads with measured retrieval quality, not a feature list." }
-    ]},
-  { n:3, title:"Agents, tools and evals", range:"Days 15–21",
-    outcome:"My system can take actions — and I can prove it still works before I ship a change.",
-    days:[
-      { d:"15", t:"Tool use", tasks:[
-        "Tool definitions, JSON schemas, tool choice, parallel tool calls",
-        "Feeding results — and errors — back into the conversation",
-        "<b>Build:</b> a four-tool assistant (search, calculator, SQL query, file write) with no framework"],
-        done:"A tool that throws produces a recovery, not a crash." },
-      { d:"16", t:"The agent loop", tasks:[
-        "Plan → act → observe → repeat; termination conditions, step limits, budget limits",
-        "Memory: short-term conversation vs long-term store; context compaction",
-        "<b>When an agent is the wrong answer:</b> if you can draw the flowchart, write the flowchart — a deterministic pipeline with three LLM calls is cheaper, faster and testable",
-        "<b>Build:</b> a bounded agent that completes a genuinely multi-step task"],
-        done:"The agent can't loop forever, and you can say what it costs at worst." },
-      { d:"17", t:"MCP and integrations", tasks:[
-        "Model Context Protocol: servers, tools, resources, transports — and why a standard tool interface matters",
-        "<b>Build:</b> an MCP server exposing your week-2 RAG as a tool, connected to a real client"],
-        done:"You can query your own corpus from inside a coding agent or desktop client." },
-      { d:"18", t:"Evals I — the discipline", lever:true, tasks:[
-        "Why evals beat vibes; the three tiers — assertions, LLM-as-judge, human review",
-        "<b>Error analysis, the actual skill:</b> dump 50 failures, read all of them, label them, cluster them, and let the clusters tell you what to fix. Most teams skip this and optimise the wrong thing.",
-        "Judge design: rubrics, pairwise comparison, position bias, and validating the judge against human labels",
-        "Read Hamel Husain's writing on evals today, start to finish"],
-        done:"You have a labelled taxonomy of how your own system fails, ranked by frequency." },
-      { d:"19", t:"Evals II — build the harness", lever:true, tasks:[
-        "Dataset → runner → judge → metrics → regression gate, wired into CI",
-        "Per-commit scores; a regression fails the build",
-        "<b>Build:</b> <code>make eval</code> that runs against your agent and your RAG app"],
-        done:"Deliberately worsening a prompt turns your CI red." },
-      { d:"20", t:"Guardrails and security", tasks:[
-        "<b>Prompt injection</b>, especially through retrieved documents and tool output — the number-one real-world AI security issue",
-        "Data exfiltration paths, PII handling, output validation, allow-listed actions",
-        "Sandboxed tool execution, human-in-the-loop for irreversible actions, rate limiting",
-        "<b>Do:</b> spend two hours red-teaming your own Day 16 agent, and write down what worked"],
-        done:"You have a document listing the attacks that worked and what you changed." },
-      { d:"21", t:"Ship #3", ship:true, tasks:[
-        "Public repo: agent, tools, eval suite, CI",
-        "README includes a \"How I evaluate this\" section"],
-        done:"Someone can read your README and reproduce your eval scores." }
-    ]},
-  { n:4, title:"Production and proof", range:"Days 22–30",
-    outcome:"Everything I built is observable, measured, deployed, and explained well enough to hire me on.",
-    days:[
-      { d:"22", t:"Observability", tasks:[
-        "Trace every model call: inputs, outputs, tokens, cost, latency, tool calls, retries",
-        "Dashboards for cost per day and p95 latency; capture user feedback signals",
-        "Log safely — no secrets, no unredacted PII",
-        "<b>Build:</b> instrument all three shipped projects with one tracing tool"],
-        done:"You can open a trace for any single request from the last week." },
-      { d:"23", t:"Fine-tuning, in exactly one day", tasks:[
-        "When it genuinely wins: fixed style or format, latency and cost at high volume, a narrow repeated task",
-        "When it loses: knowledge injection (that's RAG), fast-changing data, small datasets, anything you haven't first tried to solve with a good prompt",
-        "<b>Do:</b> run one small SFT/LoRA job on a hosted service and compare it head-to-head against your best prompt"],
-        done:"You can defend the choice with data — and the honest answer is usually \"prompt + RAG won\", which is itself a senior signal." },
-      { d:"24", t:"Open models and serving", tasks:[
-        "Run a model locally (Ollama or llama.cpp); quantisation tradeoffs",
-        "vLLM, batching, KV cache — conceptually, not as an ops project",
-        "When self-hosting is right: privacy and compliance, extreme volume, latency floors",
-        "Timebox this hard. It's the biggest rabbit hole in the plan."],
-        done:"You can say, in two sentences, when you'd self-host and when you wouldn't." },
-      { d:"25–27", t:"Capstone", ship:true, tasks:[
-        "One product using everything: retrieval + tools/agent + evals + tracing + auth + deploy",
-        "Scope rule: something <b>you would personally use every week</b>",
-        "Shapes that work: an assistant over your own domain's documents with actions attached; a workflow replacing a recurring manual task; an internal tool for a niche you know well",
-        "Ship at the end of Day 27. No extensions."],
-        done:"It's deployed and you've used it yourself for something real." },
-      { d:"28", t:"Harden and measure", tasks:[
-        "Load test it; record cost per user, p95 latency, eval scores on the golden set, error rate",
-        "Write a failure playbook: what breaks, how you'd know, what you'd do",
-        "Fix the top two failure modes your evals surface"],
-        done:"Every number in the README came from a measurement, not an estimate." },
-      { d:"29", t:"Write it up", lever:true, tasks:[
-        "Problem → architecture diagram → key tradeoffs → what failed and why → eval results → cost and latency",
-        "<b>The highest-leverage day of the month.</b> Hiring managers cannot see your skill; they can see whether you reason about tradeoffs. Most candidates ship code with no story — ship the story."],
-        done:"A stranger reads it and understands both what you built and why you built it that way." },
-      { d:"30", t:"Position yourself", tasks:[
-        "Rewrite résumé and LinkedIn around shipped systems with numbers, not tools listed",
-        "Drill the 15 questions until you can answer them cold",
-        "Choose the next 30 days: depth (evals, retrieval quality, inference optimisation) or a domain (legal, health, devtools, finance)",
-        "Start talking to people: one public write-up, one open-source PR to AI tooling, five targeted applications"],
-        done:"Someone who has never met you can tell, in 60 seconds, that you ship AI systems." }
-    ]}
-];
+const WEEKS = window.COURSE_WEEKS;
+if (!Array.isArray(WEEKS)) {
+  document.getElementById("course-weeks").innerHTML =
+    '<p class="placeholder">Could not load course-data.js — keep it next to index.html.</p>';
+  throw new Error("course-data.js did not load");
+}
 
 const KEY = "ai80-20-v1";
 let state = {};
@@ -6008,6 +5910,23 @@ function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch
 const slugOf = d => d.replace("–","-").replace(".","-");
 const DAYS = [];
 WEEKS.forEach(w => w.days.forEach(day => DAYS.push({ w, day, slug: slugOf(day.d) })));
+
+const dayLabel = d => (d.includes("–") ? "Days " : "Day ") + d;
+
+/* Task text carries the inline HTML the page renders. plain() strips it for
+   search and for the clipboard; markdownish() keeps <b>/<code> as markdown for
+   the LOG.md entry. Both decode entities through the parser rather than a table. */
+const decoder = document.createElement("textarea");
+function decode(t){ decoder.innerHTML = t; return decoder.value; }
+function plain(t){ return decode(String(t).replace(/<[^>]+>/g, "")); }
+function markdownish(t){
+  return decode(String(t)
+    .replace(/<code>(.*?)<\/code>/g, "`$1`")
+    .replace(/<b>(.*?)<\/b>/g, "**$1**")
+    .replace(/<(?:i|em)>(.*?)<\/(?:i|em)>/g, "*$1*")
+    .replace(/<[^>]+>/g, ""));
+}
+const esc = t => String(t).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
 /* ---------- course index ---------- */
 const courseHost = document.getElementById("course-weeks");
@@ -6019,7 +5938,8 @@ WEEKS.forEach(w => {
     if (day.lever) tags.push('<span class="tag lever">high leverage</span>');
     if (day.ship) tags.push('<span class="tag ship">ship it</span>');
     const label = day.d.includes("–") ? "Days " + day.d : "Day " + day.d;
-    return `<li><a class="dayrow" data-slug="${slugOf(day.d)}" href="#/day/${slugOf(day.d)}">
+    const haystack = plain([day.t, ...day.tasks, day.done || ""].join(" ")).toLowerCase();
+    return `<li><a class="dayrow" data-slug="${slugOf(day.d)}" data-search="${esc(haystack)}" href="#/day/${slugOf(day.d)}">
       <span class="dn">${label}</span><span class="dt">${day.t}</span>${tags.join("")}
       <span class="day-prog"></span></a></li>`;
   }).join("");
@@ -6058,6 +5978,10 @@ DAYS.forEach(({ w, day, slug }, i) => {
       <h4>Today's checklist</h4>
       <ul class="checks">${items}</ul>
       <div class="day-done"><b>Done when</b>${day.done}</div>
+      <div class="logrow">
+        <button class="btn copylog" type="button">Copy log entry</button>
+        <span class="note">A LOG.md entry for today, with everything you've ticked under “Built:”.</span>
+      </div>
     </div>
     <nav class="pager">
       ${prev ? `<a href="#/day/${prev.slug}"><span class="plabel">← Previous</span><span class="pname">${prev.day.t}</span></a>` : `<span></span>`}
@@ -6153,6 +6077,226 @@ function route(){
   window.scrollTo(0, 0);
 }
 window.addEventListener("hashchange", route);
+
+/* ---------- resume: where did I leave off? ---------- */
+function dayState(entry){
+  let checked = 0;
+  entry.day.tasks.forEach((_, j) => { if (state[`d${entry.day.d}:${j}`]) checked++; });
+  return { checked, total: entry.day.tasks.length };
+}
+
+/* A day you started but did not finish is where you were. Failing that, the day
+   after the furthest one you have touched — so skipping Week 0 does not park you
+   on Day 0.1 forever. Nothing ticked at all falls back to the first day; a fully
+   ticked course falls back to the index. */
+function resumeTarget(){
+  const stats = DAYS.map(dayState);
+  for (let i = 0; i < DAYS.length; i++){
+    if (stats[i].checked > 0 && stats[i].checked < stats[i].total) return DAYS[i];
+  }
+  let last = -1;
+  for (let i = 0; i < DAYS.length; i++) if (stats[i].checked > 0) last = i;
+  if (last === -1) return DAYS[0];
+  for (let i = last + 1; i < DAYS.length; i++) if (stats[i].checked < stats[i].total) return DAYS[i];
+  return null;
+}
+
+document.getElementById("resume").addEventListener("click", () => {
+  const target = resumeTarget();
+  location.hash = target ? "#/day/" + target.slug : "#/course";
+});
+
+/* ---------- which day should I be on today? ---------- */
+/* Read the start date off the hero rather than repeating it here. Week 0 is not
+   counted: the clock starts at Day 1 and stops at Day 30. */
+const startEl = document.querySelector("[data-start]");
+function todayISO(){
+  const n = new Date();
+  const p = v => String(v).padStart(2, "0");
+  return n.getFullYear() + "-" + p(n.getMonth() + 1) + "-" + p(n.getDate());
+}
+function scheduledDay(){
+  if (!startEl) return null;
+  const parts = startEl.dataset.start.split("-").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+  const start = new Date(parts[0], parts[1] - 1, parts[2]);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const elapsed = Math.round((today - start) / 86400000);
+  return Math.min(30, Math.max(1, elapsed + 1));
+}
+(function showToday(){
+  const n = scheduledDay();
+  const el = document.getElementById("today");
+  if (n === null) return;
+  const entry = DAYS.find(d => d.day.d === String(n)) ||
+                DAYS.find(d => d.day.d.split("–")[0] === String(n));
+  el.innerHTML = '<i class="tl">Today · </i><b>Day ' + n + "</b>";
+  el.title = "By the schedule you started on " + startEl.dataset.start + ", today is day " + n + " of 30";
+  if (entry) el.href = "#/day/" + entry.slug;
+  el.hidden = false;
+})();
+
+/* ---------- copy a LOG.md entry ---------- */
+/* Mirrors the template at the top of LOG.md exactly, with the ticked tasks
+   listed under "Built:". */
+function logEntry(entry){
+  const built = entry.day.tasks
+    .filter((_, j) => state[`d${entry.day.d}:${j}`])
+    .map(t => "  - " + markdownish(t));
+  return [
+    "## " + dayLabel(entry.day.d) + " — " + plain(entry.day.t) + "  (" + todayISO() + ", Xh)",
+    "- Built:",
+    ...built,
+    "- Worked:",
+    "- Surprised me:",
+    "- Still fuzzy:",
+    "- Numbers: cost/request $X.XX · p95 XXXms · eval score X.XX",
+    ""
+  ].join("\n");
+}
+
+/* Clipboard access can be refused outright on a file:// page, so fall back to
+   execCommand and then to a textarea the reader can select and copy by hand. */
+function showFallback(row, text){
+  let ta = row.parentNode.querySelector(".logout");
+  if (!ta) {
+    ta = document.createElement("textarea");
+    ta.className = "logout";
+    ta.setAttribute("aria-label", "Log entry — select and copy");
+    ta.spellcheck = false;
+    row.parentNode.insertBefore(ta, row.nextSibling);
+  }
+  ta.value = text;
+  ta.hidden = false;
+  ta.focus();
+  ta.select();
+}
+
+function flash(btn, msg){
+  const original = btn.dataset.label || btn.textContent;
+  btn.dataset.label = original;
+  btn.textContent = msg;
+  clearTimeout(btn._t);
+  btn._t = setTimeout(() => { btn.textContent = btn.dataset.label; }, 1800);
+}
+
+document.querySelectorAll(".copylog").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const sec = btn.closest(".day-page");
+    const entry = DAYS.find(d => d.slug === sec.dataset.slug);
+    const text = logEntry(entry);
+    const row = btn.closest(".logrow");
+    const existing = row.parentNode.querySelector(".logout");
+    if (existing) existing.hidden = true;
+
+    const legacyCopy = () => {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      ta.remove();
+      return ok;
+    };
+
+    const done = () => flash(btn, "Copied ✓");
+    const failed = () => { showFallback(row, text); flash(btn, "Select & copy"); };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => { legacyCopy() ? done() : failed(); });
+    } else {
+      legacyCopy() ? done() : failed();
+    }
+  });
+});
+
+/* ---------- export / import progress ---------- */
+/* The file wraps the very same map that lives under the ai80-20-v1 key, so a
+   plain dump of that key imports too. */
+document.getElementById("export").addEventListener("click", () => {
+  const payload = {
+    app: "ai80-20",
+    key: KEY,
+    exported: new Date().toISOString(),
+    checked: Object.keys(state).length,
+    progress: state
+  };
+  const href = "data:application/json;charset=utf-8," +
+               encodeURIComponent(JSON.stringify(payload, null, 2));
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = "ai80-20-progress-" + todayISO() + ".json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+const importFile = document.getElementById("import-file");
+document.getElementById("import").addEventListener("click", () => { importFile.value = ""; importFile.click(); });
+
+importFile.addEventListener("change", () => {
+  const file = importFile.files && importFile.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); } catch (e) { data = null; }
+    const map = data && typeof data === "object"
+      ? (data.progress && typeof data.progress === "object" ? data.progress : data)
+      : null;
+    if (!map || Array.isArray(map)) { alert("That file isn't a progress export."); return; }
+
+    const known = new Set(boxes.map(b => b.dataset.k));
+    const next = {};
+    let matched = 0, unknown = 0;
+    Object.keys(map).forEach(k => {
+      if (!map[k]) return;
+      next[k] = 1;
+      if (known.has(k)) matched++; else unknown++;
+    });
+
+    const warn = unknown ? "\n" + unknown + " entries don't match any task on this page and will be kept as-is." : "";
+    if (!confirm("Replace the progress in this browser with " + matched + " ticked task" +
+                 (matched === 1 ? "" : "s") + " from " + file.name + "?" + warn)) return;
+
+    state = next;
+    save();
+    boxes.forEach(b => { b.checked = !!state[b.dataset.k]; });
+    refresh();
+  };
+  reader.onerror = () => alert("Could not read that file.");
+  reader.readAsText(file);
+});
+
+/* ---------- filter the day list ---------- */
+const searchInput = document.getElementById("daysearch");
+const searchCount = document.getElementById("daysearch-count");
+const searchEmpty = document.getElementById("daysearch-empty");
+const dayRows = Array.from(document.querySelectorAll(".dayrow"));
+
+function runSearch(){
+  const q = searchInput.value.trim().toLowerCase();
+  let shown = 0;
+  dayRows.forEach(row => {
+    const hit = !q || row.dataset.search.indexOf(q) !== -1 ||
+                row.querySelector(".dn").textContent.toLowerCase().indexOf(q) !== -1;
+    row.parentNode.hidden = !hit;
+    if (hit) shown++;
+  });
+  document.querySelectorAll(".week-block").forEach(block => {
+    block.hidden = !!q && !block.querySelector(".daylist > li:not([hidden])");
+  });
+  searchCount.textContent = shown + " of " + dayRows.length;
+  searchCount.hidden = !q;
+  searchEmpty.hidden = shown !== 0;
+}
+searchInput.addEventListener("input", runSearch);
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Escape" && searchInput.value) { searchInput.value = ""; runSearch(); }
+});
 
 refresh();
 route();

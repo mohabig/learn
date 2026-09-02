@@ -1,0 +1,19 @@
+name: Check plan
+
+# The markdown plan's day sections are generated from site/course-data.js.
+# This fails the PR if someone edits one without regenerating the other.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: ai-engineer-30-day-plan.md is in step with site/course-data.js
+        run: python3 scripts/build_plan.py --check
