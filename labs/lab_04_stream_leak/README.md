@@ -49,7 +49,7 @@ Now look at the code in `labs/lab_04_stream_leak/streamer.py`:
 async def broken_stream_generator(tokens: List[str]) -> AsyncGenerator[str, None]:
     ResourceTracker.active_connections += 1
     for tok in tokens:
-        await asyncio.sleep(0.01)   # <-- CancelledError IS INJECTED HERE!
+        await asyncio.sleep(0.01)  # <-- CancelledError IS INJECTED HERE!
         yield tok
 
     # DEAD CODE ZONE: This line is NEVER reached if client disconnects!

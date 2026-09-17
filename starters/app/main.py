@@ -133,14 +133,27 @@ async def extract_structured(req: ExtractionRequest) -> ExtractedDocument:
 @app.post("/stream")
 async def stream_tokens(req: StreamRequest):
     """Streams tokens using Server-Sent Events (SSE) with time-to-first-token tracking."""
+
     async def token_generator() -> AsyncGenerator[dict[str, Any], None]:
         start_time = time.perf_counter()
         ttft_recorded = False
 
         sample_tokens = [
-            "In", " modern", " AI", " engineering,", " reliability",
-            " beats", " vibes.", " Every", " system", " must",
-            " be", " measured,", " evaluated,", " and", " hardened."
+            "In",
+            " modern",
+            " AI",
+            " engineering,",
+            " reliability",
+            " beats",
+            " vibes.",
+            " Every",
+            " system",
+            " must",
+            " be",
+            " measured,",
+            " evaluated,",
+            " and",
+            " hardened.",
         ]
 
         for i, tok in enumerate(sample_tokens):
@@ -163,10 +176,12 @@ async def stream_tokens(req: StreamRequest):
         total_latency_ms = (time.perf_counter() - start_time) * 1000.0
         yield {
             "event": "done",
-            "data": json.dumps({
-                "total_tokens": len(sample_tokens),
-                "total_duration_ms": round(total_latency_ms, 2),
-            }),
+            "data": json.dumps(
+                {
+                    "total_tokens": len(sample_tokens),
+                    "total_duration_ms": round(total_latency_ms, 2),
+                }
+            ),
         }
 
     return EventSourceResponse(token_generator())
@@ -174,4 +189,5 @@ async def stream_tokens(req: StreamRequest):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("starters.app.main:app", host="0.0.0.0", port=8000, reload=True)

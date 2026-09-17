@@ -10,11 +10,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from labs.lab_03_prompt_injection.extractor import (
-    build_vulnerable_prompt,
     build_defended_prompt,
-    simulate_model_execution,
+    build_vulnerable_prompt,
     extract_safely,
-    SecurityError,
+    simulate_model_execution,
 )
 
 

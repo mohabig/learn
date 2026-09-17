@@ -12,7 +12,6 @@ if str(ROOT) not in sys.path:
 from labs.lab_02_inverted_retrieval.search import (
     broken_search,
     fixed_search,
-    cosine_similarity,
 )
 
 

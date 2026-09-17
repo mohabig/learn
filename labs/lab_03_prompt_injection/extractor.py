@@ -13,9 +13,6 @@ Defense Pattern:
 
 from __future__ import annotations
 
-import re
-from typing import Dict, Optional
-
 
 def build_vulnerable_prompt(untrusted_invoice: str) -> str:
     """VULNERABLE: Direct string interpolation with no boundary fencing."""
@@ -52,7 +49,7 @@ def simulate_model_execution(prompt: str) -> str:
         return '{"total_amount": 100.0}'
 
 
-def extract_safely(raw_invoice: str) -> Dict[str, any]:
+def extract_safely(raw_invoice: str) -> dict[str, any]:
     prompt = build_defended_prompt(raw_invoice)
     response = simulate_model_execution(prompt)
 

@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 try:
     from fastapi.testclient import TestClient
     from starters.app.main import app
+
     HAS_DEPS = True
 except ImportError as err:
     HAS_DEPS = False

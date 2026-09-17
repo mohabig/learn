@@ -75,7 +75,9 @@ class BudgetGuard:
         self.current_step = 0
 
         # State persistence for cumulative spend
-        self.state_file = Path(state_file) if state_file else Path.home() / ".learn_budget_state.json"
+        self.state_file = (
+            Path(state_file) if state_file else Path.home() / ".learn_budget_state.json"
+        )
         self.total_stats = self._load_total_stats()
 
         # Cache directory for eval runs
@@ -140,7 +142,9 @@ class BudgetGuard:
         self.session_stats.input_tokens += input_tokens
         self.session_stats.output_tokens += output_tokens
         self.session_stats.cached_input_tokens += cached_input_tokens
-        self.session_stats.estimated_cost_usd = round(self.session_stats.estimated_cost_usd + cost, 6)
+        self.session_stats.estimated_cost_usd = round(
+            self.session_stats.estimated_cost_usd + cost, 6
+        )
 
         # Update total
         self.total_stats.calls += 1
@@ -182,12 +186,16 @@ class BudgetGuard:
     # -------------------------------------------------------------------------
     # Disk caching for deterministic evaluation runs
     # -------------------------------------------------------------------------
-    def _cache_key(self, prompt: str, model: str, extra_params: dict[str, Any] | None = None) -> str:
+    def _cache_key(
+        self, prompt: str, model: str, extra_params: dict[str, Any] | None = None
+    ) -> str:
         payload = {"prompt": prompt, "model": model, "params": extra_params or {}}
         raw = json.dumps(payload, sort_keys=True)
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
-    def get_cached(self, prompt: str, model: str, extra_params: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    def get_cached(
+        self, prompt: str, model: str, extra_params: dict[str, Any] | None = None
+    ) -> dict[str, Any] | None:
         """Retrieves cached response if present, returning None if cache miss."""
         key = self._cache_key(prompt, model, extra_params)
         file_path = self.cache_dir / f"{key}.json"
@@ -225,6 +233,10 @@ class BudgetGuard:
         s = self.session_stats
         t = self.total_stats
         print("=== BudgetGuard Usage Report ===")
-        print(f"Session: {s.calls} calls | {s.input_tokens} in ({s.cached_input_tokens} cached) | {s.output_tokens} out | ${s.estimated_cost_usd:.4f}")
-        print(f"Total:   {t.calls} calls | {t.input_tokens} in ({t.cached_input_tokens} cached) | {t.output_tokens} out | ${t.estimated_cost_usd:.4f}")
+        print(
+            f"Session: {s.calls} calls | {s.input_tokens} in ({s.cached_input_tokens} cached) | {s.output_tokens} out | ${s.estimated_cost_usd:.4f}"
+        )
+        print(
+            f"Total:   {t.calls} calls | {t.input_tokens} in ({t.cached_input_tokens} cached) | {t.output_tokens} out | ${t.estimated_cost_usd:.4f}"
+        )
         print("================================")

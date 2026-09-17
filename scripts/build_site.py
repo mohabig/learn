@@ -39,7 +39,9 @@ def build_bundle():
     )
 
     BUNDLE_OUTPUT.write_text(payload, encoding="utf-8")
-    print(f"Built {BUNDLE_OUTPUT} ({len(articles)} articles, {len(intros)} week intros, {BUNDLE_OUTPUT.stat().st_size} bytes)")
+    print(
+        f"Built {BUNDLE_OUTPUT} ({len(articles)} articles, {len(intros)} week intros, {BUNDLE_OUTPUT.stat().st_size} bytes)"
+    )
 
 
 if __name__ == "__main__":

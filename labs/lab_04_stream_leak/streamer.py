@@ -10,11 +10,12 @@ the upstream model connection remains active and resources leak.
 from __future__ import annotations
 
 import asyncio
-from typing import AsyncGenerator, Callable, List, Optional
+from collections.abc import AsyncGenerator
 
 
 class ResourceTracker:
     """Tracks active connections to detect leaks."""
+
     active_connections: int = 0
     cleaned_up: bool = False
 
@@ -24,7 +25,7 @@ class ResourceTracker:
         cls.cleaned_up = False
 
 
-async def broken_stream_generator(tokens: List[str]) -> AsyncGenerator[str, None]:
+async def broken_stream_generator(tokens: list[str]) -> AsyncGenerator[str, None]:
     """BROKEN: Ignores cancellation and fails to clean up resources."""
     ResourceTracker.active_connections += 1
     for tok in tokens:
@@ -35,17 +36,14 @@ async def broken_stream_generator(tokens: List[str]) -> AsyncGenerator[str, None
     ResourceTracker.cleaned_up = True
 
 
-async def fixed_stream_generator(tokens: List[str]) -> AsyncGenerator[str, None]:
+async def fixed_stream_generator(tokens: list[str]) -> AsyncGenerator[str, None]:
     """FIXED: Uses try ... finally to guarantee resource release on client disconnect."""
     ResourceTracker.active_connections += 1
     try:
         for tok in tokens:
             await asyncio.sleep(0.01)
             yield tok
-    except asyncio.CancelledError:
-        # Client aborted connection
-        raise
     finally:
-        # Always runs, even on cancellation
+        # Always runs, even on cancellation or generator close
         ResourceTracker.active_connections -= 1
         ResourceTracker.cleaned_up = True

@@ -20,13 +20,12 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG_PATH = ROOT / "LOG.md"
 COURSE_DATA_PATH = ROOT / "site" / "course-data.js"
 
-DRILL_QUESTIONS: List[Dict[str, str]] = [
+DRILL_QUESTIONS: list[dict[str, str]] = [
     {
         "topic": "Python Async & I/O",
         "question": "Why does async/await speed up network API calls but NOT CPU-bound mathematical operations?",
@@ -113,6 +112,7 @@ DRILL_QUESTIONS: List[Dict[str, str]] = [
 def run_drill():
     """Runs a 10-minute active recall drill."""
     import random
+
     drill = random.choice(DRILL_QUESTIONS)
     print("========================================")
     print("      10-Minute Spaced Retrieval Drill   ")
@@ -128,13 +128,13 @@ def run_drill():
     print("========================================\n")
 
 
-def load_course_days() -> Dict[str, str]:
+def load_course_days() -> dict[str, str]:
     """Extracts a mapping of day identifier -> title from course-data.js."""
     if not COURSE_DATA_PATH.exists():
         return {}
     try:
         text = COURSE_DATA_PATH.read_text(encoding="utf-8")
-        match = re.search(r"window\.COURSE_WEEKS\s*=\s*(\[.*\])\s*;\s*$", text, re.S)
+        match = re.search(r"window\.COURSE_WEEKS\s*=\s*(\[.*\])\s*;\s*$", text, re.DOTALL)
         if not match:
             return {}
         weeks = json.loads(match.group(1))
@@ -149,7 +149,7 @@ def load_course_days() -> Dict[str, str]:
         return {}
 
 
-def parse_logged_days() -> List[str]:
+def parse_logged_days() -> list[str]:
     """Finds all logged day identifiers in LOG.md."""
     if not LOG_PATH.exists():
         return []
@@ -174,7 +174,11 @@ def show_status():
     print(f"Active Log: {LOG_PATH.relative_to(ROOT)}")
     print("----------------------------------------")
     if logged_days:
-        print("Logged entries so far: " + ", ".join(logged_days[:10]) + ("..." if len(logged_days) > 10 else ""))
+        print(
+            "Logged entries so far: "
+            + ", ".join(logged_days[:10])
+            + ("..." if len(logged_days) > 10 else "")
+        )
     else:
         print("No days logged yet. Start today with Day 0 or Day 1!")
     print("========================================")
@@ -201,7 +205,9 @@ def append_or_update_log(
         f"- Numbers: {numbers}\n"
     )
 
-    current_text = LOG_PATH.read_text(encoding="utf-8") if LOG_PATH.exists() else "# Learning log\n\n"
+    current_text = (
+        LOG_PATH.read_text(encoding="utf-8") if LOG_PATH.exists() else "# Learning log\n\n"
+    )
 
     # Check if Day entry already exists
     pattern = rf"^##\s+Days?\s+{re.escape(day)}\b.*?(?=\n##\s+Days?|\Z)"
@@ -219,7 +225,7 @@ def append_or_update_log(
         print(f"Added Day {day} entry to {LOG_PATH.name}.")
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Log daily learning progress.")
     parser.add_argument("--status", action="store_true", help="Print overall progress status.")
     parser.add_argument("--drill", action="store_true", help="Run a 10-minute active recall drill.")
@@ -249,7 +255,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not day:
         # Suggest next unlogged day
         next_day = "1"
-        for d in course_days.keys():
+        for d in course_days:
             if d not in logged:
                 next_day = d
                 break
@@ -260,7 +266,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     topic = course_days.get(day, "Engineering Focus")
 
-    date_str = datetime.date.today().isoformat()
+    date_str = datetime.datetime.now(tz=datetime.UTC).date().isoformat()
     hours = args.hours
 
     built = args.built

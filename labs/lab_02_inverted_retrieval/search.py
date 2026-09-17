@@ -9,18 +9,17 @@ but sorts candidates in ASCENDING order (or confuses cosine distance with cosine
 from __future__ import annotations
 
 import math
-from typing import Dict, List, Tuple
 
 
-def dot_product(v1: List[float], v2: List[float]) -> float:
+def dot_product(v1: list[float], v2: list[float]) -> float:
     return sum(a * b for a, b in zip(v1, v2))
 
 
-def vector_norm(v: List[float]) -> float:
+def vector_norm(v: list[float]) -> float:
     return math.sqrt(sum(a * a for a in v))
 
 
-def cosine_similarity(v1: List[float], v2: List[float]) -> float:
+def cosine_similarity(v1: list[float], v2: list[float]) -> float:
     norm1 = vector_norm(v1)
     norm2 = vector_norm(v2)
     if norm1 == 0.0 or norm2 == 0.0:
@@ -28,16 +27,16 @@ def cosine_similarity(v1: List[float], v2: List[float]) -> float:
     return dot_product(v1, v2) / (norm1 * norm2)
 
 
-def cosine_distance(v1: List[float], v2: List[float]) -> float:
+def cosine_distance(v1: list[float], v2: list[float]) -> float:
     """Cosine distance = 1 - cosine similarity."""
     return 1.0 - cosine_similarity(v1, v2)
 
 
 def broken_search(
-    query_vector: List[float],
-    corpus: List[Dict[str, any]],
+    query_vector: list[float],
+    corpus: list[dict[str, any]],
     top_k: int = 3,
-) -> List[Dict[str, any]]:
+) -> list[dict[str, any]]:
     """BROKEN: Sorts cosine similarities in ascending order.
 
     Returns the chunks that are LEAST similar to the query at rank 1!
@@ -53,10 +52,10 @@ def broken_search(
 
 
 def fixed_search(
-    query_vector: List[float],
-    corpus: List[Dict[str, any]],
+    query_vector: list[float],
+    corpus: list[dict[str, any]],
     top_k: int = 3,
-) -> List[Dict[str, any]]:
+) -> list[dict[str, any]]:
     """FIXED: Sorts cosine similarities in descending order (highest score first)."""
     scored = []
     for item in corpus:

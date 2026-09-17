@@ -61,7 +61,7 @@ In `labs/lab_01_retry_storm/client.py`, look at the naive implementation:
 def broken_backoff(attempt: int, base: float = 1.0) -> float:
     # FLUID DYNAMICS COLLAPSE: Zero entropy.
     # Deterministic phase alignment guarantees synchronized thundering herd.
-    return base * (2 ** attempt)
+    return base * (2**attempt)
 ```
 
 To break destructive resonance in physical systems, you must introduce **phase noise (entropy)**. 
@@ -75,7 +75,7 @@ $$\text{Delay} \sim \mathcal{U}\left(0, \min\left(\text{MaxBackoff}, \text{Base}
 def full_jitter_backoff(attempt: int, base: float = 1.0, max_backoff: float = 30.0) -> float:
     # FULL JITTER: Injects uniform entropy across [0, ceiling].
     # Completely de-correlates worker retry phases into a smooth Poisson process.
-    ceiling = min(max_backoff, base * (2 ** attempt))
+    ceiling = min(max_backoff, base * (2**attempt))
     return random.uniform(0.0, ceiling)
 ```
 

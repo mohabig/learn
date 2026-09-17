@@ -10,10 +10,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from labs.lab_01_retry_storm.client import (
+    RateLimitExceeded,
     broken_backoff,
     full_jitter_backoff,
     retry_with_backoff,
-    RateLimitExceeded,
 )
 
 
@@ -30,7 +30,7 @@ class TestLab01(unittest.TestCase):
         delays = [full_jitter_backoff(attempt=3, base=1.0) for _ in range(50)]
         self.assertTrue(all(0.0 <= d <= 8.0 for d in delays))
         # Ensure variance exists (not all equal)
-        self.assertGreater(len(set(round(d, 3) for d in delays)), 30)
+        self.assertGreater(len({round(d, 3) for d in delays}), 30)
 
     def test_retry_recovers_after_intermittent_failures(self):
         calls = 0

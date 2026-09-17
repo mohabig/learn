@@ -13,7 +13,8 @@ from __future__ import annotations
 
 import random
 import time
-from typing import Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 T = TypeVar("T")
 
@@ -27,7 +28,7 @@ def broken_backoff(attempt: int, base: float = 1.0) -> float:
 
     All concurrent workers sleep for the EXACT same duration, causing a thundering herd.
     """
-    return base * (2 ** attempt)
+    return base * (2**attempt)
 
 
 def full_jitter_backoff(attempt: int, base: float = 1.0, max_backoff: float = 30.0) -> float:
@@ -36,7 +37,7 @@ def full_jitter_backoff(attempt: int, base: float = 1.0, max_backoff: float = 30
     Randomizes sleep uniformly between 0 and the exponential ceiling.
     Decouples synchronized retries and spreads traffic evenly.
     """
-    ceiling = min(max_backoff, base * (2 ** attempt))
+    ceiling = min(max_backoff, base * (2**attempt))
     return random.uniform(0.0, ceiling)
 
 
