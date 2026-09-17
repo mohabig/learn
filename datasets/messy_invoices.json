@@ -1,0 +1,182 @@
+[
+  {
+    "id": "inv_001",
+    "raw_text": "INVOICE #9821\nDate: 12/04/2026\nBilled To: Globex Corp\nItems:\n- 5x Cloud Compute Units @ $120.00 each\n- 1x Setup Fee $50.00\nSubtotal: $650.00\nTax (8%): $52.00\nTotal Due: $702.00 USD\nPayment via Wire Transfer.",
+    "expected": {
+      "invoice_number": "9821",
+      "date": "2026-04-12",
+      "customer": "Globex Corp",
+      "total_amount": 702.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_002",
+    "raw_text": "RECEIPT FROM: apex digital services ltd.\nReceipt No: REC-44102\nIssued on 15 Jan 2026\nClient: biohealth labs\nDescription: Monthly API Maintenance ($450.00)\nDiscount applied: -$50\nTotal: 400.00 USD\nStatus: PAID IN FULL via CC ending 4012",
+    "expected": {
+      "invoice_number": "REC-44102",
+      "date": "2026-01-15",
+      "customer": "biohealth labs",
+      "total_amount": 400.00,
+      "currency": "USD",
+      "line_items_count": 1
+    }
+  },
+  {
+    "id": "inv_003",
+    "raw_text": "Vektor Systems Inc -- BILLING STATEMENT\nInv Ref: VK-2026-099\nDate of issue: 2026.02.28\nAccount: CyberSecurity Ops Team\nCharges:\nSecurity Audit: €3,500.00\nFirewall Rule Refresh: €1,250.00\nVAT 20%: €950.00\nTotal Payable: EUR 5700.00\nDue in 30 days.",
+    "expected": {
+      "invoice_number": "VK-2026-099",
+      "date": "2026-02-28",
+      "customer": "CyberSecurity Ops Team",
+      "total_amount": 5700.00,
+      "currency": "EUR",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_004",
+    "raw_text": "Messy OCR output: *** INVOICE ***\nINV NO:   8842A\nDATE : 03/01/2026\nCUSTOMER:   Acme Logistics LLC\n1. Shipping Pallet x10 ................. £1200.00\n2. Fuel Surcharge ...................... £140.00\nTOTAL AMOUNT DUE: £1340.00 GBP\nPayment terms: NET 15",
+    "expected": {
+      "invoice_number": "8842A",
+      "date": "2026-01-03",
+      "customer": "Acme Logistics LLC",
+      "total_amount": 1340.00,
+      "currency": "GBP",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_005",
+    "raw_text": "Bill To: Sarah Connor\nInv: #SC-007\nDate: August 5th, 2026\nItem: Autonomous Drone Inspection - 1 day ($850)\nHardware rental: $150\nTax: $0.00 (Exempt)\nTotal: $1,000.00\nPaid by check.",
+    "expected": {
+      "invoice_number": "SC-007",
+      "date": "2026-08-05",
+      "customer": "Sarah Connor",
+      "total_amount": 1000.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_006",
+    "raw_text": "DevOps Consulting Group\nInvoice Number: DCG-771\nDated: 2026-06-11\nTo: FinTech Innovations\nDescription:\n- Kubernetes Migration Consulting (20 hrs @ $175/hr) = $3,500\n- Terraform Module Creation = $800\nTotal Balance: $4300.00 USD",
+    "expected": {
+      "invoice_number": "DCG-771",
+      "date": "2026-06-11",
+      "customer": "FinTech Innovations",
+      "total_amount": 4300.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_007",
+    "raw_text": "TAX INVOICE\nNumber: AU-99120\nDate: 19/07/2026\nCustomer: Sydney AI Research\nProduct: GPU Cluster Access Tier 2\nAmount: $2,450.00 AUD\nGST included: $222.73\nFinal Payable: $2450.00",
+    "expected": {
+      "invoice_number": "AU-99120",
+      "date": "2026-07-19",
+      "customer": "Sydney AI Research",
+      "total_amount": 2450.00,
+      "currency": "AUD",
+      "line_items_count": 1
+    }
+  },
+  {
+    "id": "inv_008",
+    "raw_text": "Quick Print Services\nOrder #QP-109\nDate: 02-14-2026\nBill: Marketing Dept - Horizon Media\nPrinted Flyers (5000 units) : $320.00\nRush Delivery : $45.00\nGrand Total : 365.00 USD\nTHANK YOU FOR YOUR BUSINESS",
+    "expected": {
+      "invoice_number": "QP-109",
+      "date": "2026-02-14",
+      "customer": "Horizon Media",
+      "total_amount": 365.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_009",
+    "raw_text": "Invoice: 2026-E-04\nCreated: May 22, 2026\nClient: Nordic Renewable Energy A/S\nConsulting deliverables milestone 3: €8,900.00\nTravel expenses: €650.00\nTotal Due: EUR 9550.00\nIBAN: DK500044033322",
+    "expected": {
+      "invoice_number": "2026-E-04",
+      "date": "2026-05-22",
+      "customer": "Nordic Renewable Energy A/S",
+      "total_amount": 9550.00,
+      "currency": "EUR",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_010",
+    "raw_text": "INVOICE\nNo. 5501\nDated: 09/09/2026\nSold to: Quantum Dynamics\n- 2x High-temp sensors ($600 ea) = $1200\n- Shipping & Handling = $75\nTotal Invoice Amount: $1,275.00",
+    "expected": {
+      "invoice_number": "5501",
+      "date": "2026-09-09",
+      "customer": "Quantum Dynamics",
+      "total_amount": 1275.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_011",
+    "raw_text": "Datacenter Ops Corp // INVOICE #DC-8002\nDate: 2026-03-31\nPayer: Neural Analytics Ltd\nColocation Rack Space (March): $1,400.00\nBandwidth Overage (4TB @ $25/TB): $100.00\nTotal: $1,500.00 USD\nPayment is due immediately.",
+    "expected": {
+      "invoice_number": "DC-8002",
+      "date": "2026-03-31",
+      "customer": "Neural Analytics Ltd",
+      "total_amount": 1500.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_012",
+    "raw_text": "Creative Design Studio\nINVOICE ID: CDS-019\nDate: 10/12/2026\nRecipient: Alpha Ventures Inc\nLogo & Brand Identity Pack: $2,800.00\nFont Licensing: $200.00\nNet Total: $3,000.00 USD\nPaid in full by Stripe.",
+    "expected": {
+      "invoice_number": "CDS-019",
+      "date": "2026-10-12",
+      "customer": "Alpha Ventures Inc",
+      "total_amount": 3000.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_013",
+    "raw_text": "LEGAL SERVICES STATEMENT\nMatter: File #LS-2026-11\nInvoice Date: November 3, 2026\nClient: Wayne Enterprises\nProfessional legal review (8.5 hrs @ $400/hr) = $3,400.00\nFiling fees: $350.00\nTotal Due: $3,750.00 USD\nPlease remit payment within 14 days.",
+    "expected": {
+      "invoice_number": "LS-2026-11",
+      "date": "2026-11-03",
+      "customer": "Wayne Enterprises",
+      "total_amount": 3750.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_014",
+    "raw_text": "Tokyo Cloud Services KK\nInvoice #JP-7741\nDate: 2026-04-01\nCustomer: Pacific Trading Network\nObject Storage Tier 1: ¥150,000\nDatabase Cluster: ¥220,000\nConsumption Tax 10%: ¥37,000\nTotal Amount: JPY 407,000\nThank you.",
+    "expected": {
+      "invoice_number": "JP-7741",
+      "date": "2026-04-01",
+      "customer": "Pacific Trading Network",
+      "total_amount": 407000.00,
+      "currency": "JPY",
+      "line_items_count": 2
+    }
+  },
+  {
+    "id": "inv_015",
+    "raw_text": "Contractor Service Receipt\nInvoice Ref: CON-9092\nDate: 08/21/2026\nFor: Stellar Systems\nFrontend Engineering sprint 4 (40 hrs): $4,000.00\nBug bounty bonus: $500.00\nTotal: 4500.00 USD\nDirect Deposit Confirmed.",
+    "expected": {
+      "invoice_number": "CON-9092",
+      "date": "2026-08-21",
+      "customer": "Stellar Systems",
+      "total_amount": 4500.00,
+      "currency": "USD",
+      "line_items_count": 2
+    }
+  }
+]

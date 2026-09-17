@@ -1,0 +1,247 @@
+{
+  "description": "Golden evaluation benchmark for RAG systems (Day 11). Contains 30 reference knowledge chunks and 20 labeled test questions for calculating recall@k and MRR.",
+  "corpus_chunks": [
+    {
+      "id": "chunk_01",
+      "title": "API Rate Limits and Quotas",
+      "content": "All requests to the platform are subject to rate limiting. Free tier accounts are capped at 60 requests per minute and a maximum of 5,000 requests per day. Enterprise accounts have a custom limit of 2,400 requests per minute and 500,000 requests per day. When rate limited, the server returns HTTP status code 429 with a Retry-After header indicating wait seconds."
+    },
+    {
+      "id": "chunk_02",
+      "title": "Authentication and Bearer Tokens",
+      "content": "Authentication is performed using API keys passed as HTTP Bearer tokens in the Authorization header. Format: 'Authorization: Bearer <API_KEY>'. API keys must never be committed to source code or passed in query parameters. Keys can be rotated without downtime by creating a secondary key before deleting the primary."
+    },
+    {
+      "id": "chunk_03",
+      "title": "Prompt Caching Architecture",
+      "content": "Prompt caching reduces latency and cost for requests with repeated long prefixes. Prefixes must be at least 1,024 tokens long to be eligible for caching. Cached tokens receive an 80% discount on input token pricing. Cache lifetime is typically 5 minutes from last access, and resets on every cache hit."
+    },
+    {
+      "id": "chunk_04",
+      "title": "Vector Embeddings and Dimensions",
+      "content": "Text embeddings are generated using 1536-dimensional float32 vectors. Cosine similarity is used for distance calculations. For maximum retrieval performance, normalize vectors before indexing to allow inner product search which is computationally faster than full cosine distance calculations."
+    },
+    {
+      "id": "chunk_05",
+      "title": "Hybrid Search Implementation",
+      "content": "Hybrid search combines dense vector search with sparse BM25 keyword search. Reciprocal Rank Fusion (RRF) with constant k=60 is used to merge candidate lists from both lanes. This handles exact keyword matches (part numbers, IDs, technical terms) while maintaining semantic understanding."
+    },
+    {
+      "id": "chunk_06",
+      "title": "Reranking with Cross-Encoders",
+      "content": "A cross-encoder reranker scores the top 20 candidate chunks retrieved from the initial search stage. Unlike bi-encoders, cross-encoders compute joint attention across both the user query and document text simultaneously. This increases p95 latency by approximately 45ms but improves recall@5 significantly."
+    },
+    {
+      "id": "chunk_07",
+      "title": "Document Ingestion and Chunking Strategy",
+      "content": "Documents are chunked into 512-token segments with an overlap of 64 tokens. Headings and document section titles are prepended as metadata to every child chunk to prevent loss of context. Chunks shorter than 50 tokens are merged with adjacent segments."
+    },
+    {
+      "id": "chunk_08",
+      "title": "Model Context Protocol (MCP) Server Configuration",
+      "content": "The Model Context Protocol connects LLM applications to external tools and data resources. An MCP server communicates over standard input/output (stdio) or Server-Sent Events (SSE). Tools are described using JSON Schema v7. Tool responses must return plain text or structured JSON payloads."
+    },
+    {
+      "id": "chunk_09",
+      "title": "Structured Output and Pydantic Validation",
+      "content": "When requesting structured output, schemas are enforced via JSON Schema validation. If a model generates invalid JSON or fails schema validation, the repair mechanism triggers up to two retries with error messages appended to the prompt before raising a SchemaValidationError."
+    },
+    {
+      "id": "chunk_10",
+      "title": "Streaming Tokens via Server-Sent Events",
+      "content": "Real-time streaming uses SSE over HTTP/1.1 or HTTP/2. The client establishes a connection to the streaming endpoint, and the server emits 'token' events containing chunk text, followed by a 'meta' event with time-to-first-token (TTFT) and a terminal 'done' event."
+    },
+    {
+      "id": "chunk_11",
+      "title": "Agent Execution Fences and Guardrails",
+      "content": "Agent loops must be bounded by both maximum execution steps (default 15 iterations) and maximum execution time (timeout 60 seconds). If an agent attempts to execute beyond these limits, execution is halted immediately and a StepLimitExceededError is raised."
+    },
+    {
+      "id": "chunk_12",
+      "title": "Prompt Injection Mitigation",
+      "content": "Prompt injection defenses include strict separation between system instructions and retrieved context. Context chunks are wrapped in XML delimiters like <retrieved_context>...</retrieved_context>. Untrusted tool outputs are sanitized to strip instruction-mimicking phrases."
+    },
+    {
+      "id": "chunk_13",
+      "title": "Observability and Distributed Tracing",
+      "content": "All model calls must record request timestamp, model version, prompt tokens, completion tokens, cached tokens, total latency, and HTTP status. OpenTelemetry or Langfuse collectors receive trace spans asynchronously without blocking the user request path."
+    },
+    {
+      "id": "chunk_14",
+      "title": "Fine-Tuning vs RAG Guidelines",
+      "content": "Fine-tuning is used for teaching style, tone, output format compliance, or latency reduction on narrow repetitive tasks. Fine-tuning is not recommended for injecting factual enterprise knowledge or rapidly updating data; RAG is required for accurate fact retrieval and cited verification."
+    },
+    {
+      "id": "chunk_15",
+      "title": "Local Model Deployment with Ollama",
+      "content": "For privacy-sensitive workloads or offline operation, models can be served locally via Ollama or llama.cpp using GGUF 4-bit or 8-bit quantized weights. Quantization reduces memory usage by up to 70% with minimal loss in general reasoning capability."
+    },
+    {
+      "id": "chunk_16",
+      "title": "Evaluation Metrics for Retrieval",
+      "content": "Retrieval performance is measured using Recall@k and Mean Reciprocal Rank (MRR). Recall@5 measures what percentage of test queries retrieved the ground truth document within the top 5 results. MRR measures how close to position 1 the first relevant result appeared."
+    },
+    {
+      "id": "chunk_17",
+      "title": "Evaluation Metrics for Generation",
+      "content": "Generation quality is evaluated across three primary dimensions: Faithfulness (is every claim in the answer supported by retrieved context?), Answer Relevance (does the answer directly address the question?), and Context Precision (is the context free of irrelevant noise?)."
+    },
+    {
+      "id": "chunk_18",
+      "title": "Deterministic State Machines in Agent Workflows",
+      "content": "When a workflow has predictable branching, deterministic state machines are preferred over loose ReAct agent loops. In a state graph, node transitions are controlled by fixed rules or small classification prompts, guaranteeing termination and predictable latency."
+    },
+    {
+      "id": "chunk_19",
+      "title": "Multi-Tenant Document Access Scoping",
+      "content": "Multi-tenant RAG systems store organization and user ACL tags in vector metadata. During retrieval, queries apply mandatory metadata filters (e.g., 'org_id == current_user.org_id') during the ANN search stage to ensure strict data isolation between tenants."
+    },
+    {
+      "id": "chunk_20",
+      "title": "Budget Management and Spending Caps",
+      "content": "To prevent bill shock during development, automated test runs use disk-based caching (.cache/llm_eval/) and a global spending guard. If session spend crosses $2.00 or project spend crosses $50.00, calls are blocked with a BudgetExceededError."
+    }
+  ],
+  "test_queries": [
+    {
+      "id": "q01",
+      "query": "What HTTP status code is returned when an account exceeds rate limits?",
+      "ground_truth_chunk_ids": ["chunk_01"],
+      "reference_answer": "HTTP status code 429 is returned along with a Retry-After header.",
+      "category": "specific_fact"
+    },
+    {
+      "id": "q02",
+      "query": "How are API keys formatted and passed in HTTP requests?",
+      "ground_truth_chunk_ids": ["chunk_02"],
+      "reference_answer": "API keys are passed as HTTP Bearer tokens in the Authorization header: 'Authorization: Bearer <API_KEY>'.",
+      "category": "specific_fact"
+    },
+    {
+      "id": "q03",
+      "query": "What is the minimum prefix length needed to qualify for prompt caching?",
+      "ground_truth_chunk_ids": ["chunk_03"],
+      "reference_answer": "Prompt prefixes must be at least 1,024 tokens long to qualify for prompt caching.",
+      "category": "specific_fact"
+    },
+    {
+      "id": "q04",
+      "query": "Why should embedding vectors be normalized before indexing?",
+      "ground_truth_chunk_ids": ["chunk_04"],
+      "reference_answer": "Normalizing vectors allows using inner product search, which is computationally faster than full cosine distance calculations.",
+      "category": "technical_reasoning"
+    },
+    {
+      "id": "q05",
+      "query": "How does hybrid search combine dense vector search with BM25?",
+      "ground_truth_chunk_ids": ["chunk_05"],
+      "reference_answer": "It combines candidate lists from dense and sparse lanes using Reciprocal Rank Fusion (RRF) with constant k=60.",
+      "category": "system_design"
+    },
+    {
+      "id": "q06",
+      "query": "What is the latency trade-off of adding a cross-encoder reranker?",
+      "ground_truth_chunk_ids": ["chunk_06"],
+      "reference_answer": "Adding a cross-encoder reranker increases p95 latency by approximately 45ms while improving recall@5.",
+      "category": "tradeoff_analysis"
+    },
+    {
+      "id": "q07",
+      "query": "What is the recommended segment size and overlap for document chunking?",
+      "ground_truth_chunk_ids": ["chunk_07"],
+      "reference_answer": "Documents are chunked into 512-token segments with an overlap of 64 tokens, prepending headings as metadata.",
+      "category": "specific_fact"
+    },
+    {
+      "id": "q08",
+      "query": "What transport mechanisms can Model Context Protocol (MCP) servers use?",
+      "ground_truth_chunk_ids": ["chunk_08"],
+      "reference_answer": "MCP servers can communicate over standard input/output (stdio) or Server-Sent Events (SSE).",
+      "category": "protocol"
+    },
+    {
+      "id": "q09",
+      "query": "What happens if a model returns invalid JSON during structured extraction?",
+      "ground_truth_chunk_ids": ["chunk_09"],
+      "reference_answer": "The repair mechanism retries up to two times with error messages appended to the prompt before raising SchemaValidationError.",
+      "category": "error_handling"
+    },
+    {
+      "id": "q10",
+      "query": "What events are emitted by the SSE streaming endpoint?",
+      "ground_truth_chunk_ids": ["chunk_10"],
+      "reference_answer": "It emits 'token' events with text, a 'meta' event with TTFT, and a terminal 'done' event with summary metrics.",
+      "category": "streaming"
+    },
+    {
+      "id": "q11",
+      "query": "What safety limits prevent agent loops from running indefinitely?",
+      "ground_truth_chunk_ids": ["chunk_11"],
+      "reference_answer": "Agent loops are bounded by a maximum of 15 execution steps and a 60-second execution timeout.",
+      "category": "safety"
+    },
+    {
+      "id": "q12",
+      "query": "How are retrieved documents isolated to protect against indirect prompt injection?",
+      "ground_truth_chunk_ids": ["chunk_12"],
+      "reference_answer": "Retrieved chunks are wrapped in XML delimiters like <retrieved_context>...</retrieved_context> and untrusted outputs are sanitized.",
+      "category": "security"
+    },
+    {
+      "id": "q13",
+      "query": "What key metrics must be logged for LLM observability and tracing?",
+      "ground_truth_chunk_ids": ["chunk_13"],
+      "reference_answer": "Timestamps, model version, prompt/completion/cached tokens, total latency, and HTTP status codes.",
+      "category": "observability"
+    },
+    {
+      "id": "q14",
+      "query": "When should you use RAG instead of fine-tuning?",
+      "ground_truth_chunk_ids": ["chunk_14"],
+      "reference_answer": "RAG should be used for injecting factual knowledge, rapidly changing data, and cited verification; fine-tuning is for style and format.",
+      "category": "architecture_decision"
+    },
+    {
+      "id": "q15",
+      "query": "What are the benefits of 4-bit and 8-bit weight quantization in local model serving?",
+      "ground_truth_chunk_ids": ["chunk_15"],
+      "reference_answer": "Quantization reduces memory usage by up to 70% with minimal loss in reasoning capability.",
+      "category": "local_inference"
+    },
+    {
+      "id": "q16",
+      "query": "What is the difference between Recall@5 and MRR in retrieval evaluations?",
+      "ground_truth_chunk_ids": ["chunk_16"],
+      "reference_answer": "Recall@5 measures if the ground truth is in the top 5 results; MRR measures how close to rank 1 the first relevant result is.",
+      "category": "evaluation_metrics"
+    },
+    {
+      "id": "q17",
+      "query": "What does the faithfulness metric assess in RAG generation?",
+      "ground_truth_chunk_ids": ["chunk_17"],
+      "reference_answer": "Faithfulness checks whether every claim in the generated answer is directly supported by the retrieved context chunks.",
+      "category": "evaluation_metrics"
+    },
+    {
+      "id": "q18",
+      "query": "Why use deterministic state machines instead of open ReAct loops?",
+      "ground_truth_chunk_ids": ["chunk_18"],
+      "reference_answer": "Deterministic state machines guarantee termination, reduce latency, and ensure predictable step-by-step testability.",
+      "category": "agent_architecture"
+    },
+    {
+      "id": "q19",
+      "query": "How is multi-tenant data isolation enforced in vector search?",
+      "ground_truth_chunk_ids": ["chunk_19"],
+      "reference_answer": "Mandatory organization and user ACL filters are applied during the ANN search stage, preventing cross-tenant leakage.",
+      "category": "security"
+    },
+    {
+      "id": "q20",
+      "query": "What spending limits are enforced by default in the budget guard utility?",
+      "ground_truth_chunk_ids": ["chunk_20"],
+      "reference_answer": "A default session cap of $2.00 and a cumulative project cap of $50.00.",
+      "category": "budget"
+    }
+  ]
+}
