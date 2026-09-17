@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interactive Learning Visualizers — The 80/20 AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --ground: #EDF0EA; --surface: #F8FAF6; --raised: #FFFFFF;
+    --ink: #151915; --ink-2: #3B443A; --muted: #69735F;
+    --rule: #D5DACD; --rule-soft: #E4E8DE;
+    --accent: #1F45C8; --accent-ink: #1735A0; --accent-wash: #E4E9FA;
+    --signal: #9A5312; --signal-wash: #F6E9DA;
+    --good: #2C6B3C; --good-wash: #DEEBDF;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #111412; --surface: #181C19; --raised: #1E2320;
+      --ink: #E7EBE3; --ink-2: #C2C9BC; --muted: #8E9789;
+      --rule: #2B322C; --rule-soft: #232926;
+      --accent: #8AA4FF; --accent-ink: #A9BCFF; --accent-wash: #1B2340;
+      --signal: #DFA463; --signal-wash: #33261A;
+      --good: #7CC48C; --good-wash: #1B2C20;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 32px 20px 80px;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  header {
+    margin-bottom: 36px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+  }
+  h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 600;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 65ch;
+    margin: 0;
+  }
+  .section-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 26px;
+    margin: 44px 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .section-desc {
+    font-size: 14.5px;
+    color: var(--muted);
+    margin: 0 0 18px;
+    max-width: 70ch;
+  }
+  .nav-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .nav-link {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-link:hover {
+    background: var(--accent-wash);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>AI Engineer Interactive Visualizers</h1>
+    <p class="subtitle">
+      Zero-dependency vanilla JavaScript learning widgets: Vector geometry simulator, Server-Sent Events stream inspector, active recall flashcards, and code block enhancers.
+    </p>
+    <div class="nav-bar">
+      <a class="nav-link" href="#vector-section">1. Vector Compass</a>
+      <a class="nav-link" href="#stream-section">2. SSE Streamer</a>
+      <a class="nav-link" href="#drill-section">3. Drill Runner</a>
+      <a class="nav-link" href="#code-section">4. Code Enhancers</a>
+      <a class="nav-link" href="index.html">← Back to Course</a>
+    </div>
+  </header>
+
+  <!-- 1. Vector Compass Simulator -->
+  <section id="vector-section">
+    <h2 class="section-title">1. 1,536-D Vector Compass Simulator</h2>
+    <p class="section-desc">
+      Explore cosine angle θ, cosine similarity cos(θ), cosine distance (1 - cos θ), and Euclidean distance ||A - B||. Drag the vector handles on the unit circle or select presets to observe the smooth semantic color transition.
+    </p>
+    <div id="vector-compass-container"></div>
+  </section>
+
+  <!-- 2. SSE Ticker-Tape Streamer -->
+  <section id="stream-section">
+    <h2 class="section-title">2. SSE Ticker-Tape Streamer</h2>
+    <p class="section-desc">
+      Inspect the real-time HTTP streaming lifecycle: Time-to-First-Token (TTFT) stopwatch, token-by-token emission pulse, cumulative token counts, cost calculation, and client abort socket cancellation.
+    </p>
+    <div id="stream-ticker-container"></div>
+  </section>
+
+  <!-- 3. Active Recall Drill Runner -->
+  <section id="drill-section">
+    <h2 class="section-title">3. In-Browser Active Recall Drill Runner</h2>
+    <p class="section-desc">
+      Interactive 3D flashcard testing production AI engineering intuition. Click or press <kbd>Space</kbd> to reveal the senior physical mechanism, then rate your recall to update your mastery score in localStorage.
+    </p>
+    <div id="drill-runner-container"></div>
+  </section>
+
+  <!-- 4. Code Block Enhancers -->
+  <section id="code-section">
+    <h2 class="section-title">4. Code Block Enhancers</h2>
+    <p class="section-desc">
+      Demonstrates automated language detection, line numbers column, and 1-click clipboard copy with a 'Copied ✓' micro-animation.
+    </p>
+
+    <pre><code class="language-python">import asyncio
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+
+app = FastAPI()
+
+async def event_generator(prompt: str, request: Request):
+    """Streams LLM tokens while defending against orphaned compute leaks."""
+    try:
+        # Simulate upstream token generator
+        for i in range(50):
+            if await request.is_disconnected():
+                print("Client disconnected early! Halting upstream inference.")
+                break
+            yield f"data: {{\"chunk\": {i}}}\n\n"
+            await asyncio.sleep(0.04)
+    finally:
+        # Guarantee resources, VRAM slots, and DB connections are released!
+        print("Cleaning up generator resources.")
+
+@app.post("/stream")
+async def stream_tokens(request: Request):
+    return StreamingResponse(
+        event_generator("sample prompt", request),
+        media_type="text/event-stream",
+        headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"}
+    )</code></pre>
+
+    <pre><code class="language-bash"># Run the high-performance local AI engineering suite
+uv run pytest -v tests/
+python3 scripts/log.py --status
+python3 scripts/log.py --drill</code></pre>
+
+    <pre><code class="language-json">{
+  "model": "text-embedding-3-small",
+  "dimensions": 1536,
+  "normalized": true,
+  "metric": "cosine_distance",
+  "pgvector_operator": "<=>"
+}</code></pre>
+  </section>
+</div>
+
+<!-- Load Widgets Bundle -->
+<script src="widgets.js"></script>
+<script>
+  // Mount the widgets into their containers
+  window.initVectorCompass("vector-compass-container");
+  window.initStreamTicker("stream-ticker-container");
+  window.initDrillRunner("drill-runner-container");
+  window.enhanceCodeBlocks();
+</script>
+
+</body>
+</html>
