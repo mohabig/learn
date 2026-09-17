@@ -64,10 +64,10 @@ verify on frontier models. Track spend from Day 1 — it's part of the curriculu
 1. **75% building, 25% reading.** Never read two days in a row without shipping code.
 2. **Every day ends with a commit.** No exceptions, even if the day went badly.
 3. **Timebox at 45 minutes.** Stuck longer than that? Ship the ugly version, note the debt, move on.
-4. **One repo per weekly project, public.** Four public repos by Day 30.
+4. **Two cumulative systems (or four weekly ships).** You can ship four separate repos, or build two cumulative, production-grade systems (System 1: Enterprise RAG & Extraction in Weeks 1–2; System 2: Autonomous Agent & MCP Workflow in Weeks 3–4, converging in the Capstone). Cumulative systems teach refactoring, schema evolution, and regression testing as real systems grow.
 5. **Write down numbers.** Cost per request, p95 latency, eval score. Numbers are what make you credible.
 6. **No framework until you feel the pain it solves.** Raw SDK first for a full week. You'll understand every abstraction you later adopt.
-7. **Full-time pace = 5–6 h/day.** Part-time (2–3 h/day) works too — see §8, it becomes ~55–60 days in the same order. Don't reorder it.
+7. **Full-time pace = 5–6 h/day.** Part-time (2–3 h/day) or 6-Week Sprint track works too — see §8. Don't reorder it.
 
 ### Daily rhythm (5–6 h)
 
@@ -89,6 +89,7 @@ That `LOG.md` becomes your Day 29 write-up. Start it on Day 1.
 | Language | Python 3.11+, `uv` for envs | Node/TS is equally valid if that's your strength |
 | Model provider | One primary (Anthropic or OpenAI), one secondary | The secondary teaches you portability |
 | API access | Raw provider SDK | No LangChain in Week 1. Seriously. |
+| Safety & Budget | `starters/common/budget_guard.py` | Hard session spend caps ($2 default) and eval disk caching |
 | Service | FastAPI | Streaming, async, easy deploy |
 | Vector store | pgvector, Qdrant, or Chroma locally | Any of them. Do not spend a day comparing. |
 | Tracing/evals | Langfuse **or** LangSmith **or** Braintrust | Pick one on Day 22 and commit |
@@ -157,6 +158,7 @@ Run the Day 0 gate first. Everything it checks is taught here — skip any day y
 ### Day 1 — First-principles calls
 - [ ] Set up the repo, a `uv` env, API keys in env vars — never in code
 - [ ] Raw SDK: messages, system prompt, temperature, `max_tokens`, stop sequences
+- [ ] BPE tokenization quirks: why models struggle with character counts, spelling, and trailing spaces
 - [ ] Count input and output tokens; compute the exact cost of a call
 - [ ] Measure latency: time-to-first-token vs total
 - [ ] **Build:** a CLI that takes a URL or file and returns a structured summary
@@ -177,7 +179,7 @@ Run the Day 0 gate first. Everything it checks is taught here — skip any day y
 
 ### Day 4 — Long context and multimodal
 - [ ] Images and PDFs as input; document understanding with no retrieval pipeline at all
-- [ ] Context-window budgeting; prompt caching and what it does to cost
+- [ ] Context-window budgeting; prompt caching economics vs chunk-and-retrieve RAG
 - [ ] When stuffing the whole document into the prompt beats RAG — more often than people admit
 - [ ] **Build:** PDF in, structured cited summary out
 - [ ] **Done when:** You can say which documents belong in the prompt and which need retrieval.
@@ -210,6 +212,7 @@ Run the Day 0 gate first. Everything it checks is taught here — skip any day y
 
 ### Day 8 — Embeddings from scratch, no database
 - [ ] Embeddings, cosine similarity, dimensionality, exact vs approximate nearest neighbour
+- [ ] Embedding geometry: where bi-encoder distance fails (negation, numbers, fine distinctions)
 - [ ] **Build:** a complete RAG system in ~200 lines with numpy and a list. No vector database.
 - [ ] **Done when:** You can explain, without hand-waving, exactly what a vector DB is doing for you.
 
@@ -223,7 +226,7 @@ Run the Day 0 gate first. Everything it checks is taught here — skip any day y
 ### Day 10 — Retrieval that actually works
 - [ ] Move into a real vector store
 - [ ] Hybrid search (BM25 + dense) — and why pure vector search fails on names, IDs and rare terms
-- [ ] Metadata filters, MMR/diversity, reranking, query rewriting and multi-query
+- [ ] Cross-encoder reranking vs bi-encoder retrieval; metadata filters, MMR/diversity, query rewriting
 - [ ] **Build:** upgrade yesterday's pipeline to hybrid plus a reranker
 - [ ] **Done when:** You have before/after recall numbers, not a feeling.
 
@@ -267,6 +270,7 @@ Run the Day 0 gate first. Everything it checks is taught here — skip any day y
 
 ### Day 16 — The agent loop
 - [ ] Plan → act → observe → repeat; termination conditions, step limits, budget limits
+- [ ] Deterministic state machines & graphs vs open ReAct loops — explicit state transitions
 - [ ] Memory: short-term conversation vs long-term store; context compaction
 - [ ] **When an agent is the wrong answer:** if you can draw the flowchart, write the flowchart — a deterministic pipeline with three LLM calls is cheaper, faster and testable
 - [ ] **Build:** a bounded agent that completes a genuinely multi-step task
@@ -382,7 +386,7 @@ If a question here makes you uncomfortable, that's your next study session.
 
 ## 5. Portfolio bar (what "done" looks like on Day 30)
 
-Four public repos — three weekly ships plus the capstone. Each README contains:
+Two cumulative production systems (or four public repos). Each README contains:
 
 - The problem, in one paragraph, for a non-expert
 - An architecture diagram (a Mermaid block is fine)
@@ -423,6 +427,9 @@ most comfortable way to avoid building.
 ---
 
 ## 8. Variants
+
+### The 6-Week Sprint Track (Recommended for working engineers)
+6 weeks (42 calendar days total, ~2.5–3 h/day). Structure each week as 5 days building + 2 days buffer/consolidation. This avoids burnout, allows deeper debugging when external APIs or environments break, and matches real engineering sprint tempos while completing every single deliverable in the curriculum.
 
 ### Part-time (2–3 h/day, ~55–60 days)
 Same order, same deliverables. Do one day's *reading* block in the evening and the *build*

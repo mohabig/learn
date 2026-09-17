@@ -28,7 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "site" / "course-data.js"
-PLAN = ROOT / "ai-engineer-30-day-plan.md"
+DEFAULT_PLAN = ROOT / "ai-engineer-90-day-plan.md"
 
 BEGIN = "<!-- BEGIN GENERATED DAYS -->"
 END = "<!-- END GENERATED DAYS -->"
@@ -109,13 +109,13 @@ def render(weeks):
     return "\n".join(out)
 
 
-def splice(plan_text, generated):
+def splice(plan_text, generated, plan_name="plan"):
     start = plan_text.find(BEGIN)
     end = plan_text.find(END)
     if start == -1 or end == -1 or end < start:
         raise SystemExit(
             "%s: could not find the %s / %s markers.\n"
-            "Add them around the Week 0 .. Day 30 region." % (PLAN, BEGIN, END)
+            "Add them around the generated region." % (plan_name, BEGIN, END)
         )
     head = plan_text[: start + len(BEGIN)]
     tail = plan_text[end:]
@@ -129,11 +129,21 @@ def main(argv=None):
         action="store_true",
         help="do not write; exit 1 if the markdown plan is out of date",
     )
+    parser.add_argument(
+        "--plan",
+        type=Path,
+        default=DEFAULT_PLAN,
+        help="path to markdown plan to update (default: ai-engineer-90-day-plan.md)",
+    )
     args = parser.parse_args(argv)
 
+    plan_path = args.plan
+    if not plan_path.is_absolute():
+        plan_path = ROOT / plan_path
+
     weeks = load_weeks()
-    current = PLAN.read_text(encoding="utf-8")
-    updated = splice(current, render(weeks))
+    current = plan_path.read_text(encoding="utf-8")
+    updated = splice(current, render(weeks), plan_path.name)
 
     days = sum(len(w["days"]) for w in weeks)
     tasks = sum(len(d["tasks"]) for w in weeks for d in w["days"])
@@ -143,31 +153,31 @@ def main(argv=None):
         if updated == current:
             print(
                 "%s is up to date with %s (%d weeks, %d days, %d tasks, %d done-when lines)."
-                % (PLAN.name, DATA.name, len(weeks), days, tasks, dones)
+                % (plan_path.name, DATA.name, len(weeks), days, tasks, dones)
             )
             return 0
         diff = difflib.unified_diff(
             current.splitlines(True),
             updated.splitlines(True),
-            fromfile="%s (on disk)" % PLAN.name,
-            tofile="%s (generated)" % PLAN.name,
+            fromfile="%s (on disk)" % plan_path.name,
+            tofile="%s (generated)" % plan_path.name,
         )
         sys.stdout.writelines(diff)
         print(
             "\n%s is stale. Run `make plan` (or `python3 scripts/build_plan.py`) and commit the result."
-            % PLAN.name,
+            % plan_path.name,
             file=sys.stderr,
         )
         return 1
 
     if updated == current:
-        print("%s already up to date." % PLAN.name)
+        print("%s already up to date." % plan_path.name)
         return 0
 
-    PLAN.write_text(updated, encoding="utf-8")
+    plan_path.write_text(updated, encoding="utf-8")
     print(
         "Wrote %s from %s: %d weeks, %d days, %d tasks, %d done-when lines."
-        % (PLAN.name, DATA.name, len(weeks), days, tasks, dones)
+        % (plan_path.name, DATA.name, len(weeks), days, tasks, dones)
     )
     return 0
 
