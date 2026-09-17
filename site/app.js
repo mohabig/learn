@@ -10,21 +10,54 @@
      1. Constants & Global State
      ========================================================================== */
 
-  const KEY = "ai80-20-v1";
+  const TRACK_KEY = "ai80-20-track";
+  const FLAGSHIP_KEY = "ai80-20-flagship-v1";
+  const SPRINT_KEY = "ai80-20-sprint-v1";
+  const LEGACY_KEY = "ai80-20-v1";
   const THEME_KEY = "ai80-20-theme";
   const STREAK_KEY = "ai80-20-streak";
 
-  const WEEKS = window.COURSE_WEEKS || [];
+  // Migrate legacy single key if present
+  try {
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    if (legacy && !localStorage.getItem(FLAGSHIP_KEY)) {
+      localStorage.setItem(FLAGSHIP_KEY, legacy);
+    }
+  } catch (e) {}
+
+  let currentTrack = "flagship";
+  try {
+    currentTrack = localStorage.getItem(TRACK_KEY) || "flagship";
+  } catch (e) {}
+
+  function getActiveStorageKey() {
+    return currentTrack === "sprint" ? SPRINT_KEY : FLAGSHIP_KEY;
+  }
+
+  let KEY = getActiveStorageKey();
+
+  function getActiveWeeks() {
+    if (currentTrack === "sprint" && window.SPRINT_WEEKS && window.SPRINT_WEEKS.length) {
+      return window.SPRINT_WEEKS;
+    }
+    return window.COURSE_WEEKS || [];
+  }
+
+  let WEEKS = getActiveWeeks();
   const LABS = window.LABS_DATA || [];
   const REFERENCE = window.REFERENCE_DATA || { questions: [], rubrics: [], resources: [] };
   const DRILLS = window.DRILLS_DATA || [];
 
   let state = {};
-  try {
-    state = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
-  } catch (e) {
-    state = {};
+  function loadState() {
+    KEY = getActiveStorageKey();
+    try {
+      state = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
+    } catch (e) {
+      state = {};
+    }
   }
+  loadState();
 
   function saveState() {
     try {
@@ -32,20 +65,45 @@
     } catch (e) {}
   }
 
-  // Flatten days across all 12 weeks
-  const DAYS = [];
+  // Flatten days across active weeks and build strict key allowlist
+  let DAYS = [];
+  const VALID_TASK_KEYS = new Set();
   const slugOf = d => String(d).replace("–", "-").replace(".", "-");
 
-  WEEKS.forEach(w => {
-    (w.days || []).forEach(day => {
-      DAYS.push({
-        w,
-        day,
-        slug: slugOf(day.d),
-        label: (String(day.d).includes("–") ? "Days " : "Day ") + day.d
+  function buildDaysIndex() {
+    DAYS = [];
+    VALID_TASK_KEYS.clear();
+    WEEKS = getActiveWeeks();
+
+    WEEKS.forEach(w => {
+      (w.days || []).forEach(day => {
+        const slug = slugOf(day.d);
+        DAYS.push({
+          w,
+          day,
+          slug,
+          label: (String(day.d).includes("–") ? "Days " : "Day ") + day.d
+        });
+
+        // Register valid task indices for this day
+        (day.tasks || []).forEach((_, j) => {
+          VALID_TASK_KEYS.add(`d${day.d}:${j}`);
+          VALID_TASK_KEYS.add(`d${slug}:${j}`);
+        });
       });
     });
-  });
+
+    // Valid Day 0 prerequisite checks and milestone bars
+    for (let i = 0; i < 6; i++) {
+      VALID_TASK_KEYS.add(`day0:${i}`);
+      VALID_TASK_KEYS.add(`gate:${i}`);
+    }
+    for (let i = 0; i < 5; i++) {
+      VALID_TASK_KEYS.add(`bar:${i}`);
+    }
+  }
+
+  buildDaysIndex();
 
   /* ==========================================================================
      2. String & Markdown Utilities
@@ -332,9 +390,26 @@
         }
       }
 
+      // Pedagogical breakdown helper
+      let coreBuildTask = "";
+      let depthTask = "";
+      (day.tasks || []).forEach(t => {
+        if (t.includes("Build:") || t.includes("Drill:") || t.includes("Defense:")) {
+          coreBuildTask = t;
+        } else if (!depthTask && (t.includes("Profile") || t.includes("Compare") || t.includes("Investigate") || t.includes("Review") || t.includes("Simulate") || t.includes("Explain") || t.includes("Document"))) {
+          depthTask = t;
+        }
+      });
+      if (!coreBuildTask && (day.tasks || []).length > 0) {
+        coreBuildTask = day.tasks[day.tasks.length - 1];
+      }
+      if (!depthTask && (day.tasks || []).length > 1) {
+        depthTask = day.tasks[0];
+      }
+
       sec.innerHTML = `
         <div class="crumbs">
-          <a href="#/course">← The 84 Days</a>
+          <a href="#/course">← All Curriculum Days</a>
           <span style="color:var(--rule)">/</span>
           <span class="eyebrow">Week ${w.n} · ${label}</span>
         </div>
@@ -356,6 +431,31 @@
               <p style="margin:0; font-size:14.5px; color:var(--ink-2);">${feynman.pitfall}</p>
             </div>
           `}
+        </div>
+
+        <div class="pedagogy-blueprint" style="margin:20px 0; padding:18px 20px; background:var(--surface); border:1px solid var(--rule); border-radius:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--rule); padding-bottom:8px;">
+            <span style="font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent);">Pedagogical Blueprint</span>
+            <span class="badge" style="font-size:11.5px;">⏱️ Timebox: 60–90 min (45m Core Build)</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; font-size:13.5px;">
+            <div>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🎯 Required Outcome</strong>
+              <span style="color:var(--ink-2);">${day.done || "Working software verified by automated test assertions."}</span>
+            </div>
+            <div>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🔨 45-Min Core Build</strong>
+              <span style="color:var(--ink-2);">${coreBuildTask || "Hands-on implementation and test assertion."}</span>
+            </div>
+            <div>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🔬 Depth &amp; Investigation</strong>
+              <span style="color:var(--ink-2);">${depthTask || "Physical wire mechanics, memory footprint, and edge-case failure modes."}</span>
+            </div>
+            <div>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">📦 Retained Artifact</strong>
+              <span style="color:var(--ink-2);">Git commit, benchmark numbers in <code>LOG.md</code>, and passing test suite.</span>
+            </div>
+          </div>
         </div>
 
         <div class="day-check">
@@ -711,7 +811,7 @@
     const mConfigs = [
       { id: "m1", start: 1, end: 28 },
       { id: "m2", start: 29, end: 56 },
-      { id: "m3", start: 57, end: 84 }
+      { id: "m3", start: 57, end: 90 }
     ];
 
     mConfigs.forEach(m => {
@@ -896,11 +996,20 @@
             return;
           }
 
-          // Optional schema version check if exported using the app format
-          if ("app" in data && data.app !== "ai80-20") {
+          // Schema version check: accept both current and legacy identifiers
+          if ("app" in data && data.app !== "ai80-20-engineer" && data.app !== "ai80-20") {
             alert("Import rejected: Unrecognized application identifier.");
             importInput.value = "";
             return;
+          }
+
+          if ("version" in data) {
+            const vStr = String(data.version);
+            if (!vStr.startsWith("1")) {
+              alert("Import rejected: Unsupported schema version.");
+              importInput.value = "";
+              return;
+            }
           }
 
           const rawProgress = (data.progress && typeof data.progress === "object" && !Array.isArray(data.progress))
@@ -908,8 +1017,8 @@
             : data;
 
           // Strict Allowlist Key Validation:
-          // Valid keys: d<day>:<task_index> (e.g. d1:0, d0-1:2) or gate:<index> or bar:<index>
-          const validKeyPattern = /^(d(?:[0-9]+(?:-[0-9]+)?)|gate|bar):([0-9]+)$/;
+          // Valid keys: d<day>:<task_index> (e.g. d1:0, d0-1:2) or day0:<index> or gate:<index> or bar:<index>
+          const validKeyPattern = /^(d(?:[0-9]+(?:-[0-9]+)?)|day0|gate|bar):([0-9]+)$/;
           const sanitizedState = Object.create(null);
           let validCount = 0;
           let discardedCount = 0;
@@ -926,12 +1035,18 @@
               continue;
             }
 
+            // Bound validation: Key must exist in current curriculum task index
+            if (!VALID_TASK_KEYS.has(key)) {
+              discardedCount++;
+              continue;
+            }
+
             const val = rawProgress[key];
-            // Value must strictly be boolean true/false or number 1/0
-            if (val === true || val === 1 || val === "1") {
+            // Value must strictly be boolean true/false or number 1/0 (strings like "1" or "0" are strictly rejected)
+            if (val === true || val === 1) {
               sanitizedState[key] = 1;
               validCount++;
-            } else if (val === false || val === 0 || val === "0") {
+            } else if (val === false || val === 0) {
               // Explicitly unchecked
             } else {
               discardedCount++;
@@ -1045,7 +1160,7 @@
       let monthMatch = true;
       if (activeMonth === "1") monthMatch = dayNum >= 1 && dayNum <= 28;
       else if (activeMonth === "2") monthMatch = dayNum >= 29 && dayNum <= 56;
-      else if (activeMonth === "3") monthMatch = dayNum >= 57 && dayNum <= 84;
+      else if (activeMonth === "3") monthMatch = dayNum >= 57 && dayNum <= 90;
 
       // Tag filter
       let tagMatch = true;
@@ -1073,6 +1188,63 @@
       countEl.textContent = `${visibleCount} of ${DAYS.length}`;
       countEl.hidden = !query && activeMonth === "all" && activeTag === "all";
     }
+  }
+
+  function initTrackSwitcher() {
+    const trackTabs = document.querySelectorAll(".track-tab");
+    trackTabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetTrack = btn.dataset.track;
+        if (targetTrack === currentTrack) return;
+        setTrack(targetTrack);
+      });
+    });
+
+    // Sync initial UI state with stored track
+    syncTrackUI();
+  }
+
+  function syncTrackUI() {
+    document.querySelectorAll(".track-tab").forEach(btn => {
+      btn.classList.toggle("is-active", btn.dataset.track === currentTrack);
+    });
+
+    const badge = document.getElementById("brand-track-badge");
+    if (badge) badge.textContent = currentTrack === "sprint" ? "30D Sprint" : "90D Flagship";
+
+    const eyebrow = document.getElementById("curriculum-eyebrow");
+    if (eyebrow) eyebrow.textContent = currentTrack === "sprint" ? "The 30-Day Accelerated Sprint" : "The 90-Day Production Journey";
+
+    const heading = document.getElementById("curriculum-heading");
+    if (heading) heading.textContent = currentTrack === "sprint" ? "All 30 Days & 124 Tasks" : "All 90 Days & 353 Tasks";
+
+    const monthRow = document.querySelector(".month-tabs");
+    const mprogRow = document.querySelector(".month-progress-row");
+    if (monthRow) monthRow.style.display = currentTrack === "sprint" ? "none" : "flex";
+    if (mprogRow) mprogRow.style.display = currentTrack === "sprint" ? "none" : "grid";
+  }
+
+  function setTrack(newTrack) {
+    if (newTrack !== "flagship" && newTrack !== "sprint") return;
+    currentTrack = newTrack;
+    try {
+      localStorage.setItem(TRACK_KEY, newTrack);
+    } catch (e) {}
+
+    loadState();
+    buildDaysIndex();
+    syncTrackUI();
+
+    // Re-render views
+    renderCurriculumIndex();
+    renderDayPages();
+    initCheckboxes();
+    initLogCopyHandlers();
+    refreshProgress();
+    updateStreak();
+    applyFilters();
+    buildPaletteItems();
+    flashToast(`Switched to ${currentTrack === "sprint" ? "30-Day Sprint" : "90-Day Flagship"} track!`);
   }
 
   /* ==========================================================================
@@ -1458,6 +1630,7 @@
     updateStreak();
 
     // 4. Setup listeners
+    initTrackSwitcher();
     initCourseFilters();
     initLogCopyHandlers();
     initTools();

@@ -25,7 +25,7 @@
   <div class="bar-in">
     <a class="brand" href="#/overview">
       <span>The 80/20 AI Engineer</span>
-      <span class="brand-badge">90D</span>
+      <span class="brand-badge" id="brand-track-badge">90D Flagship</span>
     </a>
 
     <nav class="tabs" aria-label="Primary Navigation">
@@ -39,12 +39,12 @@
     <div class="bar-right">
       <span class="streak-chip" id="streak-badge" title="Continuous daily learning streak">🔥 1d streak</span>
 
-      <div class="progress-widget" title="Task completion progress across all 84 days">
+      <div class="progress-widget" title="Task completion progress across active curriculum">
         <svg class="progress-ring-svg" viewBox="0 0 24 24" aria-hidden="true">
           <circle class="progress-ring-bg" cx="12" cy="12" r="9" stroke-width="2.5" fill="none"/>
           <circle class="progress-ring-fg" id="progress-ring-circle" cx="12" cy="12" r="9" stroke-width="2.5" fill="none" stroke-dasharray="56.548" stroke-dashoffset="56.548"/>
         </svg>
-        <span class="progress-text" id="progress-text">0 / 329 (0%)</span>
+        <span class="progress-text" id="progress-text">0 / 353 (0%)</span>
       </div>
 
       <button class="search-trigger" id="search-trigger-btn" type="button" aria-label="Search curriculum">
@@ -168,14 +168,14 @@
 
         <div class="traj-card">
           <div class="traj-meta">
-            <span class="eyebrow">Weeks 9–12 · Days 57–84</span>
+            <span class="eyebrow">Weeks 9–13 · Days 57–90</span>
             <span class="badge badge-ship">Month 3</span>
           </div>
           <h3>Armor, High-Throughput Silicon & Mission Control</h3>
           <p>Neutralize prompt injection with XML fences, capture traces in Langfuse, serve open models with vLLM PagedAttention, fine-tune LoRA adapters, and author 2 AM outage runbooks.</p>
           <div class="milestone-box">
-            <b>🏆 Month 3 Capstone (Day 84)</b>
-            <span>Multi-Tenant Production AI Platform with compound state machine, load test benchmarks, and Emergency Outage Playbook.</span>
+            <b>🏆 Month 3 Milestone (Day 84) & Launch Sprint (Day 90)</b>
+            <span>Production Compound AI Platform (Ship #3) with load tests, Emergency Playbook, and Days 85–90 Capstone Hardening & Public Launch.</span>
           </div>
         </div>
       </div>
@@ -193,7 +193,7 @@
         <h4>The Senior Iron Law</h4>
         <p><b>Never touch a prompt template, re-index a vector database, or adjust search weights until your evaluation harness is written and your baseline numbers are locked into disk.</b></p>
         <ul style="margin-top:12px; padding-left:20px; font-size:14.5px; color:var(--ink-2);">
-          <li><b>The Contract:</b> Define exact Pydantic schemas, latency budgets (p95 &lt; 2.0s), and hard cost ceilings (zsh.002 per query).</li>
+          <li><b>The Contract:</b> Define exact Pydantic schemas, latency budgets (p95 &lt; 2.0s), and hard cost ceilings ($0.002 per query).</li>
           <li><b>The Golden Set:</b> 40+ hand-curated evaluation fixtures with ground-truth chunk citations and canonical reference answers.</li>
           <li><b>The Caliper:</b> Run <code>python3 eval.py</code>. If Recall@5 or Faithfulness drops by even 1.5%, your pull request fails CI automatically.</li>
         </ul>
@@ -322,18 +322,24 @@
   <section class="view" data-view="course" hidden>
     <div class="chunk">
       <div class="sec-head">
-        <div class="eyebrow">The 12-Week Curriculum</div>
-        <h2>All 84 Days & 329 Tasks</h2>
-        <p class="lede">Every single day contains an actionable build deliverable, physical mechanism breakdown, and quantitative done-when verification.</p>
+        <div class="eyebrow" id="curriculum-eyebrow">The 90-Day Production Journey</div>
+        <h2 id="curriculum-heading">All 90 Days & 353 Tasks</h2>
+        <p class="lede" id="curriculum-lede">Every single day contains an actionable build deliverable, physical mechanism breakdown, and quantitative done-when verification.</p>
       </div>
 
       <div class="course-controls">
+        <!-- Track Selector Tabs -->
+        <div class="track-tabs" role="tablist" aria-label="Curriculum Track">
+          <button type="button" class="track-tab is-active" data-track="flagship">Flagship 90-Day (13-Week) Track</button>
+          <button type="button" class="track-tab" data-track="sprint">Accelerated 30-Day (4-Week) Sprint</button>
+        </div>
+
         <!-- Month Selector Tabs -->
         <div class="month-tabs" role="tablist">
-          <button type="button" class="month-tab is-active" data-month="all">All 84 Days</button>
+          <button type="button" class="month-tab is-active" data-month="all">All 90 Days</button>
           <button type="button" class="month-tab" data-month="1">Month 1: Foundations (Days 1–28)</button>
           <button type="button" class="month-tab" data-month="2">Month 2: Ingestion & Agents (Days 29–56)</button>
-          <button type="button" class="month-tab" data-month="3">Month 3: Production & Scale (Days 57–84)</button>
+          <button type="button" class="month-tab" data-month="3">Month 3: Production, Scale & Hiring (Days 57–90)</button>
         </div>
 
         <!-- Month Progress Summary Bars -->
@@ -354,8 +360,8 @@
           </div>
           <div class="mprog-box">
             <div class="mprog-head">
-              <span>Month 3 (Days 57–84)</span>
-              <span id="m3-pct">0/108</span>
+              <span>Month 3 (Days 57–90)</span>
+              <span id="m3-pct">0/132</span>
             </div>
             <div class="mprog-bar"><div class="mprog-fill" id="m3-fill"></div></div>
           </div>
@@ -465,7 +471,7 @@
 <dialog id="command-palette" aria-label="Command Palette">
   <div class="cp-header">
     <span class="cp-search-icon" aria-hidden="true">🔍</span>
-    <input class="cp-input" type="text" placeholder="Search 84 days, 329 tasks, topics, or quick actions..." aria-label="Search curriculum">
+    <input class="cp-input" type="text" placeholder="Search 90 days, 353 tasks, topics, or quick actions..." aria-label="Search curriculum">
     <kbd>Esc</kbd>
   </div>
   <ul class="cp-results" id="cp-results-list" role="listbox"></ul>
@@ -475,7 +481,7 @@
       <span><kbd>↵</kbd> Select</span>
       <span><kbd>Esc</kbd> Close</span>
     </div>
-    <span class="cp-stats">84 Days · 329 Tasks</span>
+    <span class="cp-stats" id="cp-stats-badge">90 Days · 353 Tasks</span>
   </div>
 </dialog>
 
@@ -483,6 +489,7 @@
 
 <!-- ============ SCRIPT DEPENDENCIES (LOADED IN STRICT ORDER) ============ -->
 <script src="course-data.js"></script>
+<script src="sprint-data.js"></script>
 <script src="content-bundle.js"></script>
 <script src="drills-data.js"></script>
 <script src="labs-data.js"></script>
