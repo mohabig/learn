@@ -46,58 +46,60 @@ def load_weeks(path=DATA):
     read here without a JavaScript engine and by the browser without fetch().
     """
     text = path.read_text(encoding="utf-8")
-    match = re.search(r"window\.COURSE_WEEKS\s*=\s*(\[.*\])\s*;\s*$", text, re.S)
+    match = re.search(r"window\.COURSE_WEEKS\s*=\s*(\[.*\])\s*;\s*$", text, re.DOTALL)
     if not match:
         raise SystemExit(
-            "%s: expected a `window.COURSE_WEEKS = [...];` assignment whose right-hand\n"
-            "side is strict JSON. See the comment at the top of that file." % path
+            f"{path}: expected a `window.COURSE_WEEKS = [...];` assignment whose right-hand\n"
+            "side is strict JSON. See the comment at the top of that file."
         )
     try:
         return json.loads(match.group(1))
     except json.JSONDecodeError as exc:
-        raise SystemExit("%s: right-hand side is not valid JSON: %s" % (path, exc))
+        raise SystemExit(f"{path}: right-hand side is not valid JSON: {exc}")
 
 
 def to_markdown(text):
     """Convert the inline HTML the site renders into markdown."""
-    text = re.sub(r"<code>(.*?)</code>", r"`\1`", text, flags=re.S)
-    text = re.sub(r"<b>(.*?)</b>", r"**\1**", text, flags=re.S)
-    text = re.sub(r"<(?:i|em)>(.*?)</(?:i|em)>", r"*\1*", text, flags=re.S)
+    text = re.sub(r"<code>(.*?)</code>", r"`\1`", text, flags=re.DOTALL)
+    text = re.sub(r"<b>(.*?)</b>", r"**\1**", text, flags=re.DOTALL)
+    text = re.sub(r"<(?:i|em)>(.*?)</(?:i|em)>", r"*\1*", text, flags=re.DOTALL)
     leftover = re.findall(r"</?[a-zA-Z][^>]*>", text)
     if leftover:
         raise SystemExit(
-            "unhandled inline HTML in course data: %s\n"
-            "Add a rule to to_markdown() in scripts/build_plan.py." % ", ".join(sorted(set(leftover)))
+            "unhandled inline HTML in course data: {}\n"
+            "Add a rule to to_markdown() in scripts/build_plan.py.".format(
+                ", ".join(sorted(set(leftover)))
+            )
         )
     return html.unescape(text)
 
 
 def day_label(d):
-    """"0.1" -> "Day 0.1"; "25-27" -> "Days 25-27" (matching the site)."""
+    """ "0.1" -> "Day 0.1"; "25-27" -> "Days 25-27" (matching the site)."""
     return ("Days " if ("–" in d or "-" in d) else "Day ") + d
 
 
 def render(weeks):
     out = [BANNER, ""]
     for week in weeks:
-        out.append("## Week %s — %s" % (week["n"], to_markdown(week["title"])))
+        out.append("## Week {} — {}".format(week["n"], to_markdown(week["title"])))
         if week.get("range"):
-            out.append("*%s*" % to_markdown(week["range"]))
+            out.append("*{}*".format(to_markdown(week["range"])))
         out.append("")
-        out.append('**Outcome: "%s"**' % to_markdown(week["outcome"]))
+        out.append('**Outcome: "{}"**'.format(to_markdown(week["outcome"])))
         if week.get("note"):
             out += ["", to_markdown(week["note"])]
         out.append("")
 
         for day in week["days"]:
-            heading = "### %s — %s" % (day_label(day["d"]), to_markdown(day["t"]))
+            heading = "### {} — {}".format(day_label(day["d"]), to_markdown(day["t"]))
             if day.get("lever"):
                 heading += " ⭐"
             out.append(heading)
             for task in day["tasks"]:
-                out.append("- [ ] %s" % to_markdown(task))
+                out.append(f"- [ ] {to_markdown(task)}")
             if day.get("done"):
-                out.append("- [ ] **Done when:** %s" % to_markdown(day["done"]))
+                out.append("- [ ] **Done when:** {}".format(to_markdown(day["done"])))
             out.append("")
 
         out.append("---")
@@ -114,12 +116,12 @@ def splice(plan_text, generated, plan_name="plan"):
     end = plan_text.find(END)
     if start == -1 or end == -1 or end < start:
         raise SystemExit(
-            "%s: could not find the %s / %s markers.\n"
-            "Add them around the generated region." % (plan_name, BEGIN, END)
+            f"{plan_name}: could not find the {BEGIN} / {END} markers.\n"
+            "Add them around the generated region."
         )
     head = plan_text[: start + len(BEGIN)]
     tail = plan_text[end:]
-    return "%s\n\n%s\n\n%s" % (head, generated, tail)
+    return f"{head}\n\n{generated}\n\n{tail}"
 
 
 def main(argv=None):
@@ -152,32 +154,29 @@ def main(argv=None):
     if args.check:
         if updated == current:
             print(
-                "%s is up to date with %s (%d weeks, %d days, %d tasks, %d done-when lines)."
-                % (plan_path.name, DATA.name, len(weeks), days, tasks, dones)
+                f"{plan_path.name} is up to date with {DATA.name} ({len(weeks)} weeks, {days} days, {tasks} tasks, {dones} done-when lines)."
             )
             return 0
         diff = difflib.unified_diff(
             current.splitlines(True),
             updated.splitlines(True),
-            fromfile="%s (on disk)" % plan_path.name,
-            tofile="%s (generated)" % plan_path.name,
+            fromfile=f"{plan_path.name} (on disk)",
+            tofile=f"{plan_path.name} (generated)",
         )
         sys.stdout.writelines(diff)
         print(
-            "\n%s is stale. Run `make plan` (or `python3 scripts/build_plan.py`) and commit the result."
-            % plan_path.name,
+            f"\n{plan_path.name} is stale. Run `make plan` (or `python3 scripts/build_plan.py`) and commit the result.",
             file=sys.stderr,
         )
         return 1
 
     if updated == current:
-        print("%s already up to date." % plan_path.name)
+        print(f"{plan_path.name} already up to date.")
         return 0
 
     plan_path.write_text(updated, encoding="utf-8")
     print(
-        "Wrote %s from %s: %d weeks, %d days, %d tasks, %d done-when lines."
-        % (plan_path.name, DATA.name, len(weeks), days, tasks, dones)
+        f"Wrote {plan_path.name} from {DATA.name}: {len(weeks)} weeks, {days} days, {tasks} tasks, {dones} done-when lines."
     )
     return 0
 

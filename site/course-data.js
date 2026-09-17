@@ -1032,15 +1032,90 @@ window.COURSE_WEEKS =
       },
       {
         "d": "84",
-        "t": "Ship #3 (Capstone): Production AI Platform &amp; Portfolio Launch",
+        "t": "Ship #3 (Capstone): Production AI Platform Launch &amp; Verification",
         "ship": true,
         "tasks": [
           "Launch your public Capstone repository with live demo links, architecture diagrams, and the Production Failure Playbook",
-          "Update your GitHub profile, portfolio, and resume: lead with shipped production systems, latency benchmarks, and cost optimizations",
-          "Reach out directly to 5 engineering leaders with a crisp 2-sentence note and a direct link to your architectural write-up",
-          "Celebrate! You have conquered the 90-day transformation from zero to a battle-tested, employable production AI Engineer"
+          "Execute full load tests: verify 50 concurrent streaming sessions with zero connection drops",
+          "Tag the Capstone release v1.0.0 with verified cryptographic SHA-256 manifests",
+          "Celebrate completing the core 12-week platform build! You now enter the Days 85–90 Capstone Hardening &amp; Hiring Sprint"
         ],
-        "done": "Your three production systems are live, public, and mathematically proven. You are an employable AI Engineer!"
+        "done": "Your Capstone production system is deployed, load-tested, and live on the internet."
+      }
+    ]
+  },
+  {
+    "n": 13,
+    "title": "Capstone Hardening &amp; Hiring Sprint",
+    "range": "Days 85–90",
+    "outcome": "Six days of battle-hardening: chaos engineering, tail latency profiling, SLO fencing, whiteboard defense, and production portfolio launch.",
+    "days": [
+      {
+        "d": "85",
+        "t": "Chaos engineering: fault injection, 503 circuit breakers, and degraded mode fallbacks",
+        "tasks": [
+          "Simulate upstream model provider 503 outage and rate-limit storms with an adversarial HTTP proxy",
+          "Implement circuit breaking in your client: trip after 5 consecutive failures and route to a fallback local/cheaper model",
+          "Build graceful degradation: return cached or condensed answers when latency budget exceeds 3,000ms",
+          "<b>Build:</b> write automated chaos test verifying zero unhandled 500 errors during a 60-second simulated upstream outage"
+        ],
+        "done": "Your system gracefully degrades to cached/fallback models under simulated provider outages without dropping user requests."
+      },
+      {
+        "d": "86",
+        "t": "Cold-start benchmarking and latency tail trimming: profiling TTFT and p99 waterfalls",
+        "tasks": [
+          "Profile the latency waterfall of your RAG pipeline: chunk retrieval, embedding call, reranker, and TTFT",
+          "Identify and fix p99 latency spikes: socket connection pooling, pre-warming TCP/TLS connections, and chunk pre-fetching",
+          "Benchmark TTFT under concurrent loads (1, 10, 50 workers) and graph latency distribution percentiles",
+          "<b>Build:</b> latency profiling harness that logs exact millisecond breakdowns for every pipeline stage to OpenTelemetry"
+        ],
+        "done": "p99 TTFT is documented and optimized, with every millisecond accounted for in an OpenTelemetry waterfall trace."
+      },
+      {
+        "d": "87",
+        "t": "Production runbooks, SLO fencing, and the 2:00 AM incident response playbook",
+        "tasks": [
+          "Define concrete Service Level Objectives (SLOs): 99.5% availability, p95 TTFT &lt; 1.2s, budget spend limit $50/day",
+          "Write the 2:00 AM incident runbook: clear triage steps for token budget exhaustion, latency spikes, and poison prompt attacks",
+          "Configure automated alerts and emergency kill-switches to halt agent loops before runaway costs occur",
+          "<b>Build:</b> commit <code>RUNBOOK.md</code> with step-by-step diagnostic commands, rollback scripts, and emergency switches"
+        ],
+        "done": "You have an actionable RUNBOOK.md that any on-call engineer can follow at 2:00 AM to diagnose and mitigate production outages."
+      },
+      {
+        "d": "88",
+        "t": "System architecture whiteboard defense: trade-offs, cost models, and failure modes",
+        "tasks": [
+          "Draw the complete physical architecture diagram of your Capstone: ingress, auth, queues, vector DB, model router, and observability",
+          "Prepare crisp 2-minute spoken defenses for every key trade-off: Why Pinecone vs pgvector? Why hybrid RRF over dense-only? Why vLLM vs Ollama?",
+          "Conduct a mock whiteboard interview with a peer or record yourself defending your architecture under aggressive questioning",
+          "<b>Defense:</b> explain exactly how your system handles a 10x traffic spike and how unit costs scale with token volume"
+        ],
+        "done": "You can defend every architectural component, trade-off, and failure recovery mechanism on a whiteboard with zero hesitation."
+      },
+      {
+        "d": "89",
+        "t": "Live technical coding and take-home challenge polish under time pressure",
+        "tasks": [
+          "Simulate a 60-minute live coding challenge: build a streaming SSE client with token cancellation from memory",
+          "Simulate a second 60-minute challenge: write a custom hybrid search RRF reranker with pure Python without consulting external docs",
+          "Review your code structure, docstrings, type annotations, and unit test coverage to ensure senior readability",
+          "<b>Drill:</b> complete both live challenges cleanly within the 60-minute timebox with zero unhandled exceptions"
+        ],
+        "done": "You can implement streaming clients, token buckets, and RRF rerankers in pure Python under a 60-minute live coding clock."
+      },
+      {
+        "d": "90",
+        "t": "Production Launch, Portfolio Showcase &amp; The 90-Day Transformation Complete",
+        "ship": true,
+        "tasks": [
+          "Publish your public portfolio repository with live demo links, architecture diagrams, and the Production Failure Playbook",
+          "Publish your technical deep-dive engineering article documenting architecture, cost models, and lessons learned",
+          "Send personalized, value-first outreach to 5 targeted engineering hiring managers with direct links to your shipped work",
+          "Celebrate! You have conquered the complete 90-day transformation from zero to a battle-tested, employable production AI Engineer"
+        ],
+        "done": "Your 3 production systems are live, public, and mathematically proven. You have completed the 90-day journey and are ready for senior engineering roles!"
       }
     ]
   }

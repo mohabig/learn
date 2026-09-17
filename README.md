@@ -1,8 +1,8 @@
 # The 80/20 AI Engineer
 
-- **[The 12-Week AI Engineer: 84-Day Plan](ai-engineer-90-day-plan.md)** — the flagship 12-week (84-day) journey to build production-ready engineering foundations and a portfolio of 4 shipped AI systems, with optional Days 85–90 Capstone Hardening & Hiring Sprint.
+- **[The 90-Day AI Engineer Plan](ai-engineer-90-day-plan.md)** — the flagship 90-day (13-week) journey to build production-ready engineering foundations and a portfolio of 3 shipped milestone AI systems, culminating in the Days 85–90 Capstone Hardening & Hiring Sprint.
 - **[The 80/20 AI Engineer: 30-Day Accelerated Sprint](ai-engineer-30-day-plan.md)** — the compressed 4-week fast track for experienced software engineers.
-- **[site/index.html](site/index.html)** — the modern, self-contained interactive web platform: daily step-by-step builds, live 1,536-D Vector Compass, SSE Streaming Ticker, in-browser Spaced Retrieval Drills, and Command Palette (`Cmd+K`).
+- **[site/index.html](site/index.html)** — the modern, self-contained interactive web platform: selectable track switcher (Flagship 90-Day vs 30-Day Sprint), daily step-by-step builds, live 1,536-D Vector Compass, SSE Streaming Ticker, in-browser Spaced Retrieval Drills, and Command Palette (`Cmd+K`).
 - **[LOG.md](LOG.md)** — daily learning log for the plan (`make log` or 1-click export from web).
 - **[starters/](starters/)** — production-grade FastAPI SSE microservice scaffolding with Pydantic v2 schemas and `starters/common/budget_guard.py` for spend caps and eval caching.
 - **[labs/](labs/)** — four adversarial bug hunt production mystery labs (thundering herd, inverted vector metric, prompt injection, and stream leak).
@@ -12,10 +12,10 @@
 
 | Path | Duration | Who it is for | Scope |
 |---|---|---|---|
-| **Flagship Path** | 12 Weeks (84 Days) | Developers wanting ground-up production mastery | Developer foundations $\to$ Async Python $\to$ Model APIs $\to$ Hybrid RAG $\to$ Compound AI & MCP $\to$ vLLM / LoRA $\to$ Production Fortress Capstone. |
-| **Accelerated Sprint** | 4 Weeks (30 Days) | Experienced backend / full-stack engineers | Fast-track model API fluency, vector search, evals, and production deployment with 4 public shipped repos. |
+| **Flagship Path** | 13 Weeks (90 Days) | Developers wanting ground-up production mastery | Developer foundations $\to$ Async Python $\to$ Model APIs $\to$ Hybrid RAG $\to$ Compound AI & MCP $\to$ vLLM / LoRA $\to$ Production Fortress Capstone $\to$ Days 85–90 Hardening & Hiring Sprint. |
+| **Accelerated Sprint** | 4 Weeks (30 Days) | Experienced backend / full-stack engineers | Fast-track model API fluency, vector search, evals, and production deployment. |
 
-*Note: Progress on the website is tracked independently in separate namespaces (`ai80-20-flagship-v1` and `ai80-20-sprint-v1`).*
+*Note: The website features an interactive track switcher. Progress for each path is stored independently in isolated namespaces (`ai80-20-flagship-v1` and `ai80-20-sprint-v1`), preventing progress collisions.*
 
 ## Developer & Study Commands
 
