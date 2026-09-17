@@ -37,7 +37,9 @@ jobs:
         run: uv sync --directory starters --extra dev
 
       - name: Lint Python codebase
-        run: uv run --directory starters --extra dev ruff check .
+        run: |
+          uv run --directory starters --extra dev ruff check ../scripts ../labs .
+          uv run --directory starters --extra dev ruff format --check ../scripts ../labs .
 
       - name: Run Python starters & BudgetGuard tests (Zero skips allowed)
         run: uv run --directory starters --extra dev pytest
@@ -53,6 +55,7 @@ jobs:
       - name: Validate JavaScript Syntax
         run: |
           node -c site/course-data.js
+          node -c site/sprint-data.js
           node -c site/content-bundle.js
           node -c site/drills-data.js
           node -c site/labs-data.js
