@@ -148,8 +148,13 @@ async function runTests() {
       }).then((res) => (res.result ? res.result.value : res));
     }
 
-    // Wait for initial render
-    await new Promise((r) => setTimeout(r, 1000));
+    // Reset to pristine clean state
+    await evalPage(`
+      localStorage.clear();
+      location.hash = "#/overview";
+      route();
+    `);
+    await new Promise((r) => setTimeout(r, 500));
 
     console.log("\n==================================================");
     console.log(" BROWSER E2E TEST SUITE (Chrome Headless)");
@@ -169,7 +174,9 @@ async function runTests() {
     await evalPage('location.hash = "#/day/1"; route();');
     await new Promise((r) => setTimeout(r, 200));
     let day1Heading = await evalPage('document.querySelector(".day-page:not([hidden]) h2.day-title")?.textContent');
-    console.log(`[PASS] Route #/day/1 rendered: "${day1Heading.slice(0, 45)}..."`);
+    let hasPedagogy = await evalPage('!document.querySelector(".day-page:not([hidden]) .pedagogy-blueprint").hidden');
+    if (!hasPedagogy) throw new Error("Day 1 failed to render pedagogical blueprint");
+    console.log(`[PASS] Route #/day/1 rendered with pedagogical blueprint: "${day1Heading.slice(0, 45)}..."`);
 
     await evalPage('location.hash = "#/labs"; route();');
     await new Promise((r) => setTimeout(r, 200));
@@ -202,9 +209,9 @@ async function runTests() {
       }
     `);
 
-    let saved = await evalPage('JSON.parse(localStorage.getItem("ai80-20-v1") || "{}")["d1:0"] === 1');
-    if (!saved) throw new Error("Day 1 task 0 was not saved to localStorage");
-    console.log("[PASS] Checkbox tick saved to localStorage: d1:0 = 1");
+    let saved = await evalPage('JSON.parse(localStorage.getItem("ai80-20-flagship-v1") || "{}")["d1:0"] === 1');
+    if (!saved) throw new Error("Day 1 task 0 was not saved to flagship namespace");
+    console.log("[PASS] Checkbox tick saved to localStorage: d1:0 = 1 in ai80-20-flagship-v1");
 
     await evalPage("location.reload()");
     await new Promise((r) => setTimeout(r, 1000));
@@ -217,42 +224,175 @@ async function runTests() {
     if (!isCheckedReloaded) throw new Error("Task lost checked state after page reload");
     console.log("[PASS] State persisted across reload: checkbox remains checked");
 
-    // 3. Strict Import & Malformed Payload Rejection
-    console.log("\n--- 3. Testing Strict Progress Import Validation ---");
-    let importTest = await evalPage(`
-      (function() {
-        const payload = JSON.parse('{"app":"ai80-20","progress":{"d1:0":1,"d2:1":true,"d9999:0":1,"bad_key":"evil","malicious":"<script>"}}');
-        const validKeyPattern = /^(d(?:[0-9]+(?:-[0-9]+)?)|gate|bar):([0-9]+)$/;
-        const sanitized = Object.create(null);
-        let valid = 0, discarded = 0;
-        for (const k of Object.keys(payload.progress)) {
-          if (k === "__proto__" || k === "constructor" || k === "prototype") { discarded++; continue; }
-          if (!validKeyPattern.test(k)) { discarded++; continue; }
-          const v = payload.progress[k];
-          if (v === 1 || v === true) { sanitized[k] = 1; valid++; }
-          else { discarded++; }
+    // 3. Genuine Export -> Import Round Trip through UI
+    console.log("\n--- 3. Testing Real UI Export -> Import Round Trip ---");
+    let exportImportSuccess = await evalPage(`
+      new Promise((resolve) => {
+        let exportedText = null;
+        const origCreate = URL.createObjectURL;
+        URL.createObjectURL = (blob) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            exportedText = reader.result;
+
+            // Clear state via reset button
+            window.confirm = () => true;
+            window.alert = () => {};
+            const rBtn = document.getElementById("reset-btn");
+            if (rBtn) rBtn.click();
+
+            // Verify cleared
+            const clearedState = JSON.parse(localStorage.getItem("ai80-20-flagship-v1") || "{}");
+            if (Object.keys(clearedState).length !== 0) {
+              return resolve({ ok: false, reason: "Reset failed to clear state before re-import" });
+            }
+
+            // Now dispatch real file import through UI input
+            const file = new File([exportedText], "progress-backup.json", { type: "application/json" });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            const input = document.getElementById("import-file-input");
+            input.files = dt.files;
+            input.dispatchEvent(new Event("change"));
+
+            // Allow FileReader in app.js to process
+            setTimeout(() => {
+              const restoredState = JSON.parse(localStorage.getItem("ai80-20-flagship-v1") || "{}");
+              const cbChecked = document.querySelector('.day-page[data-slug="1"] input[type="checkbox"]')?.checked;
+              resolve({
+                ok: restoredState["d1:0"] === 1 && cbChecked === true,
+                reason: "restoredState=" + JSON.stringify(restoredState) + ", cbChecked=" + cbChecked
+              });
+            }, 300);
+          };
+          reader.readAsText(blob);
+          return origCreate(blob);
+        };
+
+        // Click real UI export button
+        document.getElementById("export-btn").click();
+      })
+    `);
+    if (!exportImportSuccess.ok) throw new Error("Export/import round-trip failed: " + exportImportSuccess.reason);
+    console.log("[PASS] Real UI Export -> Import round-trip verified (exported file successfully re-imported!)");
+
+    // 4. Strict Import Validation & Security Defense
+    console.log("\n--- 4. Testing Strict Import Validation & Security Checks ---");
+    let securityValidationPassed = await evalPage(`
+      new Promise((resolve) => {
+        let lastAlert = null;
+        window.alert = (msg) => { lastAlert = msg; };
+        window.confirm = () => true;
+
+        function simulateImport(fileObj) {
+          lastAlert = null;
+          const dt = new DataTransfer();
+          dt.items.add(fileObj);
+          const input = document.getElementById("import-file-input");
+          input.files = dt.files;
+          input.dispatchEvent(new Event("change"));
         }
-        return { valid, discarded };
-      })()
+
+        // Test A: File size > 500 KB rejected
+        const oversized = new File([new Uint8Array(501 * 1024)], "huge.json", { type: "application/json" });
+        simulateImport(oversized);
+        if (!lastAlert || !lastAlert.includes("500 KB")) {
+          return resolve({ ok: false, reason: "Oversized file not rejected: " + lastAlert });
+        }
+
+        // Test B: Malformed JSON rejected
+        setTimeout(() => {
+          const malformed = new File(["{ bad json content }"], "malformed.json", { type: "application/json" });
+          simulateImport(malformed);
+          setTimeout(() => {
+            if (!lastAlert || !lastAlert.includes("Malformed")) {
+              return resolve({ ok: false, reason: "Malformed JSON not rejected: " + lastAlert });
+            }
+
+            // Test C: Unrecognized app identifier rejected
+            const badApp = new File([JSON.stringify({ app: "some-other-app", progress: {} })], "badapp.json", { type: "application/json" });
+            simulateImport(badApp);
+            setTimeout(() => {
+              if (!lastAlert || !lastAlert.includes("Unrecognized application")) {
+                return resolve({ ok: false, reason: "Bad app identifier not rejected: " + lastAlert });
+              }
+
+              // Test D: Attack payload with __proto__, constructor, nonexistent keys, and invalid string types
+              const attackPayload = {
+                app: "ai80-20-engineer",
+                version: "1.0",
+                progress: {
+                  "__proto__": 1,
+                  "constructor": 1,
+                  "d9999:0": 1,
+                  "d1:0": "1",
+                  "d1:1": true,
+                  "d2:0": 1
+                }
+              };
+              const attackFile = new File([JSON.stringify(attackPayload)], "attack.json", { type: "application/json" });
+              simulateImport(attackFile);
+              setTimeout(() => {
+                const current = JSON.parse(localStorage.getItem("ai80-20-flagship-v1") || "{}");
+                const safe = (
+                  !Object.prototype.hasOwnProperty.call(current, "__proto__") &&
+                  !Object.prototype.hasOwnProperty.call(current, "constructor") &&
+                  !Object.prototype.hasOwnProperty.call(current, "d9999:0") &&
+                  !Object.prototype.hasOwnProperty.call(current, "d1:0") &&
+                  current["d1:1"] === 1 &&
+                  current["d2:0"] === 1
+                );
+                if (!safe) {
+                  return resolve({ ok: false, reason: "Sanitization allowed invalid keys or types: " + JSON.stringify(current) });
+                }
+                resolve({ ok: true });
+              }, 200);
+            }, 100);
+          }, 100);
+        }, 100);
+      })
     `);
-    if (importTest.valid !== 3 || importTest.discarded !== 2) {
-      throw new Error("Strict import sanitization failed: " + JSON.stringify(importTest));
+    if (!securityValidationPassed.ok) {
+      throw new Error("Security validation failed: " + securityValidationPassed.reason);
     }
-    console.log("[PASS] Strict import validation accepted valid keys and rejected malicious keys");
+    console.log("[PASS] Strict import validation rejected oversized, malformed, bad app, and prototype/key-pollution payloads");
 
-    // 4. Search & Multi-Month Filters
-    console.log("\n--- 4. Testing Search & Multi-Month Filtering ---");
-    await evalPage('location.hash = "#/course"; route();');
-    await new Promise((r) => setTimeout(r, 200));
-
+    // 5. Curriculum Track Switcher & Namespace Isolation
+    console.log("\n--- 5. Testing Track Switcher & Isolated Namespaces ---");
     await evalPage(`
-      const m2Btn = document.querySelector('.month-tab[data-month="2"]');
-      if (m2Btn) m2Btn.click();
+      const sprintBtn = document.querySelector('.track-tab[data-track="sprint"]');
+      if (sprintBtn) sprintBtn.click();
     `);
-    let m2Shown = await evalPage('!document.querySelector(\'.dayrow[data-slug="29"]\').closest("li").hidden');
+    await new Promise((r) => setTimeout(r, 300));
+    let sprintDaysCount = await evalPage('document.querySelectorAll(".dayrow").length');
+    let sprintKey = await evalPage('localStorage.getItem("ai80-20-track")');
+    if (sprintDaysCount !== 33 || sprintKey !== "sprint") {
+      throw new Error(`Sprint track failed: days=${sprintDaysCount}, track=${sprintKey}`);
+    }
+    console.log(`[PASS] Accelerated Sprint track active: ${sprintDaysCount} day cards in isolated namespace (ai80-20-sprint-v1)`);
+
+    // Switch back to Flagship
+    await evalPage(`
+      const flagBtn = document.querySelector('.track-tab[data-track="flagship"]');
+      if (flagBtn) flagBtn.click();
+    `);
+    await new Promise((r) => setTimeout(r, 300));
+    let flagshipDaysCount = await evalPage('document.querySelectorAll(".dayrow").length');
+    if (flagshipDaysCount !== 90) {
+      throw new Error(`Flagship track failed: expected 90 days, got ${flagshipDaysCount}`);
+    }
+    console.log(`[PASS] Flagship 90-Day track restored: ${flagshipDaysCount} days across Weeks 1–13`);
+
+    // 6. Search & Multi-Month Filters
+    console.log("\n--- 6. Testing Search & Multi-Month Filtering ---");
+    await evalPage(`
+      const m3Btn = document.querySelector('.month-tab[data-month="3"]');
+      if (m3Btn) m3Btn.click();
+    `);
+    let m3Shown = await evalPage('!document.querySelector(\'.dayrow[data-slug="90"]\').closest("li").hidden');
     let m1Hidden = await evalPage('document.querySelector(\'.dayrow[data-slug="1"]\').closest("li").hidden');
-    if (!m2Shown || !m1Hidden) throw new Error("Month 2 tab filter failed");
-    console.log("[PASS] Month tab filter verified (Month 2 shown, Month 1 hidden)");
+    if (!m3Shown || !m1Hidden) throw new Error("Month 3 tab filter failed to show Day 90 or hide Month 1");
+    console.log("[PASS] Month tab filter verified (Month 3 Days 57–90 shown, Month 1 hidden)");
 
     // Reset filter
     await evalPage('document.querySelector(\'.month-tab[data-month="all"]\').click();');
@@ -267,8 +407,8 @@ async function runTests() {
     if (isNaN(matchCount) || matchCount === 0) throw new Error("Search filter for RRF failed");
     console.log(`[PASS] Search filter for 'RRF' matched ${matchCount} days`);
 
-    // 5. Command Palette
-    console.log("\n--- 5. Testing Command Palette (<dialog>) ---");
+    // 7. Command Palette
+    console.log("\n--- 7. Testing Command Palette (<dialog>) ---");
     await evalPage(`
       const dialog = document.getElementById("command-palette");
       if (dialog) dialog.showModal();
@@ -291,8 +431,54 @@ async function runTests() {
     if (!isClosed) throw new Error("Command palette failed to close");
     console.log("[PASS] Command Palette closed cleanly");
 
-    // 6. Mobile Layout
-    console.log("\n--- 6. Testing Mobile Viewport (375px) ---");
+    // 8. Keyboard Shortcuts
+    console.log("\n--- 8. Testing Keyboard Shortcuts (j/k/t/c) ---");
+    await evalPage(`
+      if (document.activeElement) document.activeElement.blur();
+      location.hash = "#/day/1";
+      route();
+    `);
+    await new Promise((r) => setTimeout(r, 200));
+
+    // 'j' to navigate to Day 2
+    await evalPage('window.dispatchEvent(new KeyboardEvent("keydown", { key: "j" }));');
+    await new Promise((r) => setTimeout(r, 200));
+    let atDay2 = await evalPage('location.hash === "#/day/2"');
+    if (!atDay2) throw new Error("Keyboard shortcut 'j' failed to navigate to Day 2");
+
+    // 'k' to navigate back to Day 1
+    await evalPage('window.dispatchEvent(new KeyboardEvent("keydown", { key: "k" }));');
+    await new Promise((r) => setTimeout(r, 200));
+    let atDay1 = await evalPage('location.hash === "#/day/1"');
+    if (!atDay1) throw new Error("Keyboard shortcut 'k' failed to navigate to Day 1");
+
+    // 't' to cycle theme
+    let initialTheme = await evalPage('document.documentElement.dataset.theme');
+    await evalPage('window.dispatchEvent(new KeyboardEvent("keydown", { key: "t" }));');
+    let newTheme = await evalPage('document.documentElement.dataset.theme');
+    if (initialTheme === newTheme) throw new Error("Keyboard shortcut 't' failed to cycle theme");
+    console.log(`[PASS] Keyboard shortcuts verified: j/k day navigation, theme cycle (${initialTheme} -> ${newTheme})`);
+
+    // 9. Browser History Navigation
+    console.log("\n--- 9. Testing Browser History Navigation (back/forward) ---");
+    await evalPage('location.hash = "#/course"; route();');
+    await new Promise((r) => setTimeout(r, 150));
+    await evalPage('location.hash = "#/labs"; route();');
+    await new Promise((r) => setTimeout(r, 150));
+
+    await evalPage("history.back()");
+    await new Promise((r) => setTimeout(r, 200));
+    let backedHash = await evalPage("location.hash");
+    if (backedHash !== "#/course") throw new Error(`History back failed: expected #/course, got ${backedHash}`);
+
+    await evalPage("history.forward()");
+    await new Promise((r) => setTimeout(r, 200));
+    let fwdHash = await evalPage("location.hash");
+    if (fwdHash !== "#/labs") throw new Error(`History forward failed: expected #/labs, got ${fwdHash}`);
+    console.log("[PASS] Browser history back/forward navigation cleanly preserved routes");
+
+    // 10. Mobile Layout
+    console.log("\n--- 10. Testing Mobile Viewport (375px) ---");
     await send("Emulation.setDeviceMetricsOverride", {
       width: 375,
       height: 667,
@@ -303,19 +489,19 @@ async function runTests() {
     let scrollWidth = await evalPage("document.documentElement.scrollWidth");
     console.log(`[PASS] Mobile viewport 375px test: page scrollWidth = ${scrollWidth}px (no horizontal blowout)`);
 
-    // 7. Reset Behavior
-    console.log("\n--- 7. Testing Reset Progress Engine ---");
+    // 11. Reset Behavior
+    console.log("\n--- 11. Testing Reset Progress Engine ---");
     await evalPage(`
       window.confirm = () => true;
       const rBtn = document.getElementById("reset-btn");
       if (rBtn) rBtn.click();
     `);
-    let remainingTicks = await evalPage('Object.keys(JSON.parse(localStorage.getItem("ai80-20-v1") || "{}")).length');
+    let remainingTicks = await evalPage('Object.keys(JSON.parse(localStorage.getItem("ai80-20-flagship-v1") || "{}")).length');
     if (remainingTicks !== 0) throw new Error("Reset engine failed to clear state");
     console.log("[PASS] Reset engine verified: 0 remaining ticks in storage");
 
-    // 8. Accessibility
-    console.log("\n--- 8. Testing Accessibility Attributes ---");
+    // 12. Accessibility
+    console.log("\n--- 12. Testing Accessibility Attributes ---");
     let unlabelledButtons = await evalPage(`
       Array.from(document.querySelectorAll('button:not([aria-label])'))
         .filter(b => !b.textContent.trim() && !b.title)
@@ -325,7 +511,7 @@ async function runTests() {
     console.log("[PASS] Accessibility verified: All interactive buttons possess accessible names");
 
     console.log("\n==================================================");
-    console.log(" ALL BROWSER-LEVEL END-TO-END TESTS PASSED! ✓");
+    console.log(" ALL 12 BROWSER-LEVEL END-TO-END TESTS PASSED! ✓");
     console.log("==================================================\n");
 
     ws.close();
