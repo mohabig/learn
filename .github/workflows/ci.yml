@@ -1,0 +1,67 @@
+name: CI Quality Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify plan synchronization
+        run: python3 scripts/build_plan.py --check
+
+      - name: Verify modular site content bundle
+        run: |
+          python3 scripts/build_site.py
+          git diff --exit-code site/content-bundle.js
+
+      - name: Install Python starter dependencies
+        run: uv sync --directory starters --extra dev
+
+      - name: Lint Python codebase
+        run: uv run --directory starters --extra dev ruff check .
+
+      - name: Run Python starters & BudgetGuard tests (Zero skips allowed)
+        run: uv run --directory starters --extra dev pytest
+
+      - name: Run Adversarial Bug Hunt Labs
+        run: make labs
+
+      - name: Validate dataset JSON integrity
+        run: |
+          python3 -m json.tool datasets/messy_invoices.json > /dev/null
+          python3 -m json.tool datasets/golden_rag_eval.json > /dev/null
+
+      - name: Validate JavaScript Syntax
+        run: |
+          node -c site/course-data.js
+          node -c site/content-bundle.js
+          node -c site/drills-data.js
+          node -c site/labs-data.js
+          node -c site/reference-data.js
+          node -c site/widgets.js
+          node -c site/app.js
+
+      - name: Run Widget Unit Tests
+        run: node scripts/test_widgets.js
+
+      - name: Run Headless Browser E2E Integration Suite
+        run: node scripts/test_browser_e2e.js
