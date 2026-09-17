@@ -1,0 +1,175 @@
+<p class="day-lede">Yesterday's tools were wired into one program: yours. Today you make one of them speak a standard protocol, so a desktop app, a coding agent, or somebody else's product can call it with no glue written on either side. Your Week-2 corpus becomes something you can query from inside the editor you already use.</p>
+
+  <div class="concept">
+    <h4>The problem MCP solves is arithmetic</h4>
+    <p>Count the work before you judge the standard.</p>
+    <p>Suppose there are 5 client applications people use to talk to models, and 20 useful tools — your document search, a ticket system, a database, a calendar. Wired directly, that is up to 100 separate integrations.</p>
+    <p>And each one gets written twice: once by the tool author, once by the client author. Nobody builds that. Most of those pairs simply never exist, which is why your database is not in your chat app.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="Three clients each wired separately to three tools, making nine one-off integrations">
+        <text x="320" y="28" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Wire every pair by hand</text>
+        <rect x="120" y="56" width="90" height="28" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="165" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client A</text>
+        <rect x="120" y="110" width="90" height="28" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="165" y="129" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client B</text>
+        <rect x="120" y="164" width="90" height="28" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="165" y="183" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client C</text>
+        <rect x="430" y="56" width="90" height="28" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="475" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">tool 1</text>
+        <rect x="430" y="110" width="90" height="28" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="475" y="129" text-anchor="middle" font-size="13" fill="var(--dg-ink)">tool 2</text>
+        <rect x="430" y="164" width="90" height="28" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="475" y="183" text-anchor="middle" font-size="13" fill="var(--dg-ink)">tool 3</text>
+        <line x1="210" y1="70" x2="430" y2="70" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="70" x2="430" y2="124" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="70" x2="430" y2="178" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="124" x2="430" y2="70" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="124" x2="430" y2="124" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="124" x2="430" y2="178" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="178" x2="430" y2="70" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="178" x2="430" y2="124" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="210" y1="178" x2="430" y2="178" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="320" y="218" text-anchor="middle" font-size="13" fill="var(--dg-muted)">9 integrations to write</text>
+      </svg>
+      <figcaption>Three by three is already nine; five by twenty is a hundred, and each one is written twice.</figcaption>
+    </figure>
+    <p>The Model Context Protocol is a fixed message format that sits between the two sides. A tool author writes one <strong>server</strong>. A client author writes one client.</p>
+    <p>Now the arithmetic is 5 plus 20 instead of 5 times 20, and any client can use any server.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="Three clients and three servers each connect once to a shared protocol in the middle, making six connections">
+        <text x="320" y="28" text-anchor="middle" font-size="13" fill="var(--dg-muted)">One protocol in the middle</text>
+        <rect x="40" y="56" width="90" height="28" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="85" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client</text>
+        <rect x="40" y="110" width="90" height="28" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="85" y="129" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client</text>
+        <rect x="40" y="164" width="90" height="28" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="85" y="183" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client</text>
+        <rect x="250" y="50" width="140" height="148" rx="8" fill="none" stroke="var(--dg-accent)" stroke-width="2"/>
+        <text x="320" y="130" text-anchor="middle" font-size="14" fill="var(--dg-ink)">MCP</text>
+        <rect x="510" y="56" width="90" height="28" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="555" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">server</text>
+        <rect x="510" y="110" width="90" height="28" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="555" y="129" text-anchor="middle" font-size="13" fill="var(--dg-ink)">server</text>
+        <rect x="510" y="164" width="90" height="28" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="555" y="183" text-anchor="middle" font-size="13" fill="var(--dg-ink)">server</text>
+        <line x1="130" y1="70" x2="250" y2="70" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="130" y1="124" x2="250" y2="124" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="130" y1="178" x2="250" y2="178" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="390" y1="70" x2="510" y2="70" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="390" y1="124" x2="510" y2="124" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="390" y1="178" x2="510" y2="178" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="320" y="218" text-anchor="middle" font-size="13" fill="var(--dg-muted)">6 connections, and any pair works</text>
+      </svg>
+      <figcaption>A standard turns a multiplication into an addition; that is the entire pitch.</figcaption>
+    </figure>
+    <p>This is the same trick as a printer driver, or USB. The value is not cleverness. The value is that everybody agreed on the shape of the plug.</p>
+    <p>So: MCP exists to turn a multiplication into an addition, and that is the whole reason to care about it.</p>
+  </div>
+
+  <div class="concept">
+    <h4>What a server exposes, and how it is reached</h4>
+    <p>A server offers three kinds of thing, and they are easy to mix up.</p>
+    <p><strong>Tools</strong> are actions the model can call, with the same name-description-schema shape you wrote on Day 15. Nothing new to learn there. <strong>Resources</strong> are readable data addressed by a URI — a file, a record, a list — which the client can pull in without the model calling anything. <strong>Prompts</strong> are named templates a person picks from a menu; they are for the human, not the model.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="One server offering three things: tools the model calls, resources the client reads, and prompt templates a person picks">
+        <rect x="30" y="60" width="160" height="90" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="110" y="110" text-anchor="middle" font-size="14" fill="var(--dg-ink)">your server</text>
+        <line x1="190" y1="105" x2="256" y2="52" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="256,46 264,58 248,58" fill="var(--dg-line)"/>
+        <line x1="190" y1="105" x2="260" y2="105" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="260,99 274,105 260,111" fill="var(--dg-line)"/>
+        <line x1="190" y1="105" x2="256" y2="158" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="256,164 248,152 264,152" fill="var(--dg-line)"/>
+        <rect x="280" y="34" width="330" height="36" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="296" y="57" font-size="13" fill="var(--dg-ink)">tools — actions the model can call</text>
+        <rect x="280" y="86" width="330" height="36" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="296" y="109" font-size="13" fill="var(--dg-ink)">resources — data the client reads at a URI</text>
+        <rect x="280" y="138" width="330" height="36" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="296" y="161" font-size="13" fill="var(--dg-ink)">prompts — templates a person picks</text>
+      </svg>
+      <figcaption>Only the first row involves the model; the other two serve the client and the person using it.</figcaption>
+    </figure>
+    <p>Then there is transport, which is only about how the bytes move.</p>
+    <p><em>Standard input and output</em> means the client launches your server as a subprocess on the same machine, and the two exchange JSON over the pipes. No network, no ports, no authentication. This is the simplest place to start, so start there.</p>
+    <p><em>HTTP</em> is for a server that runs somewhere else, and that one needs authentication.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 170" role="img" aria-label="Two transports: a local subprocess exchanging JSON over pipes, and a remote server reached over HTTP with authentication">
+        <text x="170" y="28" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Same machine</text>
+        <rect x="30" y="52" width="110" height="40" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="85" y="77" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client</text>
+        <line x1="140" y1="72" x2="186" y2="72" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="186,66 200,72 186,78" fill="var(--dg-line)"/>
+        <rect x="200" y="52" width="110" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="255" y="77" text-anchor="middle" font-size="13" fill="var(--dg-ink)">server</text>
+        <text x="170" y="118" text-anchor="middle" font-size="13" fill="var(--dg-ink)">JSON over the pipes</text>
+        <text x="170" y="140" text-anchor="middle" font-size="13" fill="var(--dg-muted)">launched as a subprocess</text>
+        <line x1="330" y1="20" x2="330" y2="152" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="480" y="28" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Somewhere else</text>
+        <rect x="350" y="52" width="110" height="40" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="405" y="77" text-anchor="middle" font-size="13" fill="var(--dg-ink)">client</text>
+        <line x1="460" y1="72" x2="496" y2="72" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="496,66 510,72 496,78" fill="var(--dg-line)"/>
+        <rect x="510" y="52" width="100" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="560" y="77" text-anchor="middle" font-size="13" fill="var(--dg-ink)">server</text>
+        <text x="480" y="118" text-anchor="middle" font-size="13" fill="var(--dg-ink)">HTTP, with authentication</text>
+        <text x="480" y="140" text-anchor="middle" font-size="13" fill="var(--dg-muted)">runs on another machine</text>
+      </svg>
+      <figcaption>Same protocol either way; the transport only decides who launches what and whether a password is involved.</figcaption>
+    </figure>
+    <p>Now the part that surprises people. Underneath all of it, nothing about the model changed.</p>
+    <p>The client asks your server "what tools do you have?", hands those definitions to the model as ordinary tool definitions, and when the model requests one, the client forwards the call to your server and puts the result back in the conversation. MCP standardizes discovery and transport. The round trip from Day 15 is untouched. The specification lives at <a href="https://modelcontextprotocol.io">modelcontextprotocol.io</a>.</p>
+    <p>So: a server publishes tools, data, and templates over a pipe or an HTTP connection, and the model never knows the difference.</p>
+  </div>
+
+  <div class="concept">
+    <h4>A server is code you invited in</h4>
+    <p>Installing a server from a link is not like installing a browser extension in a sandbox.</p>
+    <p>A local server is a program running as you. Your files. Your environment variables. Your network.</p>
+    <p>It also gets two hooks straight into your model call: its tool descriptions are inserted into your prompt, and its output lands directly in your context.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="A stranger's web page flows through an installed server into your context, while the server itself runs with your files and your keys">
+        <rect x="16" y="56" width="150" height="50" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="91" y="86" text-anchor="middle" font-size="13" fill="var(--dg-ink)">a web page, a PDF</text>
+        <line x1="166" y1="81" x2="192" y2="81" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="192,75 206,81 192,87" fill="var(--dg-line)"/>
+        <text x="281" y="38" text-anchor="middle" font-size="13" fill="var(--dg-muted)">runs as you: your files, your keys</text>
+        <rect x="206" y="56" width="150" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="281" y="78" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the server you</text>
+        <text x="281" y="96" text-anchor="middle" font-size="13" fill="var(--dg-ink)">installed</text>
+        <line x1="356" y1="81" x2="382" y2="81" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="382,75 396,81 382,87" fill="var(--dg-line)"/>
+        <rect x="396" y="56" width="150" height="50" rx="8" fill="none" stroke="var(--dg-ink)" stroke-width="2"/>
+        <text x="471" y="86" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your context</text>
+        <text x="16" y="146" font-size="13" fill="var(--dg-muted)">Two surfaces: what the server can do, and what it hands you.</text>
+        <text x="16" y="168" font-size="13" fill="var(--dg-muted)">Both end up inside the same model call.</text>
+      </svg>
+      <figcaption>An installed server is both a program with your privileges and a pipe from strangers into your prompt.</figcaption>
+    </figure>
+    <p>That is two attack surfaces at once. A hostile server can do whatever your account can do. And even an honest server that returns text from the internet can carry instructions written by a stranger straight into a model that is holding your keys.</p>
+    <p>The defenses are boring and they work. Read the source of what you install. Keep secrets out of any server you did not write. Prefer read-only servers. Day 20 turns this into a proper threat model.</p>
+    <p>So: treat a server the way you would treat a shell script from a stranger, because that is exactly what it is.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Install the official MCP SDK for your language and start from the smallest server example in the docs. Confirm it starts before you add anything.</li>
+      <li>Expose one tool, <code>search_docs(query, k)</code>, that calls your Week-2 hybrid retrieval and returns the top chunks with document title, source path, and score.</li>
+      <li>Write the tool description as carefully as a prompt: what corpus it covers, what a good query looks like, and when the client should reach for it.</li>
+      <li>Cap the result: at most 5 chunks and roughly 1,500 tokens, with a note when more matched. Never return a whole document.</li>
+      <li>Add one resource that lists the indexed documents with their last-updated dates, so a client can see the corpus without searching it.</li>
+      <li>Register the server in a real client — a desktop app or a coding agent — using standard input and output, and restart the client so it picks up the config.</li>
+      <li>Ask a question in that client that can only be answered from your corpus, and confirm the citation points at the right source file.</li>
+      <li>Log every call on the server side with the query, the number of results, and the latency. This is your first look at how another program actually phrases queries.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Printing to standard output for logging. On a stdio transport that is the protocol channel, and a stray print corrupts every message. Log to standard error or a file.</li>
+      <li>Missing environment: the client launches your server as a subprocess that may not inherit your shell's variables, so API keys and paths come back empty. Pass them in the client's config explicitly.</li>
+      <li>A terse tool description, then puzzlement that the client never calls the tool. The client's model chooses on that text alone.</li>
+      <li>Returning big blobs. The client pays for every token you send back, on every step of its own loop.</li>
+    </ul>
+  </div>

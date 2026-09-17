@@ -1,0 +1,93 @@
+<p class="day-lede">Two ideas, then hands on keyboard. This repo will probably be the strongest thing you show anyone this month, for one reason: almost nobody else's retrieval demo has numbers attached to it.</p>
+
+  <div class="concept">
+    <h4>The README leads with the measurement</h4>
+    <p>Most retrieval repos open with a feature list. Yours opens with the eval table from Day 11 — each configuration, recall@5, MRR, the size of the golden set, and the date. Then the architecture. Then cost per query and p95 latency. Then known failure modes.</p>
+    <p>That order is deliberate, and here's the reasoning. Nobody can tell from your code whether your retrieval is any good. That impossibility is the entire reason evals exist.</p>
+    <p>What a reader <em>can</em> tell instantly is whether you know that. The table proves you measured. The failure-modes section proves you looked at the failures instead of hoping they weren't there.</p>
+    <p>So put the Day 11 sentence in the first paragraph, in plain words: hybrid plus rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set. Then say what you would fix with another week.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="The README sections in reading order with the eval table placed second, immediately after the one-paragraph summary">
+        <text x="164" y="34" text-anchor="end" font-size="13" fill="var(--dg-muted)">first</text>
+        <rect x="180" y="18" width="280" height="24" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="196" y="35" font-size="13" fill="var(--dg-ink)">what it does, in a paragraph</text>
+        <rect x="180" y="48" width="280" height="24" rx="5" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="196" y="65" font-size="13" fill="var(--dg-ink)">the eval table</text>
+        <text x="474" y="65" font-size="13" fill="var(--dg-ink)">this is the portfolio piece</text>
+        <rect x="180" y="78" width="280" height="24" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="196" y="95" font-size="13" fill="var(--dg-ink)">architecture</text>
+        <rect x="180" y="108" width="280" height="24" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="196" y="125" font-size="13" fill="var(--dg-ink)">cost per query, p95 latency</text>
+        <rect x="180" y="138" width="280" height="24" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="196" y="155" font-size="13" fill="var(--dg-ink)">known failure modes</text>
+        <rect x="180" y="168" width="280" height="24" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="196" y="185" font-size="13" fill="var(--dg-ink)">live link</text>
+        <text x="164" y="185" text-anchor="end" font-size="13" fill="var(--dg-muted)">last</text>
+      </svg>
+      <figcaption>The reader decides what you are in the first two sections, so the measurement goes in the second one.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>What actually ships</h4>
+    <p>The index is not application code. Build it offline, keep it in a managed store, and let the deployed service hold only the query path: embed, search, rerank, generate, cite.</p>
+    <p>Three things follow from that split. The container stays small. Cold starts stay fast. And re-indexing stops being a deploy.</p>
+    <p>Ship it with keys read from the environment, one log line per request carrying tokens, cost and stage timings, and a public demo corpus a stranger can query without signing up for anything. Document the ingestion command so someone can point it at their own folder in five minutes.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="Ingestion runs offline into a managed index, while the deployed service handles only the per-request query path">
+        <text x="16" y="26" font-size="13" fill="var(--dg-muted)">built offline, once</text>
+        <rect x="40" y="36" width="140" height="42" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="110" y="62" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Corpus</text>
+        <line x1="180" y1="57" x2="196" y2="57" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="196,51 208,57 196,63" fill="var(--dg-line)"/>
+        <rect x="208" y="36" width="190" height="42" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="303" y="62" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Parse, chunk, embed</text>
+        <line x1="303" y1="78" x2="303" y2="92" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="297,92 303,102 309,92" fill="var(--dg-line)"/>
+        <rect x="230" y="102" width="170" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="315" y="130" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Index (managed)</text>
+        <text x="8" y="158" font-size="13" fill="var(--dg-muted)">per request</text>
+        <rect x="16" y="162" width="110" height="42" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="71" y="188" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Question</text>
+        <line x1="126" y1="183" x2="146" y2="183" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="146,177 158,183 146,189" fill="var(--dg-line)"/>
+        <rect x="158" y="162" width="140" height="42" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="228" y="188" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Search + rerank</text>
+        <line x1="250" y1="162" x2="250" y2="156" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="244,156 250,146 256,156" fill="var(--dg-line)"/>
+        <line x1="298" y1="183" x2="318" y2="183" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="318,177 330,183 318,189" fill="var(--dg-line)"/>
+        <rect x="330" y="162" width="130" height="42" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="395" y="188" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Generate</text>
+        <line x1="460" y1="183" x2="480" y2="183" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="480,177 492,183 480,189" fill="var(--dg-line)"/>
+        <rect x="492" y="162" width="132" height="42" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="558" y="188" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Cited answer</text>
+      </svg>
+      <figcaption>Two paths, one index: ingestion is a job you run, the service is only the query path.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Freeze scope now. Whatever is half-finished this morning is cut, noted in the README as known debt, and shipped without.</li>
+      <li>Run the eval one final time on the committed index. Paste the exact output into the README — configuration, recall@5, MRR, question count, date.</li>
+      <li>Build the public index from a corpus you can legally publish. Confirm no private document made it in; grep the chunk texts if you have to.</li>
+      <li>Deploy the query service to whatever platform gets you live in twenty minutes, with keys in environment variables.</li>
+      <li>Test as two users with different access. Same question, different answers, different citations. Screenshot it for the README.</li>
+      <li>Measure on the deployed service, not locally: p50 and p95 over 50 queries, and cost per query. Put both numbers in the README.</li>
+      <li>Write the README in this order — what it does in one paragraph, the eval table, an architecture diagram, cost and latency, known failure modes, a live link.</li>
+      <li>Commit, push, and write your five lines in <code>LOG.md</code>: what worked, what surprised you, what is still fuzzy.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Deploying the app and the index out of sync. If the service embeds queries with a different model than the index was built with, nothing errors and every answer is subtly wrong.</li>
+      <li>Publishing a corpus you did not check. Private notes and API keys inside indexed documents are the classic ship-day accident.</li>
+      <li>A demo that needs the visitor's own key. Nobody will get one. Ship a small public corpus that works on the first click.</li>
+      <li>Spending the day on the interface. The eval table is the portfolio piece; the interface is packaging.</li>
+    </ul>
+  </div>

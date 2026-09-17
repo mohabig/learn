@@ -1,0 +1,167 @@
+<p class="day-lede">The terminal looks like a memory test. It isn't. It is one small program following about five rules, and once you know the rules the error messages turn from noise into instructions. Today you learn the rules — then you break an install on purpose, so the first real one doesn't scare you.</p>
+
+  <div class="concept">
+    <h4>A shell is a loop that runs other programs</h4>
+    <p>Here is the thing nobody says out loud: the shell is a program. It is not the computer, and it is not in charge of anything. It sits there running one loop, over and over, until you close the window.</p>
+    <p>Here is the loop. It prints a prompt. It waits for you to type a line. It splits that line into words at the spaces. It takes the first word as the name of a program, and every word after it as an argument to hand that program. It starts the program, waits for it to finish, and shows you what it printed. Then it prints the prompt again.</p>
+    <p>That is the entire cycle. Nothing you type is understood in any deeper sense — the shell is not reading your intent, it is chopping a line into words and launching the first one.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="The shell repeats one loop: print a prompt, read a line, split it at spaces, run the first word as a program, then start over">
+        <text x="401" y="40" text-anchor="middle" font-size="13" fill="var(--dg-muted)">ls -l my notes.txt → four words</text>
+        <rect x="20" y="64" width="130" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="85" y="95" text-anchor="middle" font-size="13" fill="var(--dg-ink)">print prompt</text>
+        <line x1="150" y1="90" x2="164" y2="90" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="164,84 178,90 164,96" fill="var(--dg-line)"/>
+        <rect x="178" y="64" width="130" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="243" y="95" text-anchor="middle" font-size="13" fill="var(--dg-ink)">read your line</text>
+        <line x1="308" y1="90" x2="322" y2="90" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="322,84 336,90 322,96" fill="var(--dg-line)"/>
+        <rect x="336" y="64" width="130" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="401" y="95" text-anchor="middle" font-size="13" fill="var(--dg-ink)">split at spaces</text>
+        <line x1="466" y1="90" x2="480" y2="90" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="480,84 494,90 480,96" fill="var(--dg-line)"/>
+        <rect x="494" y="64" width="126" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="557" y="95" text-anchor="middle" font-size="13" fill="var(--dg-ink)">run word 1</text>
+        <line x1="557" y1="116" x2="557" y2="164" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="85" y1="164" x2="557" y2="164" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="85" y1="164" x2="85" y2="128" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="79,128 85,116 91,128" fill="var(--dg-line)"/>
+        <text x="320" y="190" text-anchor="middle" font-size="13" fill="var(--dg-muted)">wait for it, show what it printed, loop</text>
+      </svg>
+      <figcaption>Six steps forever — nothing you type is understood any more deeply than this.</figcaption>
+    </figure>
+    <p>The shell does hold one piece of state you have to keep in your head: the working directory. That is where you are standing. <code>pwd</code> prints it, <code>cd</code> changes it, <code>ls</code> lists what is there.</p>
+    <p>Every relative path you type is resolved against that spot. A path starting with <code>/</code> is absolute — a route from the root of the disk, meaning the same thing no matter where you stand. Anything else starts from where you are, where <code>.</code> means here, <code>..</code> means the directory above, and <code>~</code> means your home directory.</p>
+    <p>Now, back to the split. Because the shell splits on spaces, a file called <code>my notes.txt</code> arrives at the program as two arguments — and the program, told to open something called <code>my</code>, reasonably reports it can't find it. Quote it. The split happens before the program ever sees your line, so no program can fix this for you.</p>
+    <p>So: the shell cuts your line into words and runs the first one, starting from wherever you're standing.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Flags, and the three streams</h4>
+    <p>Flags look like a little language with grammar. They aren't. A program receives one plain list of strings, and flags are just strings with a convention attached: one dash for a single letter (<code>-l</code>), two for a whole word (<code>--recursive</code>), and some expect a value in the next string along.</p>
+    <p>There is no universal rule, which is why every program has to tell you its own. That is what <code>--help</code> is for, on nearly every program you will ever run, and <code>man ls</code> opens the full manual for the version installed on your machine. Read those before a search engine — the forum answer is usually about a different version.</p>
+    <p>Now the part that pays for itself all week. Every running program gets three streams. Standard input is where it reads from. Standard output is where its results go. Standard error is where its complaints go.</p>
+    <p>Two output holes, not one, and that is deliberate. It means you can keep the results and throw away the noise, or read the noise and ignore the results, without either one contaminating the other.</p>
+    <p>The redirections follow from that. <code>&gt;</code> sends standard output to a file, replacing what was there. <code>&gt;&gt;</code> appends instead. <code>2&gt;</code> sends standard error to a file — the <code>2</code> is just that stream's number.</p>
+    <p>And then the pipe. <code>|</code> connects one program's standard output directly to the next one's standard input, so data flows through a chain without ever touching the disk. Errors stay out of the pipe, which is why a broken stage prints to your screen instead of poisoning the data downstream.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Four commands chained by pipes, each feeding its standard output into the next, while standard error bypasses the chain">
+        <text x="320" y="26" text-anchor="middle" font-size="14" fill="var(--dg-muted)">grep -rn TODO . | sort | uniq -c | head -5</text>
+        <rect x="20" y="56" width="120" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="80" y="88" text-anchor="middle" font-size="13" fill="var(--dg-ink)">grep</text>
+        <line x1="140" y1="82" x2="166" y2="82" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="166,76 180,82 166,88" fill="var(--dg-line)"/>
+        <text x="160" y="48" text-anchor="middle" font-size="13" fill="var(--dg-muted)">stdout</text>
+        <rect x="180" y="56" width="120" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="240" y="88" text-anchor="middle" font-size="13" fill="var(--dg-ink)">sort</text>
+        <line x1="300" y1="82" x2="326" y2="82" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="326,76 340,82 326,88" fill="var(--dg-line)"/>
+        <text x="320" y="48" text-anchor="middle" font-size="13" fill="var(--dg-muted)">stdout</text>
+        <rect x="340" y="56" width="120" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="400" y="88" text-anchor="middle" font-size="13" fill="var(--dg-ink)">uniq -c</text>
+        <line x1="460" y1="82" x2="486" y2="82" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="486,76 500,82 486,88" fill="var(--dg-line)"/>
+        <text x="480" y="48" text-anchor="middle" font-size="13" fill="var(--dg-muted)">stdout</text>
+        <rect x="500" y="56" width="120" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="560" y="88" text-anchor="middle" font-size="13" fill="var(--dg-ink)">head -5</text>
+        <line x1="240" y1="108" x2="240" y2="146" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="234,146 240,158 246,146" fill="var(--dg-line)"/>
+        <text x="320" y="182" text-anchor="middle" font-size="13" fill="var(--dg-ink)">stderr skips the pipe and lands on your screen</text>
+      </svg>
+      <figcaption>Each stage reads what the last one wrote; errors take a separate road so they never pollute the data.</figcaption>
+    </figure>
+    <p>So: results and complaints leave through different doors, and the pipe is a hose from one program's results to the next one's input.</p>
+  </div>
+
+  <div class="concept">
+    <h4>PATH, and why "command not found" happens</h4>
+    <p>Every process carries a dictionary of strings around with it, called its environment, inherited from whatever started it. <code>env</code> prints yours. Look at it once — there is nothing mystical in there, just names and values.</p>
+    <p>You can set one for a single command by putting it in front (<code>DEBUG=1 python app.py</code>), or for the rest of the session with <code>export</code>. Here is the rule that catches people: environments pass from parent to child and never sideways. Set a variable in one terminal and a second window knows nothing about it, because that window is not the first one's child.</p>
+    <p>One of those strings is <code>PATH</code>: a list of directories separated by colons. When you type <code>uv</code>, the shell walks that list from left to right, runs the first file named <code>uv</code> it finds, and stops looking. It does not search your disk. <code>which uv</code> tells you which one won.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="The shell searches each PATH directory in order and runs the first matching program it finds">
+        <text x="330" y="18" text-anchor="middle" font-size="13" fill="var(--dg-muted)">PATH, searched left to right</text>
+        <rect x="20" y="88" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="95" y="116" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you type: uv</text>
+        <line x1="170" y1="110" x2="186" y2="110" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="186,104 200,110 186,116" fill="var(--dg-line)"/>
+        <rect x="200" y="30" width="260" height="44" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="214" y="58" font-size="13" fill="var(--dg-muted)">/usr/local/bin — nothing here</text>
+        <rect x="200" y="88" width="260" height="44" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="214" y="116" font-size="13" fill="var(--dg-ink)">~/.local/bin — uv lives here</text>
+        <rect x="200" y="146" width="260" height="44" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="214" y="174" font-size="13" fill="var(--dg-muted)">/usr/bin — never reached</text>
+        <line x1="460" y1="110" x2="496" y2="110" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="496,104 510,110 496,116" fill="var(--dg-line)"/>
+        <text x="575" y="106" text-anchor="middle" font-size="13" fill="var(--dg-good)">first match</text>
+        <text x="575" y="124" text-anchor="middle" font-size="13" fill="var(--dg-good)">wins</text>
+      </svg>
+      <figcaption>Nothing searches your whole disk — a program is findable only if its directory is on the list.</figcaption>
+    </figure>
+    <p>So why does this matter? Because "command not found" almost never means the install failed. It means the program landed in a directory that is not on your <code>PATH</code> — which the installer told you, in the line you scrolled past.</p>
+    <p>This is not trivia you get to forget after today. Tomorrow, activating a Python environment turns out to be exactly this and nothing more, and on Day 1 of Week 1 your API key is an environment variable read out of this same dictionary.</p>
+    <p>So: a program is findable only if its directory is on the list, and the leftmost match wins.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Read the error from the top</h4>
+    <p>A failed install prints hundreds of lines, and the last one is almost always useless: "command failed with exit code 1". That is the symptom — the last program in a chain announcing that something upstream went wrong.</p>
+    <p>The cause is higher up. Scroll back to the first line containing <code>error</code>, <code>fatal</code>, <code>No such file</code>, or <code>Permission denied</code>, and read that line literally, word by word. It names a file, a version, or a missing piece, and that name is usually the whole answer. Everything after it is wreckage.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 240" role="img" aria-label="In an install log the first error line near the top is the cause and the exit code at the bottom is only the symptom">
+        <text x="124" y="26" text-anchor="middle" font-size="13" fill="var(--dg-muted)">the install log</text>
+        <rect x="24" y="36" width="200" height="184" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <line x1="44" y1="56" x2="196" y2="56" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="44" y1="70" x2="170" y2="70" stroke="var(--dg-line)" stroke-width="2"/>
+        <rect x="36" y="82" width="176" height="30" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="124" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">error: no such file</text>
+        <line x1="44" y1="128" x2="196" y2="128" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="44" y1="142" x2="160" y2="142" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="44" y1="156" x2="196" y2="156" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="44" y1="170" x2="150" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <rect x="36" y="182" width="176" height="28" rx="4" fill="none" stroke="var(--dg-muted)"/>
+        <text x="124" y="201" text-anchor="middle" font-size="13" fill="var(--dg-muted)">exit code 1</text>
+        <line x1="240" y1="97" x2="256" y2="97" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="240,91 228,97 240,103" fill="var(--dg-line)"/>
+        <text x="264" y="102" font-size="13" fill="var(--dg-ink)">the cause — read it</text>
+        <line x1="240" y1="196" x2="256" y2="196" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="240,190 228,196 240,202" fill="var(--dg-line)"/>
+        <text x="264" y="201" font-size="13" fill="var(--dg-muted)">only the symptom</text>
+        <text x="512" y="26" text-anchor="middle" font-size="13" fill="var(--dg-muted)">almost always one of three</text>
+        <rect x="416" y="40" width="196" height="38" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="514" y="64" text-anchor="middle" font-size="13" fill="var(--dg-ink)">not on PATH</text>
+        <rect x="416" y="126" width="196" height="38" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="514" y="150" text-anchor="middle" font-size="13" fill="var(--dg-ink)">not your directory</text>
+        <rect x="416" y="172" width="196" height="38" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="514" y="196" text-anchor="middle" font-size="13" fill="var(--dg-ink)">wrong version</text>
+      </svg>
+      <figcaption>Read up, not down: the bottom line says it broke, the first error line says why.</figcaption>
+    </figure>
+    <p>Programs also report how they did as a plain number. Zero means it worked; anything else means it didn't. <code>echo $?</code> prints the number from the last command, which is how you check a result that printed nothing at all.</p>
+    <p>Here is the shortcut worth keeping. Nearly every install failure you meet is one of three kinds: the thing isn't on <code>PATH</code>, you're writing to a directory you don't own, or something needs a version you don't have. Before you type a single fix, name which of the three it is.</p>
+    <p>So: the last line tells you it broke, the first error line tells you why, and there are only three usual whys.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Open a terminal. Run <code>pwd</code>, then <code>cd ~</code>, then <code>mkdir -p drill/src drill/data</code>. Put three or four text files inside with a few <code>TODO</code> lines scattered through them.</li>
+      <li>Find files by shape: <code>find drill -name "*.py"</code>, then <code>find drill -type f -size +1k</code>. Note that <code>find</code> takes a starting directory, then filters.</li>
+      <li>Search contents: <code>grep -rn TODO drill</code>. Read the output format — file, colon, line number, colon, the matching line.</li>
+      <li>Build the pipeline one stage at a time, running it after each addition so you see what each stage did: <code>grep -rho "TODO.*" drill</code>, then <code>| sort</code>, then <code>| uniq -c</code>, then <code>| sort -rn | head -5</code>.</li>
+      <li>Redirect both streams to different files: <code>... &gt; report.txt 2&gt; problems.txt</code>. Open both. Confirm the errors never reached <code>report.txt</code>.</li>
+      <li>Break something on purpose. Install a command-line tool, then in that same window run <code>export PATH=/usr/bin:/bin</code> and call it again. Read the failure, run <code>which</code>, and fix <code>PATH</code> yourself. Then try installing a package into the system Python and read the permission error without reaching for <code>sudo</code>.</li>
+      <li>Run <code>--help</code> on two commands you used today and <code>man</code> on one. Find a flag you didn't know existed.</li>
+      <li>Write the five commands you had to look up into a notes file — the start of your <code>LOG.md</code>.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Reading only the last line of a long failure — the symptom — and never scrolling up to the first error line, which is the cause.</li>
+      <li>Reaching for <code>sudo</code> at the first permission error. It writes files as the administrator, so the next command fails in a stranger way because those files aren't yours.</li>
+      <li>Setting an environment variable in one window and expecting another window to see it. Environments are inherited by children only.</li>
+      <li>Pasting commands from the internet without reading them. A path you don't recognize deserves thirty seconds and a <code>--help</code>.</li>
+    </ul>
+  </div>

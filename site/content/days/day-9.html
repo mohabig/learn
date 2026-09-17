@@ -1,0 +1,163 @@
+<p class="day-lede">Yesterday's demo ran on text you had already cleaned by hand. Real corpora are not like that: two-column PDFs, web pages wrapped in navigation, Markdown holding 300-line code blocks. Today you turn that into chunks worth embedding, and most of the difficulty turns out not to be AI at all.</p>
+
+  <div class="concept">
+    <h4>Parsing is the actual job</h4>
+    <p>Here is the thing nobody tells you about PDFs. A PDF does not store paragraphs. It stores instructions: draw this glyph, at this coordinate, on this page. There is no sentence in there. There is no paragraph in there.</p>
+    <p>Your parser has to reconstruct reading order from positions, and it guesses. In a two-column layout the guesses interleave the columns, so the sentence you retrieve is half of the left column and half of the right one. Tables collapse into a row of words with no relationship left between them. Page headers and footers get pulled into every chunk on the way past.</p>
+    <p>HTML has the opposite problem. It has plenty of structure — most of it is just not content. Strip navigation, sidebars, footers and cookie banners first.</p>
+    <p>Skip that and watch what happens. A third of every chunk becomes the same boilerplate. Every chunk starts to look a little like every other chunk. And the keyword search you add tomorrow is poisoned before you even write it.</p>
+    <p>Markdown and code are the easy cases, because the structure is written down: headings, fenced blocks, function definitions. Split code on function and class boundaries, never on line count — a chunk that starts halfway through a function teaches the model nothing.</p>
+    <p>Now the discipline that saves you a week. Dump the parser's output for 20 random documents and <em>read it</em> before you embed anything. Most retrieval bugs that look like model failures are parser failures nobody ever looked at.</p>
+    <p>So: your parser decides what the model can possibly know, which makes twenty minutes of reading its output the highest-value work of the day.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A two-column page stores glyphs at coordinates, so the reader crosses the gutter and interleaves the columns, while reading the output first catches it">
+        <text x="160" y="26" text-anchor="middle" font-size="14" fill="var(--dg-ink)">What the page stores</text>
+        <rect x="40" y="40" width="240" height="130" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <line x1="56" y1="62" x2="150" y2="62" stroke="var(--dg-muted)" stroke-width="2"/>
+        <line x1="56" y1="86" x2="150" y2="86" stroke="var(--dg-muted)" stroke-width="2"/>
+        <line x1="56" y1="110" x2="150" y2="110" stroke="var(--dg-muted)" stroke-width="2"/>
+        <line x1="56" y1="134" x2="150" y2="134" stroke="var(--dg-muted)" stroke-width="2"/>
+        <line x1="170" y1="62" x2="264" y2="62" stroke="var(--dg-muted)" stroke-width="2"/>
+        <line x1="170" y1="86" x2="264" y2="86" stroke="var(--dg-muted)" stroke-width="2"/>
+        <line x1="170" y1="110" x2="264" y2="110" stroke="var(--dg-muted)" stroke-width="2"/>
+        <line x1="170" y1="134" x2="264" y2="134" stroke="var(--dg-muted)" stroke-width="2"/>
+        <polyline points="56,62 264,62 56,86 264,86 56,110 264,110" fill="none" stroke="var(--dg-accent2)" stroke-width="2"/>
+        <text x="160" y="196" text-anchor="middle" font-size="13" fill="var(--dg-muted)">the parser crosses the gutter</text>
+        <line x1="320" y1="16" x2="320" y2="204" stroke="var(--dg-line)"/>
+        <text x="480" y="26" text-anchor="middle" font-size="14" fill="var(--dg-ink)">What you get back</text>
+        <rect x="360" y="50" width="240" height="54" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="376" y="74" font-size="13" fill="var(--dg-muted)">"Employees may take 4 weeks</text>
+        <text x="376" y="94" font-size="13" fill="var(--dg-muted)">notice to the parking office."</text>
+        <rect x="360" y="124" width="240" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="376" y="152" font-size="13" fill="var(--dg-ink)">read 20 outputs first</text>
+        <text x="480" y="196" text-anchor="middle" font-size="13" fill="var(--dg-muted)">two columns, one sentence</text>
+      </svg>
+      <figcaption>Nothing in the pipeline can recover meaning the parser scrambled on the way in.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Why chunking exists, and what a bad chunk does</h4>
+    <p>Two forces push you to split documents up, and they are worth separating.</p>
+    <p>The first is yesterday's fixed-length rule. An embedding is the same size no matter how much text you feed it. Embed a 40-page manual as one vector and you get the average of forty topics: mildly near everything, strongly near nothing.</p>
+    <p>The second is money. Whatever you retrieve gets pasted into a prompt, and you pay per token, every single query.</p>
+    <p>So chunks can be wrong in two directions, and the failures look nothing alike. Too big is dilution again, plus you pay for 2,000 tokens to deliver one useful sentence. Too small is worse in a sneaky way: the chunk reads <em>"It expires after 90 days"</em> and "it" was named in the chunk before. Retrieval succeeded. The answer is still not available. The model fills the gap with a guess.</p>
+    <p>Where do you start? 400 to 800 tokens per chunk, with 10 to 15 percent overlap — 50 to 100 repeated tokens at each seam.</p>
+    <p>Overlap exists for exactly one reason, so don't overthink it: a sentence cut in half by a boundary survives whole in one of the two copies.</p>
+    <p>Then tune these numbers against Day 11's measurements, not against how the chunks feel when you scroll past them.</p>
+    <p>So: chunk size trades dilution against orphaned context, and you pick the default now and let the golden set argue with it later.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="A chunk cut by character count orphans its heading and splits a sentence, while a chunk cut on structure keeps the heading and overlaps the seam">
+        <text x="160" y="24" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Cut every 400 characters</text>
+        <rect x="30" y="36" width="260" height="66" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="46" y="62" font-size="13" fill="var(--dg-ink)">Parental leave</text>
+        <text x="46" y="84" font-size="13" fill="var(--dg-muted)">Employees may take 16 weeks of</text>
+        <line x1="30" y1="112" x2="290" y2="112" stroke="var(--dg-line)" stroke-dasharray="5 4"/>
+        <rect x="30" y="122" width="260" height="66" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="46" y="148" font-size="13" fill="var(--dg-muted)">leave. It expires after 90 days.</text>
+        <text x="46" y="172" font-size="13" fill="var(--dg-ink)">"It" = ? Heading is gone.</text>
+        <line x1="320" y1="16" x2="320" y2="206" stroke="var(--dg-line)"/>
+        <text x="480" y="24" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Cut on the heading</text>
+        <rect x="350" y="36" width="260" height="96" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="366" y="62" font-size="13" fill="var(--dg-ink)">Handbook &gt; Leave &gt; Parental</text>
+        <text x="366" y="84" font-size="13" fill="var(--dg-muted)">Employees may take 16 weeks of</text>
+        <text x="366" y="106" font-size="13" fill="var(--dg-muted)">leave. It expires after 90 days.</text>
+        <rect x="350" y="146" width="260" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="366" y="170" font-size="13" fill="var(--dg-muted)">...expires after 90 days. Send</text>
+        <text x="366" y="192" font-size="13" fill="var(--dg-muted)">requests to HR. (15% overlap)</text>
+      </svg>
+      <figcaption>The same text, cut two ways: one chunk answers the question on its own, the other cannot.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Structural chunking, and keeping the heading attached</h4>
+    <p>There are two ways to decide where a chunk ends, and one of them is almost always right.</p>
+    <p>Structural chunking splits on the document's own boundaries: headings, sections, list items, function definitions. It is cheap, it is deterministic, and it usually wins — because the author already decided where the ideas end, and you are just believing them.</p>
+    <p>Semantic chunking embeds sentence by sentence and cuts where consecutive sentences stop being similar. It costs an embedding call per sentence, and it occasionally helps on flowing prose that has no headings at all. Try it second, if ever.</p>
+    <p>Now here's the trick, and it is the highest-return line of code you will write today. It is one string concatenation: prepend the breadcrumb.</p>
+    <p>Start the chunk's text with <code>Employee Handbook &gt; Leave &gt; Parental leave</code>, then the section body. That's it. The chunk now describes itself.</p>
+    <p>Watch what that fixes. A question about parental leave matches heading words the body never bothered to repeat, because the author assumed you could see the heading. And when the chunk lands in a prompt, the model knows what it is reading instead of inferring it. For code, use the file path and the class name the same way.</p>
+    <p>So: cut on the structure the author already gave you, and staple the heading path to the front of every chunk so it can stand alone.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="The same body text without and with a breadcrumb heading path, and which of the two a query about parental leave matches">
+        <rect x="240" y="10" width="170" height="34" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="325" y="33" text-anchor="middle" font-size="13" fill="var(--dg-ink)">"parental leave rules?"</text>
+        <polyline points="325,44 325,56 155,56 155,62" fill="none" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="5 4"/>
+        <polygon points="149,62 155,72 161,62" fill="var(--dg-line)"/>
+        <polyline points="325,44 325,56 485,56 485,62" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="479,62 485,72 491,62" fill="var(--dg-line)"/>
+        <text x="155" y="94" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Body only</text>
+        <rect x="30" y="104" width="250" height="86" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="46" y="130" font-size="13" fill="var(--dg-muted)">Employees may take 16 weeks</text>
+        <text x="46" y="152" font-size="13" fill="var(--dg-muted)">of leave.</text>
+        <text x="46" y="178" font-size="13" fill="var(--dg-ink)">the word "parental" never appears</text>
+        <text x="485" y="94" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Breadcrumb first</text>
+        <rect x="360" y="104" width="250" height="86" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="376" y="130" font-size="13" fill="var(--dg-ink)">Handbook &gt; Leave &gt; Parental</text>
+        <text x="376" y="152" font-size="13" fill="var(--dg-muted)">Employees may take 16 weeks...</text>
+        <text x="376" y="178" font-size="13" fill="var(--dg-ink)">the chunk says what it is</text>
+      </svg>
+      <figcaption>One line of concatenation gives every chunk the words its author left in the heading.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Stable ids, dedupe, and re-indexing only what changed</h4>
+    <p>Every chunk needs an identifier you can regenerate from the source. Compose it from three things you already have: the source path, the section path, and the chunk's index within that section.</p>
+    <p>Test it the obvious way. Run ingestion twice over an unchanged document. The identifiers must come out identical. If they don't, the second run duplicates your corpus, and soon every search returns the same chunk five times.</p>
+    <p>Then dedupe on content: hash the chunk text after lowercasing it and collapsing the spacing, and keep one copy. Real corpora are full of repeated footers and copy-pasted sections, and every duplicate steals a slot in your top 5.</p>
+    <p>For incremental re-indexing, store one hash per source document and compare on each run. Unchanged: skip it, pay nothing. Changed: delete every chunk carrying that document's prefix, then re-insert. Gone from the source: delete.</p>
+    <p>Always delete-then-insert rather than update in place. Here's why: when the text changes, the chunk boundaries move, so the old identifiers no longer line up with the new chunks. Updating in place quietly leaves orphans behind.</p>
+    <p>The cost math is what actually decides whether your index stays fresh. A full rebuild of 50,000 chunks costs a few dollars and 40 minutes. An incremental run over 12 changed documents costs cents and finishes in seconds. Only one of those is something you will run several times a day.</p>
+    <p>So: stable identifiers plus one hash comparison turn re-indexing from an event into a background job.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="Ingestion parses and chunks a document, then a content hash decides whether to skip it or re-embed and upsert it">
+        <text x="8" y="64" font-size="13" fill="var(--dg-muted)">source document</text>
+        <rect x="8" y="76" width="96" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="56" y="107" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Parse</text>
+        <line x1="104" y1="102" x2="116" y2="102" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="116,96 128,102 116,108" fill="var(--dg-line)"/>
+        <rect x="128" y="76" width="110" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="183" y="107" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Chunk</text>
+        <line x1="238" y1="102" x2="250" y2="102" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="250,96 262,102 250,108" fill="var(--dg-line)"/>
+        <rect x="262" y="76" width="90" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="307" y="107" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Hash</text>
+        <line x1="352" y1="102" x2="400" y2="102" stroke="var(--dg-line)" stroke-width="2"/>
+        <polyline points="400,102 400,56 424,56" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="424,50 436,56 424,62" fill="var(--dg-line)"/>
+        <polyline points="400,102 400,152 424,152" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="424,146 436,152 424,158" fill="var(--dg-line)"/>
+        <rect x="436" y="32" width="190" height="48" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="531" y="62" text-anchor="middle" font-size="14" fill="var(--dg-muted)">same: skip, pay nothing</text>
+        <rect x="436" y="128" width="190" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="531" y="158" text-anchor="middle" font-size="14" fill="var(--dg-ink)">changed: embed, upsert</text>
+      </svg>
+      <figcaption>One hash comparison separates a 40-minute rebuild from a re-index you run hourly.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Pick a corpus you genuinely care about: your notes, a codebase, a docs site, your team's policies. You will be reading its chunks all week.</li>
+      <li>Write one parser per format you actually have. Use a library for PDF and HTML. Output plain text plus a heading path per section.</li>
+      <li>Read 20 parsed documents. Fix the two worst parsing problems before writing any chunker.</li>
+      <li>Chunk structurally: split on headings, then split oversized sections at paragraph boundaries near your token target. Prepend the breadcrumb to every chunk.</li>
+      <li>Attach metadata: source path, heading path, chunk index, last-modified date, and a stable identifier built from the first three.</li>
+      <li>Hash each chunk's normalized text and drop exact duplicates. Count them; the number is usually surprising.</li>
+      <li>Store a per-document hash. Re-run on an unchanged corpus and confirm zero embedding calls; change one file and confirm only its chunks move.</li>
+      <li>Print the token-length distribution of your chunks. A tail out at 4,000 tokens means your splitter is missing a case.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Tuning chunk size by feel. Without Day 11's golden set every size feels fine. Pick a default and move on.</li>
+      <li>Unstable identifiers built from a timestamp, a list position, or a random value. Every re-run duplicates the corpus instead of updating it.</li>
+      <li>Scanned PDFs with no text layer. The parser returns empty strings and the pipeline indexes nothing at all. Assert on chunk length and fail loudly.</li>
+      <li>Deleting a source document and forgetting its chunks. The index keeps answering from documents that no longer exist.</li>
+    </ul>
+  </div>

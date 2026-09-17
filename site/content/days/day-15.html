@@ -1,0 +1,171 @@
+<p class="day-lede">Today your model stops being a text box. By tonight it can look something up, do arithmetic, query your database, and write a file. The mechanism underneath is much smaller than the hype: the model asks, and your code decides whether to say yes.</p>
+
+  <div class="concept">
+    <h4>A tool is a description, not a function</h4>
+    <p>Start with what actually leaves your machine. When you give a model a tool, you are not giving it code. You are adding a small block of text to your request — nothing more than that.</p>
+    <p>That block has three parts. A <strong>name</strong>, such as <code>sql_query</code>. A <strong>description</strong> in plain English of what it does and when to use it. And a <strong>JSON Schema</strong> listing the arguments and their types. That is everything the model ever sees. It has no reach into your function, your database, or your machine.</p>
+    <p>Think of a menu. The model can read the menu and point at a dish. It never walks into the kitchen, and it never learns what the kitchen looks like. Your code is the kitchen.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="On one side, the name, description and schema the model receives; on the other, the function, database and disk only your code touches">
+        <text x="160" y="32" text-anchor="middle" font-size="13" fill="var(--dg-muted)">What the model sees</text>
+        <rect x="20" y="44" width="280" height="140" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="36" y="60" width="248" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="160" y="80" text-anchor="middle" font-size="13" fill="var(--dg-ink)">name: sql_query</text>
+        <rect x="36" y="98" width="248" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="160" y="118" text-anchor="middle" font-size="13" fill="var(--dg-ink)">description: when to use it</text>
+        <rect x="36" y="136" width="248" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="160" y="156" text-anchor="middle" font-size="13" fill="var(--dg-ink)">schema: limit, 1 to 100</text>
+        <line x1="330" y1="40" x2="330" y2="190" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="490" y="32" text-anchor="middle" font-size="13" fill="var(--dg-muted)">What only your code touches</text>
+        <rect x="360" y="44" width="260" height="140" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="376" y="60" width="228" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="490" y="80" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your Python function</text>
+        <rect x="376" y="98" width="228" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="490" y="118" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the database</text>
+        <rect x="376" y="136" width="228" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="490" y="156" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the disk</text>
+        <text x="320" y="208" text-anchor="middle" font-size="13" fill="var(--dg-muted)">It can point at the menu; it never enters the kitchen.</text>
+      </svg>
+      <figcaption>Everything on the left is text you wrote; nothing on the right is reachable from it.</figcaption>
+    </figure>
+    <p>So the description is a prompt. In fact it is the whole prompt for this one decision — should I call this, and with what arguments? Watch the difference it makes. "Runs a read-only SQL query against the orders database. Use it for counts, sums, or specific order records. Tables: orders, customers, refunds." gets called correctly. "Queries the DB." gets called at random.</p>
+    <p>Argument descriptions carry exactly the same weight, so write them the same way: <code>limit</code> — "max rows to return, 1 to 100, default 20".</p>
+    <p>Now the part that costs money. Tool definitions travel with every single request, so you pay input tokens for them on every call. Four careful tools might cost 400 tokens. Forty tools is a prompt of its own, and the model gets worse at choosing as the list grows. Start with four.</p>
+    <p>So: a tool is a paragraph of text you resend on every call, and how carefully you write it decides whether it ever gets used.</p>
+  </div>
+
+  <div class="concept">
+    <h4>The round trip: who actually runs the code</h4>
+    <p>Here is the entire mechanism. Learn it once and you have learned every agent framework you will ever adopt, because all of them are wrappers around these four steps.</p>
+    <p>One: you send the conversation plus the tool definitions.</p>
+    <p>Two: the model replies with a stop reason meaning "I want a tool", and a block holding the tool name, the arguments as JSON, and an identifier for this specific call. <strong>Nothing has run yet.</strong> Read that again, because it is the whole idea — the model emitted a description of a call it would like made. It is a request, not an action.</p>
+    <p>Three: your code parses those arguments, checks them, runs the real Python function, and gets a result. This is the step where you are in charge, and it is the only step where anything actually happens.</p>
+    <p>Four: you append two things to the message list — the model's request exactly as it came back, and a tool-result message carrying the output plus that same call identifier. Then you send the whole conversation again.</p>
+    <p>Why the whole conversation? Because the API is stateless. It remembers nothing between requests. Your growing message list <em>is</em> the memory of the interaction; there is no session on the other end holding your place. From there the model either answers in plain text or asks for another tool, and around you go.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 260" role="img" aria-label="Round trip between your code and the model: definitions out, a tool request back, your code runs it, the result goes back">
+        <rect x="20" y="16" width="180" height="32" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="110" y="37" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Your code</text>
+        <rect x="440" y="16" width="180" height="32" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="530" y="37" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Model</text>
+        <line x1="110" y1="48" x2="110" y2="240" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="530" y1="48" x2="530" y2="240" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="320" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">1 · messages + tool definitions</text>
+        <line x1="110" y1="84" x2="516" y2="84" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="516,78 530,84 516,90" fill="var(--dg-line)"/>
+        <text x="320" y="112" text-anchor="middle" font-size="13" fill="var(--dg-ink)">2 · asks for sql_query, with arguments</text>
+        <line x1="530" y1="124" x2="124" y2="124" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="124,118 110,124 124,130" fill="var(--dg-line)"/>
+        <rect x="24" y="142" width="172" height="40" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="110" y="167" text-anchor="middle" font-size="13" fill="var(--dg-ink)">3 · validate · run · truncate</text>
+        <text x="320" y="204" text-anchor="middle" font-size="13" fill="var(--dg-ink)">4 · the result, or the error text</text>
+        <line x1="110" y1="216" x2="516" y2="216" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="516,210 530,216 516,222" fill="var(--dg-line)"/>
+        <text x="530" y="246" text-anchor="middle" font-size="13" fill="var(--dg-muted)">answers, or asks again</text>
+      </svg>
+      <figcaption>The model never executes anything; it requests, and your code chooses to comply.</figcaption>
+    </figure>
+    <p>The common break is small and maddening: you append the result but forget to append the model's request first. The pair no longer matches, and you get either an API error or a model that asks for the same thing again.</p>
+    <p>So: the model requests, your code runs it, and both halves of that exchange go back into the list before you send it again.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Choosing tools, and calling several at once</h4>
+    <p>You control how eager the model is, with one setting per request. <em>Auto</em> lets it decide, and is the default. <em>None</em> forbids tools for that turn. <em>Required</em> forces it to pick something. Naming one exact tool forces that call.</p>
+    <p>That last one deserves a second look, because it is the trick behind reliable structured output from Day 3. Define a tool whose schema is your output shape, then require it. Now the model has to fill in your fields.</p>
+    <p>Here is the other thing one reply can do: ask for several tools at once. That happens when the calls do not depend on each other — search the web <em>and</em> check the calculator, where neither needs the other's answer first.</p>
+    <p>Run those concurrently, then return <strong>all</strong> the results in one message. Split them across separate messages and the pairing breaks; the model quietly stops batching, and every later turn costs you an extra round trip.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="One model turn requests three tools; your code runs them in parallel and returns all three results in a single message">
+        <rect x="16" y="30" width="150" height="120" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="91" y="52" text-anchor="middle" font-size="13" fill="var(--dg-ink)">One model turn</text>
+        <rect x="30" y="62" width="122" height="22" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <text x="91" y="78" text-anchor="middle" font-size="13" fill="var(--dg-ink)">web_search</text>
+        <rect x="30" y="90" width="122" height="22" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <text x="91" y="106" text-anchor="middle" font-size="13" fill="var(--dg-ink)">calculator</text>
+        <rect x="30" y="118" width="122" height="22" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <text x="91" y="134" text-anchor="middle" font-size="13" fill="var(--dg-ink)">sql_query</text>
+        <line x1="166" y1="73" x2="236" y2="90" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="166" y1="101" x2="236" y2="101" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="166" y1="129" x2="236" y2="112" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="236,84 250,95 234,96" fill="var(--dg-line)"/>
+        <polygon points="236,95 250,101 236,107" fill="var(--dg-line)"/>
+        <polygon points="234,106 250,107 236,118" fill="var(--dg-line)"/>
+        <rect x="250" y="55" width="140" height="92" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="320" y="95" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your code runs</text>
+        <text x="320" y="115" text-anchor="middle" font-size="13" fill="var(--dg-ink)">all three at once</text>
+        <line x1="390" y1="101" x2="456" y2="101" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="456,95 470,101 456,107" fill="var(--dg-line)"/>
+        <rect x="470" y="55" width="150" height="92" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="545" y="88" text-anchor="middle" font-size="13" fill="var(--dg-ink)">one message,</text>
+        <text x="545" y="108" text-anchor="middle" font-size="13" fill="var(--dg-ink)">three results,</text>
+        <text x="545" y="128" text-anchor="middle" font-size="13" fill="var(--dg-ink)">matching call ids</text>
+      </svg>
+      <figcaption>Parallel calls save a round trip only if all the results come back together.</figcaption>
+    </figure>
+    <p>So: decide how much freedom the model gets, and when it asks for three things at once, answer all three in one breath.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Errors are results, not crashes</h4>
+    <p>Your SQL tool will receive a malformed query. Not maybe — it will.</p>
+    <p>The instinct is to let the exception propagate. That kills the loop, and the person waiting gets nothing at all.</p>
+    <p>Do this instead. Catch it, and send the error text back as the tool result, flagged as an error: <code>relation "order" does not exist; tables are orders, customers, refunds</code>. Models are good at fixing a query when you show them the message. That one behavior converts a large share of your failures into self-repair.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="Above, an exception ends the run with no answer; below, the same error returned as a tool result lets the model rewrite the query">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">Let the exception fly</text>
+        <rect x="20" y="40" width="130" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="85" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">bad SQL</text>
+        <line x1="150" y1="62" x2="176" y2="62" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="176,56 190,62 176,68" fill="var(--dg-line)"/>
+        <rect x="190" y="40" width="150" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="265" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your tool raises</text>
+        <line x1="340" y1="62" x2="366" y2="62" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="366,56 380,62 366,68" fill="var(--dg-line)"/>
+        <rect x="380" y="40" width="150" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="455" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the loop dies</text>
+        <text x="545" y="68" font-size="13" fill="var(--dg-muted)">no answer</text>
+        <line x1="20" y1="110" x2="620" y2="110" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="20" y="134" font-size="13" fill="var(--dg-muted)">Send the error back as the result</text>
+        <rect x="20" y="146" width="130" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="85" y="174" text-anchor="middle" font-size="13" fill="var(--dg-ink)">bad SQL</text>
+        <line x1="150" y1="168" x2="176" y2="168" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="176,162 190,168 176,174" fill="var(--dg-line)"/>
+        <rect x="190" y="146" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="265" y="174" text-anchor="middle" font-size="13" fill="var(--dg-ink)">error text back</text>
+        <line x1="340" y1="168" x2="366" y2="168" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="366,162 380,168 366,174" fill="var(--dg-line)"/>
+        <rect x="380" y="146" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="455" y="174" text-anchor="middle" font-size="13" fill="var(--dg-ink)">model rewrites it</text>
+        <text x="545" y="174" font-size="13" fill="var(--dg-good)">answer</text>
+      </svg>
+      <figcaption>The same failure, twice: one ends the run, the other becomes the next thing the model reads.</figcaption>
+    </figure>
+    <p>Two limits keep self-repair from becoming a treadmill. Cap retries of the same tool at two, then stop and report honestly.</p>
+    <p>And truncate results. A fetched web page can be 200,000 tokens, and once it is in the conversation you pay for it on every remaining step. Return the first 2,000 tokens plus a note that it was cut.</p>
+    <p>So: an error is just one more thing the model can read, but an untrimmed result is a bill you keep paying.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Define four tools by hand — <code>web_search</code>, <code>calculator</code>, <code>sql_query</code>, <code>file_write</code> — each with a name, a two-sentence description, and a JSON Schema with described arguments. No framework.</li>
+      <li>Write a dispatch table: a dict from tool name to the Python callable that implements it.</li>
+      <li>Validate arguments with a Pydantic model before executing. The model produced that JSON from text, so treat it as untrusted input.</li>
+      <li>Make <code>sql_query</code> safe by construction: a read-only connection, a forced row limit, and a reject on anything that is not a single SELECT.</li>
+      <li>Make <code>file_write</code> take a bare filename, join it to one output directory, and reject any name containing a path separator or a parent reference.</li>
+      <li>Write the loop: send messages and tools, check the stop reason, run the requested tools, append the request and the results, send again.</li>
+      <li>Log every call — tool name, arguments, duration, result size in tokens, running cost. You need this on Day 18, and it is much easier to add now.</li>
+      <li>Test with a question that needs two tools ("how many orders shipped last month, and what is that per day?") and one that needs none.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>A vague description, then blaming the model for not calling the tool. Rewrite the description before you touch anything else.</li>
+      <li>Trusting the arguments. Never concatenate them into SQL, a shell command, or a file path.</li>
+      <li>Enormous tool results. One un-truncated page can triple the cost of every later step of the conversation.</li>
+      <li>One mega-tool with a <code>mode</code> argument. The schema is what the model reasons over, so split it into real tools.</li>
+    </ul>
+  </div>

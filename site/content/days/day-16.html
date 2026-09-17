@@ -1,0 +1,155 @@
+<p class="day-lede">One tool call is a function call. Many calls, chosen by the model, where each result changes what it does next — that is an agent. Today you build one, put a fence around it, and learn when not to build one at all.</p>
+
+  <div class="concept">
+    <h4>The loop is about fifteen lines</h4>
+    <p>People describe agents as "plan, act, observe, repeat". That is a fair description of what the model does inside its own text. It is not what your code does.</p>
+    <p>Your code is a <code>while</code> loop. Send the messages. Look at the stop reason. Branch. If the model asked for tools, run them, append the results, and go around again. If it did not, you have your answer and the loop ends. That is the whole program.</p>
+    <p>There is no hidden state anywhere. Everything the agent "knows" is the message list you keep resending: the original task, every tool request, every result. When someone says an agent "remembers" what it did three steps ago, they mean a list in your process got longer.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Four bars showing the message list growing at every step, because each step appends a request and a result and the whole list is resent">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">What you send at each step</text>
+        <text x="20" y="66" font-size="13" fill="var(--dg-ink)">step 1</text>
+        <rect x="80" y="48" width="90" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="20" y="100" font-size="13" fill="var(--dg-ink)">step 2</text>
+        <rect x="80" y="82" width="180" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="272" y="100" font-size="13" fill="var(--dg-muted)">each step appends a request and a result</text>
+        <text x="20" y="134" font-size="13" fill="var(--dg-ink)">step 3</text>
+        <rect x="80" y="116" width="270" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="20" y="168" font-size="13" fill="var(--dg-ink)">step 4</text>
+        <rect x="80" y="150" width="360" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="20" y="202" font-size="13" fill="var(--dg-muted)">The list is the memory, and you pay for all of it again.</text>
+      </svg>
+      <figcaption>The agent has no state but this list, which is also why every step costs more than the last.</figcaption>
+    </figure>
+    <p>That is worth sitting with, because it explains the cost curve you meet in a minute, and it explains why the loop is worth writing yourself once.</p>
+    <p>Every framework you might adopt later is this loop plus opinions — about retries, about logging, about how the list gets trimmed. Build the thing once and you will read those opinions as choices rather than magic.</p>
+    <p>So: an agent is a while loop over a list you own, and nothing else.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Termination is a design decision, not an accident</h4>
+    <p>An unbounded loop is a bill.</p>
+    <p>Do the arithmetic once and it stops being abstract. Suppose each step carries 30,000 tokens of history and the agent takes 40 steps. That is 1.2 million input tokens for a task you expected to cost pennies.</p>
+    <p>Worse, a stuck agent does not look stuck. It looks busy. It is calling tools, printing lines, making progress-shaped noise while it goes nowhere.</p>
+    <p>So give the loop four independent ceilings, and check all four every single iteration. A <strong>step limit</strong> — start at 12. A <strong>token or dollar budget</strong> you add up as you go. A <strong>wall-clock limit</strong>. And a <strong>no-progress rule</strong>: the same tool called with the same arguments twice in a row means stop.</p>
+    <p>Then make every exit useful. Each one should return what it achieved, what it was trying to do, and why it stopped. "Hit the step limit while retrying the SQL tool" is a debuggable answer. A stack trace is not.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="A three-box loop from model to tool to appended result, with a list of the conditions that end the loop">
+        <rect x="40" y="34" width="160" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="120" y="65" text-anchor="middle" font-size="13" fill="var(--dg-ink)">model picks a tool</text>
+        <line x1="200" y1="60" x2="226" y2="60" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="226,54 240,60 226,66" fill="var(--dg-line)"/>
+        <rect x="240" y="34" width="160" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="320" y="65" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your code runs it</text>
+        <line x1="400" y1="60" x2="426" y2="60" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="426,54 440,60 426,66" fill="var(--dg-line)"/>
+        <rect x="440" y="34" width="160" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="520" y="65" text-anchor="middle" font-size="13" fill="var(--dg-ink)">append the result</text>
+        <line x1="520" y1="86" x2="520" y2="112" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="520" y1="112" x2="120" y2="112" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="120" y1="112" x2="120" y2="92" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="114,92 120,80 126,92" fill="var(--dg-line)"/>
+        <rect x="40" y="140" width="560" height="66" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="320" y="164" text-anchor="middle" font-size="13" fill="var(--dg-ink)">stop when: no tool was asked for · step 12 · 50 cents spent</text>
+        <text x="320" y="188" text-anchor="middle" font-size="13" fill="var(--dg-ink)">· 90 seconds · the same call repeated twice</text>
+      </svg>
+      <figcaption>The loop is three boxes; the engineering is in the box underneath.</figcaption>
+    </figure>
+    <p>So: decide in advance how the loop ends, in four different ways, and make each ending say something out loud.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Short-term memory grows; long-term memory is written on purpose</h4>
+    <p>Short-term memory is the message list. It grows every step, and you resend all of it every step, so the cost per step climbs even when the work does not. By step 10 you may be paying five times what step 2 cost.</p>
+    <p><strong>Compaction</strong> is the fix. Once the history passes a threshold, replace the oldest steps with a short summary the model writes itself — "searched three sources, found the invoice total is 4,180, still need the tax rate" — and keep the last two steps verbatim.</p>
+    <p>Where do the discarded details go? To disk. Write full tool outputs to files and leave the path in the summary, so the agent can re-read anything it actually needs instead of carrying everything just in case.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Five raw steps on the left become one summary plus the last two steps kept verbatim on the right">
+        <text x="110" y="28" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Before</text>
+        <rect x="40" y="44" width="140" height="22" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="40" y="72" width="140" height="22" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="40" y="100" width="140" height="22" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="40" y="128" width="140" height="22" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="40" y="156" width="140" height="22" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="110" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">every step, in full</text>
+        <line x1="192" y1="110" x2="230" y2="110" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="230,104 244,110 230,116" fill="var(--dg-line)"/>
+        <text x="380" y="28" text-anchor="middle" font-size="13" fill="var(--dg-muted)">After compaction</text>
+        <rect x="260" y="44" width="240" height="50" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="380" y="66" text-anchor="middle" font-size="13" fill="var(--dg-ink)">one summary the model wrote</text>
+        <text x="380" y="86" text-anchor="middle" font-size="13" fill="var(--dg-ink)">of the older steps</text>
+        <rect x="260" y="104" width="240" height="26" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="380" y="122" text-anchor="middle" font-size="13" fill="var(--dg-ink)">last step but one, verbatim</text>
+        <rect x="260" y="138" width="240" height="26" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="380" y="156" text-anchor="middle" font-size="13" fill="var(--dg-ink)">last step, verbatim</text>
+        <text x="380" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Raw outputs go to files; the summary keeps the paths.</text>
+      </svg>
+      <figcaption>Compaction trades detail you can re-read for tokens you would otherwise resend forever.</figcaption>
+    </figure>
+    <p>Long-term memory is a different kind of thing entirely. It is a store you write to deliberately, keyed by user or topic, that outlives the run: a table, a file, a small index.</p>
+    <p>The trap is treating an ever-growing transcript as memory. A transcript is a cost curve. Memory is something you chose to save and can look up later.</p>
+    <p>So: trim what you resend, and save on purpose the few things you want to keep.</p>
+  </div>
+
+  <div class="concept">
+    <h4>When an agent is the wrong answer</h4>
+    <p>Here is the test, and it fits on one line: <strong>if you can draw the flowchart, write the flowchart.</strong></p>
+    <p>Suppose the job is always "classify the request, retrieve the right documents, draft an answer, check the format". You already know the steps and their order. Three or four ordinary model calls in a fixed sequence beat an agent on every axis that matters.</p>
+    <p>Cheaper, because you never resend a growing history. Faster, because no round trips get spent deciding something that was already obvious to you. And testable, because each step has its own input, its own output, and its own eval on Day 19.</p>
+    <p>An agent earns its cost in one situation: when the <em>number and order</em> of steps genuinely depend on what gets discovered along the way. A debugging task. An open-ended research question. A repair loop that runs until a test passes.</p>
+    <p>Even then, the strongest systems are mostly pipeline with one small agentic segment in the middle, not one agent doing everything.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="A fixed three-call pipeline compared with an agent loop whose call count is decided at runtime">
+        <text x="20" y="34" font-size="13" fill="var(--dg-muted)">Pipeline</text>
+        <rect x="20" y="44" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="95" y="71" text-anchor="middle" font-size="13" fill="var(--dg-ink)">classify</text>
+        <line x1="170" y1="66" x2="186" y2="66" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="186,60 200,66 186,72" fill="var(--dg-line)"/>
+        <rect x="200" y="44" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="275" y="71" text-anchor="middle" font-size="13" fill="var(--dg-ink)">retrieve + draft</text>
+        <line x1="350" y1="66" x2="366" y2="66" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="366,60 380,66 366,72" fill="var(--dg-line)"/>
+        <rect x="380" y="44" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="455" y="71" text-anchor="middle" font-size="13" fill="var(--dg-ink)">check format</text>
+        <text x="585" y="60" text-anchor="middle" font-size="13" fill="var(--dg-muted)">3 calls</text>
+        <text x="585" y="80" text-anchor="middle" font-size="13" fill="var(--dg-muted)">each testable</text>
+        <line x1="20" y1="112" x2="620" y2="112" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="20" y="140" font-size="13" fill="var(--dg-muted)">Agent</text>
+        <rect x="20" y="150" width="150" height="50" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="95" y="180" text-anchor="middle" font-size="13" fill="var(--dg-ink)">model decides</text>
+        <line x1="170" y1="164" x2="236" y2="164" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="236,158 250,164 236,170" fill="var(--dg-line)"/>
+        <rect x="250" y="150" width="150" height="50" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="325" y="180" text-anchor="middle" font-size="13" fill="var(--dg-ink)">tools</text>
+        <line x1="250" y1="188" x2="184" y2="188" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="184,182 170,188 184,194" fill="var(--dg-line)"/>
+        <text x="430" y="168" font-size="13" fill="var(--dg-muted)">4 to 12 calls</text>
+        <text x="430" y="188" font-size="13" fill="var(--dg-muted)">order known only at runtime</text>
+      </svg>
+      <figcaption>Same task, two shapes: the pipeline is cheaper and testable; the agent buys flexibility you may not need.</figcaption>
+    </figure>
+    <p>So: reach for the loop only where the path is genuinely unknown, and write plain steps everywhere else.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Pick a task that genuinely needs several steps whose order you cannot fix in advance — "find the three most-refunded products last quarter, look up each one's return policy in the docs, and write a summary file".</li>
+      <li>Write the loop by hand around yesterday's four tools. Keep the message list in one variable so you can print it whenever it misbehaves.</li>
+      <li>Add the four ceilings — steps, dollars, seconds, repeated call — and make each one return a structured "stopped because" result.</li>
+      <li>Add a run log: one line per step with the tool, the arguments, the tokens, and the cumulative cost. Print the total at the end.</li>
+      <li>Add compaction: when the history passes your threshold, summarize everything except the last two steps, and keep raw outputs in files.</li>
+      <li>Run a task the agent can finish, and one it cannot (a database that lacks the table). Confirm the second one stops cleanly and says why.</li>
+      <li>Now write the same task as a fixed three-call pipeline. Time both, price both, and record the numbers in <code>LOG.md</code>. That comparison is a job-interview answer.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>No step limit during development. One overnight loop can outspend a week of careful work.</li>
+      <li>Ignoring the cost curve: the same agent that costs 2 cents at step 2 costs 10 cents at step 10 because the history keeps riding along.</li>
+      <li>Reaching for an orchestration library before feeling the pain it solves. Adopt one when your own loop hurts, not before.</li>
+      <li>Judging the agent by watching it work. "It usually gets there" is not a measurement, and Days 18 and 19 exist to replace it.</li>
+    </ul>
+  </div>

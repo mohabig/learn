@@ -1,0 +1,237 @@
+<p class="day-lede">Everything before today was a guess with a demo attached. Today you build the instrument that tells you whether a change helped, and the two numbers that prove it. This is the day that shows up in interviews.</p>
+
+  <div class="concept">
+    <h4>The golden set: questions with known correct chunks</h4>
+    <p>A golden set is 30 to 50 rows. Each row is a question, plus the identifiers of the chunks that actually contain the answer. That's the whole artifact.</p>
+    <p>It will outlast your retrieval code, and that is not a small point. The code can be rewritten in an hour. The labels took you a day, and they stay true no matter what you rewrite underneath them.</p>
+    <p>Build it in this order. Real questions first — from support tickets, chat history, your search log. Then questions you write yourself while reading the corpus. Model-generated ones last, and always hand-edited.</p>
+    <p>Now the discipline that makes the whole thing work: label the <strong>chunk identifier</strong>, not the answer text. Identifiers let you score retrieval with no model anywhere in the loop. It becomes a set comparison — milliseconds, free, and exactly repeatable.</p>
+    <p>Three traps wait here. The first is subtle: a model writing a question from a chunk borrows that chunk's vocabulary, so dense retrieval solves it trivially. Recall reads 0.95 while your real users sit at 0.5. Rewrite generated questions in the words of someone who never read the document.</p>
+    <p>The second is an all-easy set. Include error codes, questions that span two documents, and questions your corpus simply cannot answer.</p>
+    <p>The third is tuning on all 40 forever. Hold back 10 rows you don't look at, and keep them for ship decisions.</p>
+    <p>So: a golden set is a small pile of hand-labeled truth, and it is the only reason any later number means anything.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="A golden set row holding a question and its labeled chunk identifiers, compared against the retriever's returned identifiers as a set overlap">
+        <text x="20" y="30" font-size="14" fill="var(--dg-ink)">one golden row</text>
+        <rect x="20" y="44" width="250" height="106" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="70" font-size="13" fill="var(--dg-muted)">question</text>
+        <text x="36" y="92" font-size="13" fill="var(--dg-ink)">"how long is parental leave?"</text>
+        <text x="36" y="118" font-size="13" fill="var(--dg-muted)">labeled chunks</text>
+        <text x="36" y="140" font-size="13" fill="var(--dg-ink)">hb-leave-3, hb-leave-4</text>
+        <line x1="278" y1="97" x2="316" y2="97" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="316,91 328,97 316,103" fill="var(--dg-line)"/>
+        <text x="340" y="30" font-size="14" fill="var(--dg-ink)">what your retriever returned</text>
+        <rect x="340" y="44" width="280" height="106" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="356" y="76" font-size="13" fill="var(--dg-muted)">hb-parking-1, hb-leave-4,</text>
+        <text x="356" y="100" font-size="13" fill="var(--dg-muted)">hb-pay-2, hb-leave-9, hb-it-7</text>
+        <text x="356" y="132" font-size="13" fill="var(--dg-ink)">one id matches, so this one hit</text>
+        <text x="320" y="184" text-anchor="middle" font-size="13" fill="var(--dg-muted)">scoring is a set comparison: no model, milliseconds, free</text>
+      </svg>
+      <figcaption>Because the labels are identifiers, grading retrieval costs nothing and never drifts.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>recall@k, from first principles</h4>
+    <p>One question at a time, ask one yes-or-no thing: did at least one labeled chunk appear in the top k? Yes scores 1. No scores 0. Average across all your questions. That is recall@k, and there is nothing else in it.</p>
+    <p>Worked: 40 questions, 5 chunks each; in 25 a labeled chunk is somewhere in those five. recall@5 = 25/40 = 0.625.</p>
+    <p>Why recall and not precision? Because of what each failure costs. The generator can ignore an irrelevant chunk you handed it. It cannot use one that was never retrieved.</p>
+    <p>That makes this number a ceiling on everything downstream. At recall@5 of 0.62, no amount of prompt work gets you past 62 percent correct answers. None. The information simply isn't in the room.</p>
+    <p>Measure at the k you actually feed the model — then measure the whole curve, at k of 1, 3, 5, 10 and 20, because the curve's shape is a diagnosis.</p>
+    <p>Here's how to read it. recall@20 of 0.95 against recall@5 of 0.62 means the right chunk is being found and ranked badly. That is a reranker's job, and now you have evidence for it. But if recall@20 is also 0.65, ranking is not your problem — chunking or parsing is, and no reranker will save you.</p>
+    <p>So: recall@k is the percentage of questions whose answer reached the prompt at all, and it caps every number that comes after it.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="Forty cells for forty questions with twenty-five filled, giving recall at five of 0.625">
+        <text x="20" y="30" font-size="14" fill="var(--dg-ink)">40 questions, one cell each</text>
+        <rect x="20" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="56" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="92" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="128" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="164" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="200" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="236" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="272" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="308" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="344" y="44" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="20" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="56" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="92" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="128" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="164" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="200" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="236" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="272" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="308" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="344" y="76" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="20" y="108" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="56" y="108" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="92" y="108" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="128" y="108" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="164" y="108" width="28" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="200" y="108" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="236" y="108" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="272" y="108" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="308" y="108" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="344" y="108" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="20" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="56" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="92" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="128" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="164" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="200" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="236" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="272" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="308" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="344" y="140" width="28" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <text x="400" y="82" font-size="13" fill="var(--dg-ink)">filled: a labeled chunk was</text>
+        <text x="400" y="104" font-size="13" fill="var(--dg-ink)">somewhere in the top 5</text>
+        <text x="400" y="140" font-size="14" fill="var(--dg-ink)">25 / 40 = 0.625</text>
+      </svg>
+      <figcaption>recall@5 is a count of questions, not of chunks: either the answer was in the five or it wasn't.</figcaption>
+    </figure>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 240" role="img" aria-label="Two recall curves plotted against k: one climbing steeply, indicating a ranking problem, one flat, indicating a chunking problem">
+        <line x1="60" y1="200" x2="606" y2="200" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="60" y1="200" x2="60" y2="40" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="52" y="46" text-anchor="end" font-size="13" fill="var(--dg-muted)">1.0</text>
+        <text x="52" y="204" text-anchor="end" font-size="13" fill="var(--dg-muted)">0</text>
+        <text x="100" y="220" text-anchor="middle" font-size="13" fill="var(--dg-muted)">1</text>
+        <text x="240" y="220" text-anchor="middle" font-size="13" fill="var(--dg-muted)">5</text>
+        <text x="380" y="220" text-anchor="middle" font-size="13" fill="var(--dg-muted)">10</text>
+        <text x="560" y="220" text-anchor="middle" font-size="13" fill="var(--dg-muted)">20</text>
+        <text x="330" y="238" text-anchor="middle" font-size="13" fill="var(--dg-muted)">k, chunks retrieved</text>
+        <polyline points="100,144 240,101 380,72 560,48" fill="none" stroke="var(--dg-accent)" stroke-width="3"/>
+        <circle cx="100" cy="144" r="4" fill="var(--dg-accent)"/>
+        <circle cx="240" cy="101" r="4" fill="var(--dg-accent)"/>
+        <circle cx="380" cy="72" r="4" fill="var(--dg-accent)"/>
+        <circle cx="560" cy="48" r="4" fill="var(--dg-accent)"/>
+        <polyline points="100,152 240,117 380,107 560,101" fill="none" stroke="var(--dg-accent2)" stroke-width="3" stroke-dasharray="6 4"/>
+        <circle cx="100" cy="152" r="4" fill="var(--dg-accent2)"/>
+        <circle cx="240" cy="117" r="4" fill="var(--dg-accent2)"/>
+        <circle cx="380" cy="107" r="4" fill="var(--dg-accent2)"/>
+        <circle cx="560" cy="101" r="4" fill="var(--dg-accent2)"/>
+        <text x="352" y="46" font-size="13" fill="var(--dg-accent)">climbs: ranking is the problem</text>
+        <text x="352" y="140" font-size="13" fill="var(--dg-accent2)">flat: chunking is the problem</text>
+        <text x="74" y="34" font-size="13" fill="var(--dg-muted)">recall</text>
+      </svg>
+      <figcaption>The gap between recall@5 and recall@20 says whether to fix ordering or the chunker.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>MRR: how far down the list the answer sits</h4>
+    <p>recall@5 has a blind spot. It treats rank 1 and rank 5 as equally good, and they are not — position decides what the generator actually reads tomorrow, once you start ordering the prompt.</p>
+    <p>So add a second number. Reciprocal rank is 1 divided by the position of the first correct chunk. Rank 1 gives 1.0. Rank 2 gives 0.5. Rank 3 gives 0.33. Not found gives 0. MRR is just the mean of that across your questions.</p>
+    <p>Work one through. Four questions, with the first correct chunk at ranks 1, 3, 2, and nowhere: (1 + 0.33 + 0.5 + 0) / 4 = 0.46.</p>
+    <p>Read that out loud as a sentence about your system: "the first right answer sits around position two."</p>
+    <p>Notice how steep the drop from 1.0 to 0.5 is for a single position. That steepness is on purpose. Slipping from first to second really is a bigger deal than slipping from fourth to fifth, because the model reads the top of the pack most carefully.</p>
+    <p>So: report both — recall@5 says the information reached the prompt, MRR says it arrived at the top.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 260" role="img" aria-label="Three questions scored across five ranked results, with reciprocal rank and top-five hit computed for each and averaged">
+        <text x="144" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">1</text>
+        <text x="200" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">2</text>
+        <text x="256" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">3</text>
+        <text x="312" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">4</text>
+        <text x="368" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">5</text>
+        <text x="440" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">rank</text>
+        <text x="520" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">RR</text>
+        <text x="592" y="52" text-anchor="middle" font-size="13" fill="var(--dg-muted)">top 5</text>
+        <text x="110" y="90" text-anchor="end" font-size="14" fill="var(--dg-ink)">Q1</text>
+        <rect x="120" y="66" width="48" height="30" rx="5" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="176" y="66" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="232" y="66" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="288" y="66" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="344" y="66" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="440" y="88" text-anchor="middle" font-size="14" fill="var(--dg-ink)">1</text>
+        <text x="520" y="88" text-anchor="middle" font-size="14" fill="var(--dg-ink)">1.00</text>
+        <text x="592" y="88" text-anchor="middle" font-size="14" fill="var(--dg-ink)">yes</text>
+        <text x="110" y="132" text-anchor="end" font-size="14" fill="var(--dg-ink)">Q2</text>
+        <rect x="120" y="108" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="176" y="108" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="232" y="108" width="48" height="30" rx="5" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="288" y="108" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="344" y="108" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="440" y="130" text-anchor="middle" font-size="14" fill="var(--dg-ink)">3</text>
+        <text x="520" y="130" text-anchor="middle" font-size="14" fill="var(--dg-ink)">0.33</text>
+        <text x="592" y="130" text-anchor="middle" font-size="14" fill="var(--dg-ink)">yes</text>
+        <text x="110" y="174" text-anchor="end" font-size="14" fill="var(--dg-ink)">Q3</text>
+        <rect x="120" y="150" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="176" y="150" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="232" y="150" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="288" y="150" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <rect x="344" y="150" width="48" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+        <text x="440" y="172" text-anchor="middle" font-size="14" fill="var(--dg-muted)">none</text>
+        <text x="520" y="172" text-anchor="middle" font-size="14" fill="var(--dg-ink)">0.00</text>
+        <text x="592" y="172" text-anchor="middle" font-size="14" fill="var(--dg-muted)">no</text>
+        <line x1="120" y1="196" x2="620" y2="196" stroke="var(--dg-line)"/>
+        <text x="120" y="222" font-size="14" fill="var(--dg-ink)">MRR = (1 + 0.33 + 0) / 3 = 0.44</text>
+        <text x="120" y="246" font-size="14" fill="var(--dg-ink)">recall@5 = 2 / 3 = 0.67</text>
+      </svg>
+      <figcaption>One table, two metrics: a filled cell is a labeled chunk, recall counts the rows that hit, MRR weights how high.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Faithfulness and answer relevance</h4>
+    <p>Retrieval metrics stop at one question: was the right text in the prompt? Two more questions remain, and both need a judge — a model with a rubric, or a human.</p>
+    <p>Faithfulness, also called groundedness, splits the answer into claims and asks, per claim, whether the retrieved chunks support it. Three of four supported scores 0.75.</p>
+    <p>This is the one that protects trust. It catches the failure that destroys a product overnight: a fluent, confident answer with one invented number in the middle of it.</p>
+    <p>Answer relevance asks something different. Did it answer <em>your</em> question, or a neighboring one very well? It is judged against the question, not against the sources.</p>
+    <p>With all four numbers in hand you can locate any failure exactly, without guessing. No labeled chunk retrieved: chunking or retrieval. Chunk retrieved but the answer unsupported: generation. Supported but off-target: the prompt.</p>
+    <p>So: two retrieval numbers tell you what reached the model, and two judged numbers tell you what it did with them.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 250" role="img" aria-label="A two-by-two grid splitting failures by whether retrieval found a labeled chunk and whether the answer is supported by the context">
+        <text x="245" y="46" text-anchor="middle" font-size="14" fill="var(--dg-ink)">answer supported</text>
+        <text x="485" y="46" text-anchor="middle" font-size="14" fill="var(--dg-ink)">not supported</text>
+        <text x="122" y="104" text-anchor="end" font-size="14" fill="var(--dg-ink)">chunk found</text>
+        <text x="122" y="194" text-anchor="end" font-size="14" fill="var(--dg-ink)">chunk missed</text>
+        <rect x="130" y="60" width="230" height="80" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="245" y="94" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Working.</text>
+        <text x="245" y="118" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Record the config.</text>
+        <rect x="370" y="60" width="230" height="80" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="485" y="94" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Generation problem:</text>
+        <text x="485" y="118" text-anchor="middle" font-size="13" fill="var(--dg-muted)">prompt, ordering, model</text>
+        <rect x="130" y="150" width="230" height="80" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="245" y="184" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Grounded in wrong text:</text>
+        <text x="245" y="208" text-anchor="middle" font-size="13" fill="var(--dg-muted)">check labels, then recall</text>
+        <rect x="370" y="150" width="230" height="80" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="485" y="184" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Invented:</text>
+        <text x="485" y="208" text-anchor="middle" font-size="13" fill="var(--dg-muted)">retrieval missed, model filled in</text>
+      </svg>
+      <figcaption>Four numbers put every failure in one box, so you fix the stage that is actually broken.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>The harness, and the sentence it produces</h4>
+    <p>The structure is smaller than it sounds: a dataset file, a runner that executes one named configuration, a scorer, and a printed table. About 150 lines. <a href="https://docs.ragas.io">Ragas</a> gives you tested implementations, but hand-rolling recall@k and MRR takes twenty minutes and teaches you more.</p>
+    <p>Two rules make the numbers mean something, and both are about discipline rather than code.</p>
+    <p>Change one thing per run — chunk size, or fusion, or the reranker, never two together — and record every run with its configuration, date, metric and question count. A number without its configuration is a rumor.</p>
+    <p>Then respect your sample size. On 40 questions, a move from 0.62 to 0.65 is one question flipping. That is noise. A move from 0.62 to 0.84 is nine questions, and that is real.</p>
+    <p>The deliverable is one sentence: "hybrid plus rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set." Every word in it is defensible, which is exactly why it lands in a room full of people who have only ever shown demos.</p>
+    <p>So: the harness is small, the discipline around it is the hard part, and the output is a sentence you can stand behind.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Create <code>golden.jsonl</code>: one row per question, holding the question and its correct chunk identifiers. Write 30 to 50 by hand.</li>
+      <li>Include five questions your corpus cannot answer, labeled with an empty list. Tomorrow they become your refusal tests.</li>
+      <li>Write the runner: given a configuration name, return ranked chunk identifiers. Wire in yesterday's three.</li>
+      <li>Write recall@k and MRR from the definitions above; test them against the worked examples.</li>
+      <li>Score all three configurations at k of 1, 5, 10 and 20 in one table.</li>
+      <li>Read the ten worst failures with the chunks open. Label each cause: parsed, chunked, ranked, or mislabeled.</li>
+      <li>Add a faithfulness check with a judge model over 20 answers, claim by claim.</li>
+      <li>Commit the golden set, the harness and the table, and paste the table into your README today.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Generating the whole golden set with a model, then believing the 0.95 it reports. It inherits the corpus's wording and tests nothing.</li>
+      <li>Wrong labels. When retrieval "fails", check your label before you blame the retriever.</li>
+      <li>Changing two things at once, then arguing about which one helped.</li>
+      <li>Reading a 0.03 move on 40 questions as progress. Count the questions that flipped instead.</li>
+    </ul>
+  </div>

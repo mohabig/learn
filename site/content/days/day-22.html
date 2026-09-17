@@ -1,0 +1,188 @@
+<p class="day-lede">Your three projects are deployed and working, and you have almost no idea what they are doing in there. Today you turn the lights on. Every request gets recorded — inputs, outputs, tokens, cost, latency, tool calls, retries — so that by tonight, "it gave a weird answer on Tuesday" is something you can open and read.</p>
+
+  <div class="concept">
+    <h4>A trace is the recording of one request</h4>
+    <p>Start with the difference between a log line and a trace. A log line is a sentence you wrote by hand, months ago, guessing what future-you would want to know. A trace is a recording, made for you automatically, of everything that happened while your system answered one request. One is a note. The other is footage.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A single log line records only the final answer, while a trace keeps every step of the request as its own timed entry under one id">
+        <text x="20" y="26" font-size="13" fill="var(--dg-muted)">what a log line kept</text>
+        <rect x="20" y="40" width="280" height="48" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="36" y="70" font-size="13" fill="var(--dg-muted)">bad answer at 14:32</text>
+        <text x="20" y="118" font-size="13" fill="var(--dg-muted)">and nothing at all about why</text>
+        <text x="350" y="26" font-size="13" fill="var(--dg-muted)">what a trace kept</text>
+        <rect x="350" y="40" width="270" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="362" y="57" font-size="13" fill="var(--dg-ink)">retrieved 5 chunks</text>
+        <rect x="350" y="72" width="270" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="362" y="89" font-size="13" fill="var(--dg-ink)">tool error, swallowed</text>
+        <rect x="350" y="104" width="270" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="362" y="121" font-size="13" fill="var(--dg-ink)">retry after a truncated prompt</text>
+        <rect x="350" y="136" width="270" height="24" rx="4" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="362" y="153" font-size="13" fill="var(--dg-ink)">the answer you saw</text>
+        <text x="350" y="186" font-size="13" fill="var(--dg-muted)">one trace id ties all four together</text>
+      </svg>
+      <figcaption>The answer is the last frame; the trace is the film, and the cause is somewhere in the middle.</figcaption>
+    </figure>
+    <p>The piece a trace is built out of is called a <strong>span</strong>. A span is one named piece of work with a clock around it: when it started, when it stopped, and whatever data you decide to hang on it. That is the whole idea.</p>
+    <p>Watch what a single request produces. The root span is the request itself. Underneath it sit its children, one per step: embed the query (14 ms), search (60 ms), rerank (90 ms), call the model (1,400 ms). On that last span you write down the messages you sent, the text that came back, tokens in and out, the model name, the prompt version, the stop reason, and the cost.</p>
+    <p>How do you collect all of that? You wrap each step. A decorator notes the clock and the arguments on the way in, then the clock, the result and any exception on the way out, and hands the finished record to the collector in the background. That last part matters: your user never waits on your telemetry.</p>
+    <p>Here's the trick that makes the whole thing usable. Every span from one request carries the same <strong>trace id</strong>. Return that id in a response header. Show it in a corner of your interface. Now a complaint arrives with its own case number attached, and answering it is a lookup instead of a dig.</p>
+    <p>So why does this matter more here than in ordinary code? Ordinary bugs crash. Something throws, and a stack trace points at the line. Model bugs do not crash. They return a fluent, confident paragraph that happens to be wrong, and every piece of your machinery reports success.</p>
+    <p>Which is why the trap is logging only the final answer. When an answer is bad, the cause is almost always upstream — the chunks you retrieved, the tool error you quietly swallowed, the retry after a truncated prompt.</p>
+    <p>So: a trace is one request's film, cut into timed spans and filed under an id you can hand to a stranger.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A trace for one request, drawn as four timed spans that add up to 1.9 seconds, with the model call taking most of it">
+        <text x="16" y="20" font-size="13" fill="var(--dg-muted)">one request · one trace id · total 1.9 s</text>
+        <text x="16" y="50" font-size="13" fill="var(--dg-ink)">embed + search</text>
+        <text x="16" y="86" font-size="13" fill="var(--dg-ink)">rerank</text>
+        <text x="16" y="122" font-size="13" fill="var(--dg-ink)">tool: sql</text>
+        <text x="16" y="158" font-size="13" fill="var(--dg-ink)">model call</text>
+        <rect x="150" y="35" width="29" height="22" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="187" y="50" font-size="13" fill="var(--dg-muted)">120 ms</text>
+        <rect x="179" y="71" width="22" height="22" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="209" y="86" font-size="13" fill="var(--dg-muted)">90 ms</text>
+        <rect x="201" y="107" width="72" height="22" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="281" y="122" font-size="13" fill="var(--dg-muted)">300 ms</text>
+        <rect x="273" y="143" width="337" height="22" rx="3" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="441" y="158" text-anchor="middle" font-size="13" fill="var(--dg-ink)">1,400 ms</text>
+        <line x1="150" y1="190" x2="612" y2="190" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="150" y="208" font-size="13" fill="var(--dg-muted)">0</text>
+        <text x="391" y="208" text-anchor="middle" font-size="13" fill="var(--dg-muted)">1.0 s</text>
+        <text x="612" y="208" text-anchor="end" font-size="13" fill="var(--dg-muted)">1.9 s</text>
+      </svg>
+      <figcaption>A trace tells you where the time went before you start guessing which part to optimize.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Two dashboards: what it costs, and how slow it is for the unlucky</h4>
+    <p>Cost first, because cost is the one that can hurt you while you sleep. Sum the cost field across your spans, group it by day, split it by project. You want one number you glance at every morning, and an alarm that fires at three times a normal day.</p>
+    <p>Why the alarm? A retry loop can spend a month of budget overnight, and the invoice does not arrive for three weeks.</p>
+    <p>Now latency. Here is where most people go wrong: they look at the average. Suppose 90 of your requests take 1.0 second and 10 take 9 seconds. Add it all up, divide by 100, and you get 1.8 seconds. That looks fine. It is a lie.</p>
+    <p>Try it a different way. Sort all one hundred requests from fastest to slowest and walk 95 percent of the way up the line. The number you land on is called the <strong>95th percentile</strong> — p95 for short, and in plain words, roughly the slowest one in twenty. Here it is 9 seconds.</p>
+    <p>Read those two numbers together. One user in ten is sitting in front of a spinner for nine seconds, and the average did not just miss them — it hid them from you.</p>
+    <p>So: track p50 and p95 per endpoint, and treat the average as decoration. p50 is the normal experience. p95 is the experience people write to you about.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Twenty-four requests sorted by latency: most are fast, a few are very slow, and the average line sits far below the 95th percentile">
+        <rect x="40" y="158" width="13" height="12" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="63" y="157" width="13" height="13" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="86" y="156" width="13" height="14" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="109" y="155" width="13" height="15" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="132" y="154" width="13" height="16" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="155" y="153" width="13" height="17" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="178" y="152" width="13" height="18" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="201" y="151" width="13" height="19" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="224" y="150" width="13" height="20" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="247" y="149" width="13" height="21" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="270" y="148" width="13" height="22" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="293" y="146" width="13" height="24" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="316" y="145" width="13" height="25" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="339" y="143" width="13" height="27" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="362" y="141" width="13" height="29" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="385" y="139" width="13" height="31" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="408" y="136" width="13" height="34" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="431" y="132" width="13" height="38" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="454" y="126" width="13" height="44" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="477" y="118" width="13" height="52" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="500" y="106" width="13" height="64" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="523" y="88" width="13" height="82" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="546" y="66" width="13" height="104" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="569" y="50" width="13" height="120" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <line x1="30" y1="134" x2="610" y2="134" stroke="var(--dg-muted)" stroke-width="2" stroke-dasharray="5 5"/>
+        <text x="34" y="128" font-size="13" fill="var(--dg-muted)">average 1.8 s</text>
+        <line x1="516" y1="40" x2="516" y2="178" stroke="var(--dg-accent2)" stroke-width="2"/>
+        <text x="510" y="36" text-anchor="end" font-size="13" fill="var(--dg-ink)">p95 = 9 s</text>
+        <line x1="30" y1="170" x2="610" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="30" y="192" font-size="13" fill="var(--dg-muted)">24 requests, sorted by latency</text>
+      </svg>
+      <figcaption>The average smooths the tail away; p95 is where your angry users live.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Feedback signals: your users label data for free</h4>
+    <p>Put a thumbs up and a thumbs down next to every answer, and write the click into a small table keyed by trace id. The key is the whole point. A score on its own is a number. A score with a trace attached is a diagnosis, because you can open it and see the five chunks that produced the bad answer.</p>
+    <p>Explicit clicks are the obvious signal. The quiet ones are often better, because people give them without deciding to: a regenerate click, an abandoned session, a copy to the clipboard, whether anyone ever opened the source you cited.</p>
+    <p>Richest of all is a correction. If your interface lets someone edit an answer, store the pair. A bad output sitting next to a human fix is two things at once: an eval case, and a training example.</p>
+    <p>Then close the loop once a week. The golden set you hand-built on Day 11 was your best guess at what people would ask. Traffic tells you what they actually ask. Read twenty thumbs-down traces on a Friday and promote the honest ones into your eval set.</p>
+    <p>So: your users are labeling data all day for nothing; your only job is to catch the labels and keep the trace attached to each one.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="An answer carries a trace id, a user thumbs it down, the score is stored with that trace, and on review day it becomes a permanent eval case">
+        <rect x="20" y="50" width="128" height="64" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="84" y="78" text-anchor="middle" font-size="13" fill="var(--dg-ink)">answer shown</text>
+        <text x="84" y="98" text-anchor="middle" font-size="13" fill="var(--dg-muted)">+ trace id</text>
+        <line x1="148" y1="82" x2="168" y2="82" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="168,76 180,82 168,88" fill="var(--dg-line)"/>
+        <rect x="180" y="50" width="128" height="64" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="244" y="78" text-anchor="middle" font-size="13" fill="var(--dg-ink)">user clicks</text>
+        <text x="244" y="98" text-anchor="middle" font-size="13" fill="var(--dg-ink)">thumbs down</text>
+        <line x1="308" y1="82" x2="328" y2="82" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="328,76 340,82 328,88" fill="var(--dg-line)"/>
+        <rect x="340" y="50" width="128" height="64" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="404" y="78" text-anchor="middle" font-size="13" fill="var(--dg-ink)">score stored</text>
+        <text x="404" y="98" text-anchor="middle" font-size="13" fill="var(--dg-muted)">with the trace</text>
+        <line x1="468" y1="82" x2="488" y2="82" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="488,76 500,82 488,88" fill="var(--dg-line)"/>
+        <rect x="500" y="50" width="128" height="64" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="564" y="78" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you read it</text>
+        <text x="564" y="98" text-anchor="middle" font-size="13" fill="var(--dg-muted)">on Friday</text>
+        <line x1="564" y1="114" x2="564" y2="130" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="4 4"/>
+        <polygon points="558,130 570,130 564,138" fill="var(--dg-line)"/>
+        <rect x="180" y="140" width="448" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="404" y="162" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the honest ones become permanent eval cases</text>
+      </svg>
+      <figcaption>A click with no trace behind it is a number; a click with a trace behind it is a bug report.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Log safely, at the boundary</h4>
+    <p>Redact where you build the span payload, inside your own process, before anything is sent. Not downstream. Not "later in the pipeline". Once a secret has reached your vendor's database it lives somewhere you do not control and cannot fully clean.</p>
+    <p>Three rules cover most of it. Never record environment values or request headers — an authorization header slides into span attributes remarkably easily once automatic instrumentation is on. Run every piece of user text through one redaction function: emails, phone numbers, card-shaped runs of digits. And hash user identifiers, so you can still group by user without storing who the user is.</p>
+    <p>Then two levers that shrink the risk further. Keep metadata for every request — it is cheap, and it is what your dashboards run on. Keep the full text for a sample, say 5 percent, plus every error and every thumbs-down, which is where the interesting text lives anyway. Set retention to 30 days so the risk expires on its own.</p>
+    <p>The trap is trusting the default. Automatic instrumentation captures everything it can reach, and it is very good at reaching. So switch it on, send yourself one request containing a fake card number, a fake email and a fake key, then go and look at what actually got stored.</p>
+    <p>So: redact at the boundary, keep metadata for everything and text for a sample, and verify with your own eyes rather than the documentation's promise.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Raw span payloads pass through a redact and hash step inside your own process before anything reaches the vendor's store">
+        <text x="16" y="24" font-size="13" fill="var(--dg-muted)">inside your process</text>
+        <rect x="16" y="36" width="200" height="110" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <rect x="32" y="52" width="168" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="116" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">raw span payload</text>
+        <line x1="116" y1="88" x2="116" y2="100" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="110,100 122,100 116,108" fill="var(--dg-line)"/>
+        <rect x="32" y="110" width="168" height="30" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="116" y="130" text-anchor="middle" font-size="13" fill="var(--dg-ink)">redact and hash</text>
+        <line x1="216" y1="125" x2="246" y2="125" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="246,119 258,125 246,131" fill="var(--dg-line)"/>
+        <text x="270" y="24" font-size="13" fill="var(--dg-muted)">your vendor, out of your hands</text>
+        <rect x="270" y="36" width="354" height="110" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="290" y="68" font-size="13" fill="var(--dg-ink)">no keys, no headers</text>
+        <text x="290" y="94" font-size="13" fill="var(--dg-ink)">emails and card digits gone</text>
+        <text x="290" y="120" font-size="13" fill="var(--dg-ink)">user id hashed, not stored</text>
+        <text x="16" y="178" font-size="13" fill="var(--dg-muted)">full text for 5 percent of requests, plus every error. Deleted after 30 days.</text>
+      </svg>
+      <figcaption>The only place you fully control the data is before it leaves your own process, so that is where the filter goes.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Pick one tracing tool this morning — Langfuse, LangSmith or Braintrust — and commit to it. Comparing them is how Day 22 disappears (<a href="https://langfuse.com/docs">Langfuse docs</a> if you want a default).</li>
+      <li>Wire it into your smallest project first: a root span on the request handler, child spans on every model, retrieval and tool call, each named for meaning (<code>answer_question</code>) rather than transport.</li>
+      <li>On every model span record model name, prompt version, tokens in and out, cost, latency, stop reason and retries. Use identical field names across all three projects, or the shared dashboard is fiction.</li>
+      <li>Generate a trace id per request, return it in a response header, and show it in the interface so a complaint arrives with its own case number.</li>
+      <li>Write one <code>redact()</code> function, call it on every payload before it enters a span, and test it with a fake email, a fake card number and a fake API key.</li>
+      <li>Repeat for the other two projects — mostly copy and paste, which is the reward for picking one tool this morning.</li>
+      <li>Build two panels: cost per day by project, and p50/p95 latency per endpoint, plus a daily-spend alarm at three times normal.</li>
+      <li>Add a feedback endpoint that writes trace id and score. Then leave yourself a thumbs-down and open the trace behind it, so you know the path works before a real user needs it.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Tracing inside the request path. If the exporter blocks, your app blocks. Send in the background, and drop spans rather than fail requests.</li>
+      <li>Instrumenting the framework instead of the meaning. Automatic instrumentation gives you "HTTP 200, 1.4 s". You want "answer_question, 1.4 s, 5 chunks retrieved, 1 retry".</li>
+      <li>Dashboards nobody opens. Put yesterday's cost and p95 where you already look, or you have built decoration with a login screen.</li>
+    </ul>
+  </div>

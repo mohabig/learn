@@ -1,0 +1,158 @@
+<p class="day-lede">You are not learning Python. You are learning the third of it this course actually types, which is smaller than any tutorial suggests. By tonight, one command should rebuild your project environment from nothing, and your own program should run on the first try.</p>
+
+  <div class="concept">
+    <h4>Functions, modules, and what import really does</h4>
+    <p>A function takes named inputs and hands back one value. Keep each one small enough to describe in a single sentence, and give it exactly one job.</p>
+    <p>The reason is not tidiness. A function that does one thing is a function you can test on its own — and on Day 0.3 you will be writing tests, where every function that does three things fights you.</p>
+    <p>A module is just a file. There is no registration and no manifest: a file named <code>counter.py</code> is a module named <code>counter</code>.</p>
+    <p>So what does <code>import counter</code> actually do? Three things. Python finds <code>counter.py</code>. It runs that file from top to bottom, exactly once. It stores the result in a table of loaded modules. A second <code>import counter</code> anywhere else in your program hands back the cached one without re-running a single line.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="The first import finds a file and runs it once into a module cache; every later import returns the cached module without running anything">
+        <text x="16" y="76" font-size="13" fill="var(--dg-muted)">first import</text>
+        <rect x="110" y="44" width="140" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="180" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">find counter.py</text>
+        <line x1="250" y1="70" x2="264" y2="70" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="264,64 278,70 264,76" fill="var(--dg-line)"/>
+        <rect x="278" y="44" width="140" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="348" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">run it once</text>
+        <line x1="418" y1="70" x2="432" y2="70" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="432,64 446,70 432,76" fill="var(--dg-line)"/>
+        <rect x="446" y="44" width="170" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="531" y="75" text-anchor="middle" font-size="13" fill="var(--dg-ink)">module cache</text>
+        <text x="16" y="170" font-size="13" fill="var(--dg-muted)">every import after</text>
+        <line x1="140" y1="164" x2="531" y2="164" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="531" y1="164" x2="531" y2="108" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="525,108 531,96 537,108" fill="var(--dg-line)"/>
+        <text x="330" y="196" text-anchor="middle" font-size="13" fill="var(--dg-ink)">straight to the cache — nothing re-runs</text>
+      </svg>
+      <figcaption>Importing a module runs its file the first time and hands out the same object every time after.</figcaption>
+    </figure>
+    <p>That one fact explains two things beginners find spooky. The first: code sitting at the top level of a file runs the moment somebody imports it, because importing <em>is</em> running.</p>
+    <p>The second: <code>if __name__ == "__main__":</code> exists to stop exactly that. The variable <code>__name__</code> holds <code>"__main__"</code> only inside the file you actually ran, so anything under that guard fires when you run the file and stays quiet when someone imports it.</p>
+    <p>The rest is small. <code>import counter</code> binds the module name; <code>from counter import top_words</code> binds one name out of it. A package is a directory of modules. That's the whole system.</p>
+    <p>So: importing runs a file once, remembers the result, and hands the same thing to everyone who asks afterward.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Containers, comprehensions, and classes that earn their place</h4>
+    <p>Four containers cover most work. A list is an ordered sequence you can change. A dict maps keys to values, and it is the shape almost all API data arrives in. A set holds unique items and answers "is this in here?" instantly. A tuple is a small fixed record.</p>
+    <p>One more is worth knowing today, because it <em>is</em> your build. <code>collections.Counter</code> is a dict that counts: <code>Counter(words).most_common(10)</code> is the whole "ten most common tokens" feature, finished.</p>
+    <p>A comprehension is a loop that builds a container, written on one line: <code>[w.lower() for w in words if w.isalpha()]</code>. Read it left to right — what to keep, what to loop over, what to skip. The dict and set versions use braces.</p>
+    <p>Now watch what happens when you swap the brackets for parentheses. You get a generator, and it builds nothing. It produces one item, waits, and produces the next when asked. That is the difference between streaming a two-gigabyte file through your program and running out of memory trying to hold it.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A list comprehension builds every item in memory at once while a generator hands over one item at a time">
+        <text x="16" y="40" font-size="13" fill="var(--dg-muted)">[ ... ] list comprehension</text>
+        <rect x="16" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="48" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="80" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="112" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="144" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="176" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="208" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="240" y="54" width="26" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="286" y="73" font-size="13" fill="var(--dg-ink)">all of it, in memory, before you get anything</text>
+        <line x1="16" y1="104" x2="624" y2="104" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="16" y="140" font-size="13" fill="var(--dg-muted)">( ... ) generator</text>
+        <rect x="16" y="154" width="26" height="26" rx="3" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="48" y="154" width="26" height="26" rx="3" fill="none" stroke="var(--dg-line)"/>
+        <rect x="80" y="154" width="26" height="26" rx="3" fill="none" stroke="var(--dg-line)"/>
+        <rect x="112" y="154" width="26" height="26" rx="3" fill="none" stroke="var(--dg-line)"/>
+        <rect x="144" y="154" width="26" height="26" rx="3" fill="none" stroke="var(--dg-line)"/>
+        <rect x="176" y="154" width="26" height="26" rx="3" fill="none" stroke="var(--dg-line)"/>
+        <rect x="208" y="154" width="26" height="26" rx="3" fill="none" stroke="var(--dg-line)"/>
+        <rect x="240" y="154" width="26" height="26" rx="3" fill="none" stroke="var(--dg-line)"/>
+        <text x="286" y="173" font-size="13" fill="var(--dg-ink)">one now, the next when you ask for it</text>
+      </svg>
+      <figcaption>Same loop, same result — the brackets decide whether it all exists at once.</figcaption>
+    </figure>
+    <p>The trap is nesting. A comprehension inside a comprehension inside a condition is legal and unreadable. If you can't read it aloud in one breath, write the loop.</p>
+    <p>Classes come last, because you need them less than tutorials suggest. A class bundles state with the functions that use it. You have earned one when four functions keep passing the same three arguments around; until then, plain functions over dicts and lists are easier to test and easier to delete. When you want a typed record and nothing more, <code>@dataclass</code> writes the boilerplate for you.</p>
+    <p>So: dicts and lists carry your data, a comprehension builds one in a line, and a class waits until repeated arguments prove it's needed.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Type hints: ignored at runtime, valuable anyway</h4>
+    <p>Write <code>def top_words(path: str, n: int = 10) -&gt; dict[str, int]:</code> and Python stores those annotations as data — then ignores them completely.</p>
+    <p>Pass a list where you promised a string and nothing stops you. The program runs on happily until something further down tries to use it and breaks, usually somewhere that looks unrelated. Python does not check types at runtime. Say that out loud once, today, so you never expect otherwise at two in the morning.</p>
+    <p>So why write them? Because other tools read them, and those tools do check.</p>
+    <p>Your editor reads them and flags the mistake as you type. <code>mypy</code> reads them and flags it before you run anything.</p>
+    <p>And the real payoff arrives on Day 3 of Week 1. Pydantic reads these same annotations and turns them into enforcement: when a model hands you JSON, Pydantic checks it against your declared types and raises on anything that doesn't fit. Every hint you write this week is a contract you get to enforce later, at the exact boundary where untrusted data walks in.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="One type annotation is read by the editor, by mypy, and later by Pydantic for runtime validation">
+        <rect x="14" y="80" width="232" height="56" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="130" y="105" text-anchor="middle" font-size="13" fill="var(--dg-ink)">def parse(text: str)</text>
+        <text x="130" y="124" text-anchor="middle" font-size="13" fill="var(--dg-ink)">-&gt; Invoice:</text>
+        <line x1="246" y1="108" x2="260" y2="108" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="260" y1="46" x2="260" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="260" y1="46" x2="316" y2="46" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="316,40 330,46 316,52" fill="var(--dg-line)"/>
+        <line x1="260" y1="108" x2="316" y2="108" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="316,102 330,108 316,114" fill="var(--dg-line)"/>
+        <line x1="260" y1="170" x2="316" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="316,164 330,170 316,176" fill="var(--dg-line)"/>
+        <rect x="336" y="26" width="284" height="40" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="350" y="51" font-size="13" fill="var(--dg-muted)">editor: flagged as you type</text>
+        <rect x="336" y="88" width="284" height="40" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="350" y="113" font-size="13" fill="var(--dg-muted)">mypy: flagged before you run</text>
+        <rect x="336" y="150" width="284" height="40" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="350" y="175" font-size="13" fill="var(--dg-ink)">Pydantic, Week 1: raises at runtime</text>
+      </svg>
+      <figcaption>The annotation costs nothing to write and gets read three times, the last time by code that actually enforces it.</figcaption>
+    </figure>
+    <p>So: the annotation does nothing by itself and everything through the three tools that read it.</p>
+  </div>
+
+  <div class="concept">
+    <h4>One environment per project, and what it isolates</h4>
+    <p>Installing a package copies files into a directory called <code>site-packages</code>. That is all an install is — a copy.</p>
+    <p>Now think about what happens if there is one such directory for the whole machine. Every project on it shares one copy of everything. The day project A needs one version of a library and project B needs another, one of them breaks — usually the one you aren't looking at.</p>
+    <p>A virtual environment fixes that by being boring. It is a directory, conventionally <code>.venv</code>, holding its own <code>site-packages</code> and its own <code>bin</code> with a <code>python</code> inside it.</p>
+    <p>Activating it is not magic and not a mode you enter. It puts <code>.venv/bin</code> at the front of your <code>PATH</code>, so the word <code>python</code> resolves there first. That is yesterday's lesson, doing real work.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="Two projects each keep their own site-packages directory while sharing one Python interpreter">
+        <text x="320" y="22" text-anchor="middle" font-size="13" fill="var(--dg-muted)">two projects, one machine</text>
+        <rect x="24" y="38" width="270" height="120" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="159" y="62" text-anchor="middle" font-size="14" fill="var(--dg-ink)">project-a/.venv</text>
+        <rect x="44" y="76" width="230" height="66" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="159" y="99" text-anchor="middle" font-size="13" fill="var(--dg-muted)">site-packages</text>
+        <text x="159" y="122" text-anchor="middle" font-size="13" fill="var(--dg-ink)">httpx 0.27, rich 13.7</text>
+        <rect x="346" y="38" width="270" height="120" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="481" y="62" text-anchor="middle" font-size="14" fill="var(--dg-ink)">project-b/.venv</text>
+        <rect x="366" y="76" width="230" height="66" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="481" y="99" text-anchor="middle" font-size="13" fill="var(--dg-muted)">site-packages</text>
+        <text x="481" y="122" text-anchor="middle" font-size="13" fill="var(--dg-ink)">httpx 0.24, pandas 2.2</text>
+        <line x1="159" y1="158" x2="245" y2="176" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="481" y1="158" x2="395" y2="176" stroke="var(--dg-line)" stroke-width="2"/>
+        <rect x="170" y="176" width="300" height="40" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="320" y="201" text-anchor="middle" font-size="13" fill="var(--dg-muted)">the same python3.12, untouched by either</text>
+      </svg>
+      <figcaption>Two package directories, one interpreter; activating only changes which bin directory PATH hits first.</figcaption>
+    </figure>
+    <p><code>uv</code> makes this fast enough to stop thinking about. <code>uv init</code> starts a project. <code>uv add httpx</code> installs a package and records that you depend on it. <code>uv run script.py</code> executes your code inside the environment without activating anything. And the lockfile it writes pins exact versions, so a fresh machine reproduces yours instead of approximating it.</p>
+    <p>Here is the habit that matters more than any command: treat the environment as disposable. Deleting one is <code>rm -rf .venv</code> and rebuilding takes seconds. Once that round trip is routine, a broken environment stops being a crisis. The <a href="https://docs.astral.sh/uv/">uv docs</a> are short; read the project section properly once.</p>
+    <p>So: one package directory per project, one shared interpreter, and a rebuild cheap enough that you delete rather than debug.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li><code>uv init wordstat</code>, then <code>uv add typer</code> (or use <code>argparse</code> from the standard library — both are fine).</li>
+      <li>Write <code>read_text(path: str) -&gt; str</code>. Open the file with an explicit encoding and let a missing file raise; you'll handle that properly tomorrow.</li>
+      <li>Write <code>tokenize(text: str) -&gt; list[str]</code>: lowercase, split, keep only alphabetic tokens. One comprehension, fully annotated.</li>
+      <li>Write <code>summarize(tokens: list[str], n: int = 10) -&gt; dict[str, int]</code> using <code>Counter</code>. Count lines separately from the raw text.</li>
+      <li>Add the entry point: parse one file argument and an optional <code>--top</code> flag, print words, lines, and the table. Guard it with <code>if __name__ == "__main__":</code> so importing it stays silent.</li>
+      <li>Run <code>uv run wordstat.py somefile.txt --top 5</code> on a real file — a book from Project Gutenberg, your own notes, anything over a megabyte.</li>
+      <li>Delete <code>.venv</code> entirely. Rebuild with one command. Run the CLI again. If that round trip works, your environment is reproducible.</li>
+      <li>Run <code>mypy wordstat.py</code>. Fix whatever it finds, then break a type on purpose and watch it get caught.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Installing into the system Python by habit, then wondering why <code>import httpx</code> fails inside the project. Check <code>which python</code> before you debug anything else.</li>
+      <li>A mutable default argument (<code>def f(items=[])</code>). The list is created once at definition and shared by every call forever.</li>
+      <li>Expecting type hints to validate anything. They don't run. Only a checker or Pydantic makes them real.</li>
+      <li>Naming your file <code>json.py</code> or <code>types.py</code> in the project root, which shadows the standard library module and produces an error message that names neither file.</li>
+    </ul>
+  </div>

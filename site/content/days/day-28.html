@@ -1,0 +1,161 @@
+<p class="day-lede">Your capstone works when you use it politely, one request at a time. Today you find out what happens when it is used impolitely. You turn every claim in your README into a measurement, and you write down what you would do about each way it breaks.</p>
+
+  <div class="concept">
+    <h4>Load testing: what it measures and what it fakes</h4>
+    <p>A load tool — <a href="https://k6.io/docs/">k6</a>, Locust, or a twenty-line script of your own — runs some number of pretend users in a loop against your endpoint for a few minutes, recording every request's latency and status code. Then you read the distribution it produces: p50, p95, p99, error rate, and how many requests per second actually completed.</p>
+    <p>What are you hunting for in all that? One thing, and it has a name: the <strong>knee</strong>. The knee is the concurrency at which p95 stops being flat and starts climbing.</p>
+    <p>Below the knee you have headroom. Above it, requests are queuing, and what your users are feeling is your capacity limit rather than your model's speed. So ramp deliberately — 1 user, then 5, then 10, then 25 — and plot p95 at each level. That line is a real engineering finding, and it goes straight into your write-up.</p>
+    <p>Now three ways a load test will lie to you if you let it. Send the same input every time and your cache serves it, so you have measured your cache; use a pool of fifty varied real inputs instead. You will often hit your provider's rate limit before you hit your own ceiling, which is a finding to record rather than a broken test. And tokens cost money: ten minutes at ten concurrent users can be several dollars, so do that multiplication before you press go, not after.</p>
+    <p>So: a load test does not give you a capacity number, it gives you the point where the line turns upward, and that is the number worth having.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="p95 latency stays flat from one to ten concurrent users, then climbs steeply at twenty-five and fifty as requests queue">
+        <text x="70" y="24" font-size="13" fill="var(--dg-muted)">p95 latency</text>
+        <line x1="70" y1="30" x2="70" y2="180" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="70" y1="180" x2="610" y2="180" stroke="var(--dg-line)" stroke-width="2"/>
+        <polyline points="110,160 210,159 310,156 430,120 560,40" fill="none" stroke="var(--dg-accent)" stroke-width="3"/>
+        <circle cx="110" cy="160" r="4" fill="var(--dg-accent)"/>
+        <circle cx="210" cy="159" r="4" fill="var(--dg-accent)"/>
+        <circle cx="310" cy="156" r="4" fill="var(--dg-accent)"/>
+        <circle cx="430" cy="120" r="4" fill="var(--dg-accent)"/>
+        <circle cx="560" cy="40" r="4" fill="var(--dg-accent)"/>
+        <line x1="340" y1="60" x2="340" y2="180" stroke="var(--dg-accent2)" stroke-width="2" stroke-dasharray="5 5"/>
+        <text x="348" y="72" font-size="13" fill="var(--dg-ink)">the knee: past here,</text>
+        <text x="348" y="90" font-size="13" fill="var(--dg-ink)">requests queue</text>
+        <text x="62" y="164" text-anchor="end" font-size="13" fill="var(--dg-muted)">2 s</text>
+        <text x="62" y="124" text-anchor="end" font-size="13" fill="var(--dg-muted)">6 s</text>
+        <text x="62" y="44" text-anchor="end" font-size="13" fill="var(--dg-muted)">14 s</text>
+        <text x="110" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">1</text>
+        <text x="210" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">5</text>
+        <text x="310" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">10</text>
+        <text x="430" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">25</text>
+        <text x="560" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">50</text>
+        <text x="340" y="214" text-anchor="middle" font-size="13" fill="var(--dg-muted)">concurrent users</text>
+      </svg>
+      <figcaption>Capacity is not a single number — it is the point where the latency line turns upward.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>The four numbers</h4>
+    <p><strong>Cost per user</strong>, not per request. Pull requests per session out of your traces and multiply. Here is why the unit matters: "$0.004 per request" means nothing to anybody, while "about $0.15 per user per week, 80 percent of it in the generation call" is a business fact that someone can act on.</p>
+    <p><strong>p95 latency end to end</strong>, measured at the edge, including your own overhead — not the model's time in isolation, which always flatters you. Then break it down from your spans: retrieval 180 ms, rerank 120 ms, generation 1.9 s, your own code 40 ms.</p>
+    <p>Look at what that breakdown just saved you. Retrieval is 180 ms of a 2.24-second request. You could optimize it into nothing and the user would barely notice. Without the breakdown, that is exactly the week you would have spent.</p>
+    <p><strong>Eval score on the golden set</strong>, from the same harness as Day 19, run against the deployed configuration rather than your laptop's happy path.</p>
+    <p><strong>Error rate, split by cause:</strong> provider errors, timeouts, output-validation failures, empty retrieval, tool failures. A single "2 percent error rate" hides which of those is one config change away and which is a design problem.</p>
+    <p>So: every one of these goes in the README with the date and the conditions attached, because a number without conditions is a rumor.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="A p95 request of 2.24 seconds broken into retrieval 180 milliseconds, rerank 120, generation 1.9 seconds and your own code 40 milliseconds">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">p95, end to end: 2.24 s</text>
+        <rect x="20" y="50" width="43" height="40" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="63" y="50" width="29" height="40" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="92" y="50" width="458" height="40" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="321" y="76" text-anchor="middle" font-size="13" fill="var(--dg-ink)">generation 1.9 s</text>
+        <rect x="550" y="50" width="10" height="40" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <line x1="41" y1="90" x2="41" y2="112" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="20" y="130" font-size="13" fill="var(--dg-ink)">retrieval 180 ms</text>
+        <line x1="77" y1="90" x2="77" y2="142" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="56" y="160" font-size="13" fill="var(--dg-ink)">rerank 120 ms</text>
+        <line x1="555" y1="90" x2="555" y2="112" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="620" y="130" text-anchor="end" font-size="13" fill="var(--dg-ink)">your code 40 ms</text>
+        <text x="20" y="188" font-size="13" fill="var(--dg-muted)">optimizing retrieval to the bone saves 180 ms of 2,240</text>
+      </svg>
+      <figcaption>The breakdown is what stops you spending a week making the smallest bar smaller.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>The failure playbook</h4>
+    <p>A playbook is a table you could hand to a stranger at two in the morning. Three columns: what breaks, how you would know, what you would do. One row for every failure mode you can name.</p>
+    <p>The middle column is where the value is. Be honest in it, and half your rows will read "I would not know". That is not an embarrassment — that is the finding. Each of those rows turns into a panel or an alarm, built out of the tracing you wired on Day 22.</p>
+    <p>The third column has a rule too: it must be a <em>degraded behavior</em>, not a heroic fix. At two in the morning you do not debug. You walk down a short list until something works — serve the cached answer, fall back to the second provider, return the sources without a summary, or turn the feature off behind a flag while the rest of the site stays up.</p>
+    <p>So: the playbook is not a document about how good your system is; it is the list of smaller promises you can still keep when the big one fails.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="When generation fails you walk down a list of smaller promises, and only at the end turn the feature off behind a flag">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">generation is failing. Walk down, do not fall over.</text>
+        <rect x="20" y="42" width="330" height="38" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="66" font-size="13" fill="var(--dg-ink)">fail over to the second provider</text>
+        <line x1="190" y1="80" x2="190" y2="90" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="184,90 196,90 190,98" fill="var(--dg-line)"/>
+        <rect x="20" y="100" width="330" height="38" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="124" font-size="13" fill="var(--dg-ink)">serve the cached answer</text>
+        <line x1="190" y1="138" x2="190" y2="148" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="184,148 196,148 190,156" fill="var(--dg-line)"/>
+        <rect x="20" y="158" width="330" height="38" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="182" font-size="13" fill="var(--dg-ink)">return the sources with a note</text>
+        <text x="390" y="70" font-size="13" fill="var(--dg-ink)">last resort:</text>
+        <rect x="390" y="84" width="230" height="54" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="406" y="108" font-size="13" fill="var(--dg-ink)">turn the feature off</text>
+        <text x="406" y="128" font-size="13" fill="var(--dg-ink)">behind a flag</text>
+        <text x="390" y="176" font-size="13" fill="var(--dg-muted)">the rest of the site stays up</text>
+      </svg>
+      <figcaption>Every rung is a smaller promise you can still keep; falling over is what happens when you never wrote the rungs.</figcaption>
+    </figure>
+    <div class="tablewrap">
+      <table>
+        <tr><th>What breaks</th><th>How you would know</th><th>What you would do</th></tr>
+        <tr><td>Provider outage or overload</td><td>Error-rate panel spikes; alarm on server errors</td><td>Fail over to the secondary provider; if both are down, return retrieved sources with a note</td></tr>
+        <tr><td>Cost spike</td><td>Daily-spend alarm at three times normal</td><td>Find the retry or agent loop in traces, cap steps, rotate the key if it is abuse</td></tr>
+        <tr><td>Latency creep</td><td>p95 above 4 s for an hour</td><td>Check context size — usually one document got huge; cap chunk count and truncate</td></tr>
+        <tr><td>Bad answers after re-indexing</td><td>Eval score drops in CI; thumbs-down rate rises</td><td>Roll back to the previous index version, re-ingest only the changed documents</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>Fix the top two, then prove it</h4>
+    <p>Error analysis, one more time, because it is the highest-return habit in the whole plan. Dump every failing case — from the golden set and from real traces — and read them. Actually read them, one at a time. Then give each one a single line of cause in your own words.</p>
+    <p>Now count the causes. This is the step people skip, and it is the only step that matters: the counts, not your intuition, tell you what to fix. Your intuition will always nominate the most interesting failure.</p>
+    <p>Fix in order of count times harm. And two is a real number — pick the top two clusters, fix them, then re-run the identical golden set so before and after are actually comparable. Change the set and you have thrown away your own evidence.</p>
+    <p>Last, promote those cases into the permanent eval set, so the bug cannot come back quietly six weeks from now.</p>
+    <p>Here is the sentence you are trying to earn: "Raising chunk overlap from 0 to 80 tokens moved faithfulness from 0.71 to 0.86 on the 30-question set; the remaining failures are all questions that need two documents at once, which is next week's work."</p>
+    <p>So: read, label, count, fix two, re-run, promote. That loop, with real numbers behind it, is the thing you will be hired for.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="The error analysis loop: read every failure with a one-line cause, count the causes, fix the top two clusters, re-run the same set">
+        <text x="20" y="26" font-size="13" fill="var(--dg-muted)">the loop you run today</text>
+        <rect x="20" y="40" width="270" height="54" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="155" y="64" text-anchor="middle" font-size="13" fill="var(--dg-ink)">read every failure</text>
+        <text x="155" y="84" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one line of cause each</text>
+        <line x1="290" y1="67" x2="314" y2="67" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="314,61 326,67 314,73" fill="var(--dg-line)"/>
+        <rect x="336" y="40" width="270" height="54" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="471" y="64" text-anchor="middle" font-size="13" fill="var(--dg-ink)">count the causes</text>
+        <text x="471" y="84" text-anchor="middle" font-size="13" fill="var(--dg-muted)">counts overrule your taste</text>
+        <line x1="471" y1="94" x2="471" y2="116" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="465,116 477,116 471,124" fill="var(--dg-line)"/>
+        <rect x="336" y="126" width="270" height="54" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="471" y="150" text-anchor="middle" font-size="13" fill="var(--dg-ink)">fix the top two clusters</text>
+        <text x="471" y="170" text-anchor="middle" font-size="13" fill="var(--dg-muted)">two, not seven</text>
+        <line x1="336" y1="153" x2="314" y2="153" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="314,147 302,153 314,159" fill="var(--dg-line)"/>
+        <rect x="20" y="126" width="270" height="54" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="155" y="150" text-anchor="middle" font-size="13" fill="var(--dg-ink)">re-run the same set</text>
+        <text x="155" y="170" text-anchor="middle" font-size="13" fill="var(--dg-muted)">before and after, comparable</text>
+        <text x="20" y="206" font-size="13" fill="var(--dg-muted)">then promote those cases into the permanent eval set</text>
+      </svg>
+      <figcaption>Counting is the whole trick: it replaces the failure you find interesting with the failure that happens most.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Build an input pool of fifty varied real requests, so your load runs and your eval runs use the same realistic traffic.</li>
+      <li>Write one load script and run the ramp: 1, 5, 10, 25 concurrent users, three minutes each. Record p50, p95, p99, error rate and throughput at every level.</li>
+      <li>Plot p95 against concurrency and find the knee. Note your provider's rate limit if you hit it first.</li>
+      <li>Compute cost per request and per user from traces, and break p95 down by span so you know which bar to attack.</li>
+      <li>Run the golden set against the deployed system, and record the score beside the load numbers.</li>
+      <li>Write the failure playbook, at least six rows. For every "I would not know", add the panel or alarm that would tell you.</li>
+      <li>Do the error analysis: dump failures, label, count, fix the top two clusters, re-run, record before and after.</li>
+      <li>Update the README so every number came from today's measurement, with the date and conditions beside it.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Load testing with the same provider key your real users depend on. You will rate-limit yourself and then call it an outage.</li>
+      <li>Testing with one repeated input. Your cache makes the graph beautiful, and the graph means nothing.</li>
+      <li>Chasing p99 on a system with eleven users. p99 of 100 requests is one request. Fix p95 first, and say how many samples it came from.</li>
+      <li>Fixing the most interesting failure instead of the most common one. The counts exist to overrule your taste.</li>
+    </ul>
+  </div>

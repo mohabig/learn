@@ -1,0 +1,170 @@
+<p class="day-lede">Every model call you make for the next four weeks is one HTTP request with a secret in a header. That's the whole thing. Today you look at that request as literal text, learn what the server's three-digit answer obliges you to do, and put your key where it cannot leak.</p>
+
+  <div class="concept">
+    <h4>What a request actually looks like</h4>
+    <p>Strip away the library and an API call is text sent down a wire. Your program opens a connection to a host and writes characters into it.</p>
+    <p>First a request line: the method, the path, and the protocol version. Then headers, one per line. Then a blank line — and that blank line is load-bearing, because it is how the server knows the headers have ended. Then, optionally, a body. The server replies in the same shape: a status line, its own headers, a blank line, a body.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 300" role="img" aria-label="The text of one HTTP request and the response beneath it, split into start line, headers, blank line, and body">
+        <text x="16" y="92" font-size="13" fill="var(--dg-muted)">you send</text>
+        <rect x="120" y="30" width="500" height="126" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="136" y="56" font-size="13" fill="var(--dg-ink)">POST /v1/messages HTTP/1.1</text>
+        <text x="136" y="80" font-size="13" fill="var(--dg-muted)">host: api.example.com</text>
+        <text x="136" y="100" font-size="13" fill="var(--dg-muted)">authorization: Bearer sk-live-...</text>
+        <text x="136" y="120" font-size="13" fill="var(--dg-muted)">content-type: application/json</text>
+        <line x1="128" y1="130" x2="612" y2="130" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="136" y="148" font-size="13" fill="var(--dg-ink)">{"model": "...", "messages": [...]}</text>
+        <line x1="370" y1="156" x2="370" y2="176" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="364,176 370,188 376,176" fill="var(--dg-line)"/>
+        <text x="16" y="240" font-size="13" fill="var(--dg-muted)">server replies</text>
+        <rect x="120" y="190" width="500" height="100" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="136" y="216" font-size="13" fill="var(--dg-ink)">HTTP/1.1 429 Too Many Requests</text>
+        <text x="136" y="240" font-size="13" fill="var(--dg-muted)">retry-after: 20</text>
+        <line x1="128" y1="252" x2="612" y2="252" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="136" y="274" font-size="13" fill="var(--dg-ink)">{"error": {"message": "rate limit"}}</text>
+      </svg>
+      <figcaption>There is no magic in an API call: a line, some headers, a blank line, a body — in both directions.</figcaption>
+    </figure>
+    <p>The method is a verb the server has agreed to honor. <code>GET</code> fetches and carries no body, and repeating it is expected to be harmless. <code>POST</code> sends a body and may change something; <code>PUT</code> and <code>PATCH</code> update, <code>DELETE</code> removes.</p>
+    <p>The path and query string name what you want. The headers are metadata about the message itself: <code>content-type</code> says how to read the body, <code>authorization</code> says who you are.</p>
+    <p>Look at one before you write any code. <code>curl -i</code> prints the response headers along with the body, and <code>curl -v</code> shows your own request too. Do it once, and when the Python version misbehaves later you'll know which side of that blank line to suspect.</p>
+    <p>So: a line, some headers, a blank line, a body — every time, in both directions.</p>
+  </div>
+
+  <div class="concept">
+    <h4>The three digits</h4>
+    <p>The first digit is the family, and the family is the whole story. The other two digits are detail.</p>
+    <p><code>2xx</code> worked. 200 returned something, 201 created something, 204 succeeded with nothing to return.</p>
+    <p><code>3xx</code> means go elsewhere. Clients follow redirects silently by default, which is occasionally why your POST arrives as a GET.</p>
+    <p><code>4xx</code> means your request is wrong, and this is the family people waste the most time on. Sending it again unchanged gets the same answer, forever. 400 is malformed. 401 means the credentials are missing or bad. 403 means they're valid but not allowed here. 404 means no such path — often a typo in the base URL, not a missing record. 422 means well-formed but wrong fields.</p>
+    <p>And 429 means too many requests: the one member of the family worth retrying, after the delay <code>retry-after</code> names.</p>
+    <p><code>5xx</code> means the server broke, not you. 500 internal, 502 and 504 from a proxy that couldn't reach or wait for the real server, 503 overloaded. Retry these with a growing delay.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A status code sorts into three actions: use the body, fix the request, or wait and retry">
+        <rect x="250" y="20" width="140" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="320" y="48" text-anchor="middle" font-size="14" fill="var(--dg-ink)">status code</text>
+        <line x1="320" y1="64" x2="320" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="105" y1="96" x2="535" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="105" y1="96" x2="105" y2="114" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="99,114 105,126 111,114" fill="var(--dg-line)"/>
+        <line x1="320" y1="96" x2="320" y2="114" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="314,114 320,126 326,114" fill="var(--dg-line)"/>
+        <line x1="535" y1="96" x2="535" y2="114" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="529,114 535,126 541,114" fill="var(--dg-line)"/>
+        <rect x="20" y="130" width="170" height="60" rx="8" fill="none" stroke="var(--dg-good)"/>
+        <text x="105" y="156" text-anchor="middle" font-size="13" fill="var(--dg-good)">2xx</text>
+        <text x="105" y="176" text-anchor="middle" font-size="13" fill="var(--dg-ink)">use the body</text>
+        <rect x="235" y="130" width="170" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="320" y="156" text-anchor="middle" font-size="13" fill="var(--dg-ink)">4xx</text>
+        <text x="320" y="176" text-anchor="middle" font-size="13" fill="var(--dg-ink)">fix it, don't retry</text>
+        <rect x="450" y="130" width="170" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="535" y="156" text-anchor="middle" font-size="13" fill="var(--dg-ink)">429 and 5xx</text>
+        <text x="535" y="176" text-anchor="middle" font-size="13" fill="var(--dg-ink)">wait, then retry</text>
+      </svg>
+      <figcaption>Three branches; the only one people get wrong is retrying a 4xx forever.</figcaption>
+    </figure>
+    <p>That split — fix a 4xx, wait out a 429 or a 5xx — is what exponential backoff is built on in Week 1, Day 6.</p>
+    <p>So: one digit tells you which of three things to do, and doing the wrong one turns a typo into five slow failures instead of one fast one.</p>
+  </div>
+
+  <div class="concept">
+    <h4>JSON, and what Python turns it into</h4>
+    <p>JSON is text with six kinds of value: object, array, string, number, boolean, null.</p>
+    <p>Python maps them straight across: dict, list, str, int or float, bool, and <code>None</code>. There is no cleverness in the translation, which is why it almost never surprises you.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A JSON string parses into nested Python objects: an object becomes a dict holding an int and a list">
+        <text x="134" y="46" text-anchor="middle" font-size="13" fill="var(--dg-muted)">JSON: one long string</text>
+        <rect x="24" y="60" width="220" height="90" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="134" y="96" text-anchor="middle" font-size="13" fill="var(--dg-ink)">{"n": 3,</text>
+        <text x="134" y="122" text-anchor="middle" font-size="13" fill="var(--dg-ink)">"tags": ["a"]}</text>
+        <line x1="244" y1="105" x2="288" y2="105" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="288,99 302,105 288,111" fill="var(--dg-line)"/>
+        <text x="272" y="90" text-anchor="middle" font-size="13" fill="var(--dg-ink)">r.json()</text>
+        <rect x="310" y="46" width="306" height="118" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="463" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">dict</text>
+        <rect x="330" y="86" width="126" height="56" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="393" y="120" text-anchor="middle" font-size="13" fill="var(--dg-ink)">3 is an int</text>
+        <rect x="470" y="86" width="126" height="56" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="533" y="120" text-anchor="middle" font-size="13" fill="var(--dg-ink)">[ ] is a list</text>
+        <text x="320" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">six kinds of value in, six kinds of Python object out</text>
+      </svg>
+      <figcaption>Parsing is a direct swap: each JSON value becomes the obvious Python one, nested the same way.</figcaption>
+    </figure>
+    <p>With <code>httpx</code> you rarely call <code>json.dumps</code> or <code>json.loads</code> yourself. Passing <code>json=payload</code> serializes it and sets the content type, and <code>r.json()</code> parses what came back.</p>
+    <p>The format is strict, and the strictness is the part to remember: double quotes only, no trailing commas, no comments.</p>
+    <p>That strictness is why "the model returned invalid JSON" is a real production problem — a parser will refuse an entire response over one stray comma — and why Day 3 of Week 1 exists.</p>
+    <p>Two smaller traps. JSON has no date type, so dates are strings in a format the two sides agreed on. And money in floating-point numbers picks up rounding errors.</p>
+    <p>So: six value kinds, a direct mapping into Python, and a parser with no tolerance at all.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Where the auth goes</h4>
+    <p>HTTP is stateless. The server remembers nothing about you between requests, so every single request has to prove who you are, from scratch.</p>
+    <p>Usually that proof is a header. <code>authorization: Bearer sk-...</code> is the common shape; some providers use their own name, such as <code>x-api-key</code>. Same mechanism either way — a secret string, sent every time, over HTTPS so it's encrypted before it leaves your machine.</p>
+    <p>Never put a key in the query string. URLs get written to server logs, proxy logs, browser history, and error trackers, and a key in a log has leaked whether or not anyone has read it yet.</p>
+    <p>Read the two rejections apart, too, because they send you to different places. 401 says the key is missing, wrong, or malformed — a newline from a copy-paste counts. 403 says the key is fine but not permitted on that endpoint.</p>
+    <p>So: the secret rides in a header on every request, and 401 means fix the key while 403 means fix your permissions.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Secret hygiene, mechanically</h4>
+    <p>An environment variable is a string your process inherited from the shell — Day 0.1, doing real work again.</p>
+    <p>Your code reads <code>os.environ["WEATHER_API_KEY"]</code> at startup and fails immediately with a clear message if it's absent. Failing immediately is the point: the alternative is a confusing 401 twenty seconds into a run.</p>
+    <p>A <code>.env</code> file is a plain list of <code>NAME=value</code> lines that a loader reads into the environment at startup. It exists so you don't retype <code>export</code> all day. It is not encrypted and must never be committed.</p>
+    <p>So do two things before your first commit, not after: add <code>.env</code> to <code>.gitignore</code>, and check in a <code>.env.example</code> holding the names with no values.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 240" role="img" aria-label="The key travels from a gitignored env file into the process environment and out in a header, with three ways it escapes into logs">
+        <text x="320" y="26" text-anchor="middle" font-size="13" fill="var(--dg-muted)">the only path a key should take</text>
+        <rect x="20" y="42" width="130" height="50" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="85" y="72" text-anchor="middle" font-size="13" fill="var(--dg-muted)">.env, ignored</text>
+        <line x1="150" y1="67" x2="166" y2="67" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="166,61 180,67 166,73" fill="var(--dg-line)"/>
+        <rect x="180" y="42" width="140" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="250" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">process env</text>
+        <line x1="320" y1="67" x2="336" y2="67" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="336,61 350,67 336,73" fill="var(--dg-line)"/>
+        <rect x="350" y="42" width="140" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="420" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">os.environ</text>
+        <line x1="490" y1="67" x2="506" y2="67" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="506,61 520,67 506,73" fill="var(--dg-line)"/>
+        <rect x="520" y="42" width="100" height="50" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="570" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">header</text>
+        <text x="320" y="132" text-anchor="middle" font-size="13" fill="var(--dg-ink)">three ways it leaves that path</text>
+        <rect x="24" y="148" width="180" height="42" rx="6" fill="none" stroke="var(--dg-muted)"/>
+        <text x="114" y="174" text-anchor="middle" font-size="13" fill="var(--dg-muted)">in the URL</text>
+        <rect x="228" y="148" width="180" height="42" rx="6" fill="none" stroke="var(--dg-muted)"/>
+        <text x="318" y="174" text-anchor="middle" font-size="13" fill="var(--dg-muted)">in a debug print</text>
+        <rect x="432" y="148" width="184" height="42" rx="6" fill="none" stroke="var(--dg-muted)"/>
+        <text x="524" y="174" text-anchor="middle" font-size="13" fill="var(--dg-muted)">committed to git</text>
+        <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-muted)">all three end up in somebody's log</text>
+      </svg>
+      <figcaption>One safe route in, three well-worn routes out — and every one of them ends in a log file.</figcaption>
+    </figure>
+    <p>If a key ever reaches a public repository, understand what does and doesn't fix it. Deleting the line does not: git history keeps every version, and scanners find keys within minutes. Rotate the key instead; it takes a minute.</p>
+    <p>Day 1 of Week 1 is this exact pattern with a provider key and real money attached, so build the habit now, while the worst case is a free tier.</p>
+    <p>So: the key lives in the environment, arrives from a file git never sees, and gets rotated rather than deleted if it escapes.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Pick a public API with a free tier that requires a key. In its reference, find four things: base URL, auth header, one endpoint, rate limit.</li>
+      <li>Call it from the terminal first: <code>curl -i</code> with no key, read the 401, then add the header and read the 200 headers before the body.</li>
+      <li>Create the project with <code>uv</code>, add <code>httpx</code> and a <code>.env</code> loader. Write <code>.gitignore</code> with <code>.env</code> in it <em>before</em> the first commit.</li>
+      <li>Read the key from the environment at startup and raise a named error if it's missing. Never print it, even while debugging.</li>
+      <li>Write the request with an explicit <code>timeout=10</code>. Print <code>r.status_code</code>, the content type, and <code>r.json()</code>.</li>
+      <li>Branch on the status yourself instead of calling <code>raise_for_status</code> and walking away: on 404 print the path you asked for; on 429 read <code>retry-after</code>, wait, and retry once.</li>
+      <li>Force both paths: request a resource that doesn't exist, then loop the call until the API rate-limits you.</li>
+      <li>Log every header <em>except</em> authorization, then grep the log for your key to prove it isn't there.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>The key in the URL, in a debug print, or pasted into a notebook cell that gets committed. Three routes to one leak.</li>
+      <li>Treating every non-200 identically, so a 400 gets retried five times with backoff and fails five times more slowly.</li>
+      <li>A trailing newline on a key read from a file, producing a 401 that looks impossible until you print the string's length.</li>
+      <li>No timeout, so one slow endpoint stalls everything with nothing in the logs.</li>
+    </ul>
+  </div>

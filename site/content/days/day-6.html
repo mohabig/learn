@@ -1,0 +1,183 @@
+<p class="day-lede">Everything you built works right up until the network, the provider, or the model has a bad day — and at any real volume, that day is today. This is where each of those stops being a stack trace in a user's face and becomes a case you already handled.</p>
+
+  <div class="concept">
+    <h4>Six ways one call fails</h4>
+    <p><strong>Hallucination.</strong> The model samples a plausible continuation and nothing in the loop checks it against the world. This is not an error state: you get a normal response, confidently wrong. Retrying just gives you a different plausible answer. The fixes are grounding and verification.</p>
+    <p><strong>Truncation.</strong> Output hit <code>max_tokens</code> or a stop sequence. The stop reason tells you exactly this, and it is still the failure people misdiagnose most often.</p>
+    <p><strong>Refusal.</strong> A safety layer or the model itself declines. It arrives as a successful response with a refusal stop reason, or an apologetic paragraph. Retrying the identical input reproduces it exactly.</p>
+    <p><strong>Rate limits.</strong> A 429, usually with a <code>retry-after</code> header, from a per-minute budget of requests and tokens. Retryable — after waiting the time you were told to wait.</p>
+    <p><strong>Timeouts.</strong> Your client gave up. The dangerous part is that the work may have completed on the server, so a naive retry can duplicate real effects. <strong>Outages</strong> round it out: 5xx responses, retryable, though retrying hard makes a struggling service worse.</p>
+    <p>The taxonomy is the deliverable, because it decides what you do next. Retry 429, 5xx, and connection errors. Never retry 400 or 401 — a malformed request and a bad key stay malformed and bad however many times you send them.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="Failures sorted into the ones worth retrying and the ones that will return the same result every time">
+        <text x="20" y="28" font-size="14" fill="var(--dg-ink)">worth retrying</text>
+        <rect x="20" y="40" width="270" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="155" y="65" text-anchor="middle" font-size="13" fill="var(--dg-ink)">429 rate limit</text>
+        <rect x="20" y="88" width="270" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="155" y="113" text-anchor="middle" font-size="13" fill="var(--dg-ink)">5xx outage</text>
+        <rect x="20" y="136" width="270" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="155" y="161" text-anchor="middle" font-size="13" fill="var(--dg-ink)">connection error</text>
+        <text x="340" y="28" font-size="14" fill="var(--dg-ink)">never retry</text>
+        <rect x="340" y="40" width="280" height="40" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="480" y="65" text-anchor="middle" font-size="13" fill="var(--dg-ink)">400: still malformed</text>
+        <rect x="340" y="88" width="280" height="40" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="480" y="113" text-anchor="middle" font-size="13" fill="var(--dg-ink)">401: still the wrong key</text>
+        <rect x="340" y="136" width="280" height="40" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="480" y="161" text-anchor="middle" font-size="13" fill="var(--dg-ink)">refusal: same input, same answer</text>
+        <text x="20" y="200" font-size="13" fill="var(--dg-muted)">hallucination and truncation aren't errors at all — the call succeeded</text>
+      </svg>
+      <figcaption>Half of these get better when you retry and half get more expensive, so classify before you react.</figcaption>
+    </figure>
+    <p>So: name the failure before you respond to it, because retrying the wrong one just buys the same answer twice.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Backoff with jitter</h4>
+    <p>Wait 1 second, then 2, then 4, then 8. Each wait is double the last.</p>
+    <p>The doubling isn't superstition. It gives a struggling service room to recover, instead of a steady drumbeat of new load arriving while it's trying to stand back up.</p>
+    <p>Then add jitter: a random fraction on top of each wait. Without it, a thousand clients that failed in the same second all retry in the same second, and your recovery is indistinguishable from an attack.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 180" role="img" aria-label="Four retry attempts spaced at doubling intervals, each with a small random jitter window around it">
+        <line x1="40" y1="110" x2="610" y2="110" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="20" y="40" font-size="13" fill="var(--dg-muted)">each wait doubles; the box is the random jitter around it</text>
+        <rect x="26" y="96" width="28" height="28" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <circle cx="40" cy="110" r="6" fill="var(--dg-accent)"/>
+        <text x="40" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">try 1</text>
+        <rect x="96" y="96" width="28" height="28" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <circle cx="110" cy="110" r="6" fill="var(--dg-accent)"/>
+        <text x="110" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">+1 s</text>
+        <rect x="236" y="96" width="28" height="28" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <circle cx="250" cy="110" r="6" fill="var(--dg-accent)"/>
+        <text x="250" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">+2 s</text>
+        <rect x="516" y="96" width="28" height="28" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <circle cx="530" cy="110" r="6" fill="var(--dg-accent2)"/>
+        <text x="530" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">+4 s</text>
+        <text x="320" y="160" text-anchor="middle" font-size="13" fill="var(--dg-muted)">stop at your latency budget, not at a fixed attempt count</text>
+      </svg>
+      <figcaption>Doubling gives the service room; jitter keeps every client from coming back at the same instant.</figcaption>
+    </figure>
+    <p>If the response carries <code>retry-after</code>, that number beats your formula. It's the server telling you what it can currently take.</p>
+    <p>And cap the whole thing against your latency budget, not against an attempt count. Five retries of up to 30 seconds means a user waited three minutes to be told it didn't work.</p>
+    <p>One thing to check before you write any of this: what your SDK already does. Most retry a couple of times on their own, so your loop of three around their two is six attempts you didn't plan and six times the spend in exactly the minute you can least afford it.</p>
+    <p>So: double, jitter, obey <code>retry-after</code>, and stop when the clock says stop.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Idempotency: the retry that runs twice</h4>
+    <p>A timeout does not mean nothing happened. It means you stopped listening.</p>
+    <p>The request may have completed perfectly well on the other side. Your retry is then the second delivery of work that already ran.</p>
+    <p>For a call that only reads, that's harmless — you pay twice and move on. For anything that writes a row, sends a message, or charges money, it's a duplicate with real consequences.</p>
+    <p>The mechanism is a key. Generate a unique id per logical operation, store it with the result when the work completes, and check for it before doing the work. A repeat with a known key returns the stored result instead of running again.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A first request whose reply is lost to a timeout, and a retry carrying the same key that returns the stored result instead of running the work again">
+        <text x="20" y="26" font-size="13" fill="var(--dg-muted)">first try</text>
+        <rect x="20" y="38" width="170" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="105" y="66" text-anchor="middle" font-size="13" fill="var(--dg-ink)">request · key abc</text>
+        <line x1="190" y1="60" x2="214" y2="60" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="214,54 226,60 214,66" fill="var(--dg-line)"/>
+        <rect x="230" y="38" width="180" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="320" y="66" text-anchor="middle" font-size="13" fill="var(--dg-ink)">work runs, row written</text>
+        <line x1="410" y1="60" x2="434" y2="60" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="434,54 446,60 434,66" fill="var(--dg-line)"/>
+        <rect x="450" y="38" width="170" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="535" y="66" text-anchor="middle" font-size="13" fill="var(--dg-muted)">reply lost: timeout</text>
+        <text x="20" y="124" font-size="13" fill="var(--dg-muted)">your retry</text>
+        <rect x="20" y="136" width="170" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="105" y="164" text-anchor="middle" font-size="13" fill="var(--dg-ink)">same key abc</text>
+        <line x1="190" y1="158" x2="214" y2="158" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="214,152 226,158 214,164" fill="var(--dg-line)"/>
+        <rect x="230" y="136" width="180" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="320" y="164" text-anchor="middle" font-size="13" fill="var(--dg-ink)">key already on file</text>
+        <line x1="410" y1="158" x2="434" y2="158" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="434,152 446,158 434,164" fill="var(--dg-line)"/>
+        <rect x="450" y="136" width="170" height="44" rx="8" fill="none" stroke="var(--dg-good)"/>
+        <text x="535" y="164" text-anchor="middle" font-size="13" fill="var(--dg-ink)">stored result returned</text>
+        <text x="20" y="202" font-size="13" fill="var(--dg-muted)">the work runs once, however many times you ask for it</text>
+      </svg>
+      <figcaption>The key is what lets a second delivery be recognized as a second delivery instead of a second job.</figcaption>
+    </figure>
+    <p>Accept such a key on your own endpoints too, so your callers can be as careful with you as you're being with your provider.</p>
+    <p>So: a key turns "did that go through?" from a guess into a lookup.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Circuit breaking</h4>
+    <p>When a provider is genuinely down, retries stop helping and start hurting.</p>
+    <p>Every request burns your whole backoff budget before it fails. So every user waits 40 seconds to receive an error, and your traffic piles onto a service that is already in trouble.</p>
+    <p>A circuit breaker is a counter and three states. <strong>Closed</strong>: calls pass through and you count failures in a rolling window. Cross the threshold — say 5 failures in 30 seconds — and it flips to <strong>open</strong>, where every call fails instantly without a request leaving your process.</p>
+    <p>After a cooldown it moves to <strong>half-open</strong> and lets exactly one call through. Success closes the circuit. Failure opens it again for another cooldown.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A circuit breaker moving from closed to open after repeated failures, then to half-open after a cooldown, then back to closed on success">
+        <rect x="24" y="72" width="152" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="100" y="98" text-anchor="middle" font-size="14" fill="var(--dg-ink)">closed</text>
+        <text x="100" y="118" text-anchor="middle" font-size="13" fill="var(--dg-muted)">calls pass</text>
+        <line x1="176" y1="102" x2="228" y2="102" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="228,96 240,102 228,108" fill="var(--dg-line)"/>
+        <text x="208" y="62" text-anchor="middle" font-size="13" fill="var(--dg-muted)">5 fails</text>
+        <rect x="244" y="72" width="152" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="320" y="98" text-anchor="middle" font-size="14" fill="var(--dg-ink)">open</text>
+        <text x="320" y="118" text-anchor="middle" font-size="13" fill="var(--dg-muted)">fail in 1 ms</text>
+        <line x1="396" y1="102" x2="448" y2="102" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="448,96 460,102 448,108" fill="var(--dg-line)"/>
+        <text x="428" y="62" text-anchor="middle" font-size="13" fill="var(--dg-muted)">30 s</text>
+        <rect x="464" y="72" width="152" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="540" y="98" text-anchor="middle" font-size="14" fill="var(--dg-ink)">half-open</text>
+        <text x="540" y="118" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one test call</text>
+        <polyline points="540,132 540,172 100,172 100,144" fill="none" stroke="var(--dg-good)" stroke-width="2"/>
+        <polygon points="94,144 106,144 100,132" fill="var(--dg-good)"/>
+        <text x="320" y="192" text-anchor="middle" font-size="13" fill="var(--dg-muted)">success closes it; one more failure opens it again</text>
+      </svg>
+      <figcaption>Three states and one counter turn a provider outage into a fast, predictable failure.</figcaption>
+    </figure>
+    <p>Failing in one millisecond is a much better product than failing in forty seconds, and it's what lets your fallback path stay fast.</p>
+    <p>So: one counter is the difference between an outage that costs you a second and one that costs you every user's patience.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Degraded, not dead</h4>
+    <p>Between a perfect answer and a stack trace there's a ladder, and every rung on it is a few lines of code.</p>
+    <p>Full answer at the top. Then a stale answer from the response cache, clearly labeled as stale. Then a smaller model, or your secondary provider — this is why the plan told you to have one. Then a partial result with the missing fields marked null. At the bottom, a plain message with a request id and one sentence about what to do next.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 250" role="img" aria-label="Five rungs of degradation from a full answer down to a plain message carrying a request id">
+        <text x="20" y="24" font-size="13" fill="var(--dg-muted)">each rung down is a few lines of code, not a rewrite</text>
+        <rect x="20" y="34" width="270" height="34" rx="6" fill="none" stroke="var(--dg-good)"/>
+        <text x="155" y="56" text-anchor="middle" font-size="13" fill="var(--dg-ink)">full answer</text>
+        <rect x="60" y="76" width="290" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="205" y="98" text-anchor="middle" font-size="13" fill="var(--dg-ink)">stale answer, labeled stale</text>
+        <rect x="100" y="118" width="300" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="250" y="140" text-anchor="middle" font-size="13" fill="var(--dg-ink)">smaller model or second provider</text>
+        <rect x="140" y="160" width="300" height="34" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="290" y="182" text-anchor="middle" font-size="13" fill="var(--dg-ink)">partial result, missing fields null</text>
+        <rect x="180" y="202" width="300" height="34" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="330" y="224" text-anchor="middle" font-size="13" fill="var(--dg-muted)">plain message plus a request id</text>
+      </svg>
+      <figcaption>Failure isn't one step off a cliff; decide in advance which rung each endpoint is allowed to land on.</figcaption>
+    </figure>
+    <p>Decide which rung each endpoint lands on before you're in an incident, not during one.</p>
+    <p>And treat error text as part of the product. Never an API key, never a raw provider message, never a traceback. Log those with the request id; show the user the id.</p>
+    <p>So: the goal was never to stop failing, it's to fail one rung at a time.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Write one error classifier: given an exception or status code, return retryable, not retryable, or degraded. Every call site uses it — no scattered try blocks with different opinions.</li>
+      <li>Implement the retry wrapper: doubling waits, random jitter, <code>retry-after</code> honored when present, and a total time cap tied to your latency budget.</li>
+      <li>Add the circuit breaker around the provider client: failure threshold, cooldown, half-open probe. Expose its state on your health endpoint so you can see it from outside.</li>
+      <li>Add idempotency keys to anything that writes, and return the stored result for a repeated key.</li>
+      <li>Build the degradation ladder into the endpoint, and put a flag in every response saying which rung produced it.</li>
+      <li>Break it on purpose: a wrong key, an input ten times your window, a 30-megabyte upload, the network cut mid-stream, and a fake provider that returns 429 forever.</li>
+      <li>For each break, confirm the response is useful, the log line has the request id and the classification, and no secret appears anywhere in either.</li>
+      <li>Write the failure table in <code>LOG.md</code>: what you broke, what the user saw, what the logs said. Commit.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Retrying everything, including 400s and refusals, which spends money to receive the same failure four more times.</li>
+      <li>Retries stacked on the SDK's own retries, quietly multiplying attempts and latency in exactly the minute you can least afford it.</li>
+      <li>Timeouts so generous they exceed the caller's own timeout, so your careful retry logic runs for a client that hung up long ago.</li>
+      <li>Error messages that leak the provider's raw response — sometimes including fragments of the prompt — straight into a user-facing string.</li>
+    </ul>
+  </div>

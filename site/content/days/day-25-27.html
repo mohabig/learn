@@ -1,0 +1,173 @@
+<p class="day-lede">Three days, one product, no extensions. This is the piece that ties the other three together, and the one you will actually talk about in interviews. The hard part is not the code. It is deciding what not to build.</p>
+
+  <div class="concept">
+    <h4>The scope rule is the design</h4>
+    <p>"Something you would personally use every week" sounds like motivation. It is not. It is an engineering constraint, and it quietly solves three problems at once.</p>
+    <p>First, you know the domain. That means you can tell a good answer from a plausible one in half a second, without a rubric and without borrowing a second expert. Second, you have real inputs, so your golden set is made of things people actually ask rather than things you imagined they would ask. Third, you will keep using it after Day 30 — which means it keeps producing failures, and failures are the only reliable supply of improvement you will ever have.</p>
+    <p>The corollary is ruthless. One user, and that user is you. One job. One week of use. If you cannot describe it in a single sentence with a real verb in it — "turns my week of meeting notes into tracked action items I can search later" — it is too vague to finish in three days.</p>
+    <p>Now the trap, and it catches nearly everybody: building a platform. Every capstone wants to grow into a general assistant, because general feels ambitious.</p>
+    <p>But look at what general costs you. No golden set, because you cannot write cases for "anything". No clear failure, because nothing was promised. Nothing to measure, and so nothing to write up on Day 29. General is untestable, and untestable means unprovable.</p>
+    <p>So: narrow is what gets shipped, and narrow is what gets you hired.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A general assistant has no golden set and no nameable failure, while a one-sentence product has thirty real cases and a clear pass or fail">
+        <text x="20" y="26" font-size="14" fill="var(--dg-ink)">a general assistant</text>
+        <rect x="20" y="38" width="280" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="160" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">helps with anything</text>
+        <text x="20" y="124" font-size="13" fill="var(--dg-muted)">golden set: what would you even write</text>
+        <text x="20" y="152" font-size="13" fill="var(--dg-muted)">failure: hard to name</text>
+        <text x="20" y="180" font-size="13" fill="var(--dg-muted)">write-up: nothing to measure</text>
+        <text x="340" y="26" font-size="14" fill="var(--dg-ink)">one sentence, one real verb</text>
+        <rect x="340" y="38" width="280" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="480" y="62" text-anchor="middle" font-size="13" fill="var(--dg-ink)">turns my meeting notes</text>
+        <text x="480" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">into tracked action items</text>
+        <text x="340" y="124" font-size="13" fill="var(--dg-good)">golden set: 30 real cases</text>
+        <text x="340" y="152" font-size="13" fill="var(--dg-good)">failure: the item was missed</text>
+        <text x="340" y="180" font-size="13" fill="var(--dg-good)">write-up: before and after</text>
+      </svg>
+      <figcaption>Scope is not ambition management — it is what decides whether you can measure anything at all.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>The spine: one of each, all small</h4>
+    <p>The capstone has to contain retrieval, an action, evals, tracing, auth and a deployment. Not an impressive version of each — one small honest version of each. The point you are proving is that you can wire a whole system together, not that any single part of it is remarkable.</p>
+    <p><strong>Retrieval:</strong> your corpus, chunked with its structure preserved, hybrid search plus a reranker, and answers that cite the source chunks. <strong>An action:</strong> at least one tool that changes something in the world — writes a file, opens an issue, drafts a message, updates a row. That single tool is the entire difference between a chatbot and a product. <strong>Evals:</strong> twenty to thirty golden cases drawn from your own real use, a runner, a judge, and a gate in CI. <strong>Tracing:</strong> wired before your first model call, not bolted on after. <strong>Auth:</strong> a login and per-user document scoping even with one user, because it forces you to answer whose data is whose. <strong>Deploy:</strong> a public URL.</p>
+    <p>One honest version of each is also what keeps three days survivable. A beautiful retriever with no evals attached proves nothing you can state in a sentence. Six small parts, wired together and measured, prove the one thing the job is actually about.</p>
+    <p>And here is the rule that saves capstones: <strong>deploy on Day 25, not Day 27.</strong></p>
+    <p>Why so early? Because deployment is where the surprises live — environment variables, cold starts, request timeouts, memory limits, and the vector store that only ever existed on your laptop. You are going to meet all of those. The only question is whether you meet them with two days of slack or two hours.</p>
+    <p>So: six small pieces, wired end to end, with the riskiest one done first.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 300" role="img" aria-label="Capstone architecture: user through auth and API into a pipeline of retrieval, model call and a tool, returning a cited answer, with every span traced and a golden set gating CI">
+        <rect x="12" y="120" width="64" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="44" y="150" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you</text>
+        <line x1="76" y1="144" x2="86" y2="144" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="86,138 98,144 86,150" fill="var(--dg-line)"/>
+        <rect x="100" y="120" width="70" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="135" y="150" text-anchor="middle" font-size="13" fill="var(--dg-ink)">auth</text>
+        <line x1="170" y1="144" x2="180" y2="144" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="180,138 192,144 180,150" fill="var(--dg-line)"/>
+        <rect x="194" y="120" width="60" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="224" y="150" text-anchor="middle" font-size="13" fill="var(--dg-ink)">API</text>
+        <line x1="254" y1="144" x2="262" y2="144" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="262,138 274,144 262,150" fill="var(--dg-line)"/>
+        <rect x="276" y="66" width="196" height="170" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="286" y="86" font-size="13" fill="var(--dg-muted)">pipeline</text>
+        <rect x="290" y="96" width="168" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="374" y="119" text-anchor="middle" font-size="13" fill="var(--dg-ink)">retrieve + rerank</text>
+        <line x1="374" y1="132" x2="374" y2="140" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="368,140 380,140 374,148" fill="var(--dg-line)"/>
+        <rect x="290" y="150" width="168" height="36" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="374" y="173" text-anchor="middle" font-size="13" fill="var(--dg-ink)">model call</text>
+        <line x1="374" y1="186" x2="374" y2="194" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="368,194 380,194 374,202" fill="var(--dg-line)"/>
+        <rect x="290" y="196" width="168" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="374" y="218" text-anchor="middle" font-size="13" fill="var(--dg-ink)">tool, with a confirm step</text>
+        <line x1="472" y1="144" x2="482" y2="144" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="482,138 494,144 482,150" fill="var(--dg-line)"/>
+        <rect x="496" y="120" width="128" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="560" y="150" text-anchor="middle" font-size="13" fill="var(--dg-ink)">cited answer</text>
+        <line x1="374" y1="236" x2="374" y2="256" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="4 4"/>
+        <rect x="276" y="258" width="196" height="32" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="374" y="279" text-anchor="middle" font-size="13" fill="var(--dg-ink)">every span traced</text>
+        <rect x="12" y="258" width="200" height="32" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="112" y="279" text-anchor="middle" font-size="13" fill="var(--dg-ink)">golden set + CI gate</text>
+        <polyline points="112,258 112,190 264,190" fill="none" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="4 4"/>
+        <polygon points="264,184 276,190 264,196" fill="var(--dg-line)"/>
+      </svg>
+      <figcaption>Six small pieces, wired end to end — the wiring is the skill you are demonstrating.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Agent or pipeline: decide on paper, once</h4>
+    <p>Back to the rule from Day 16: if you can draw the flowchart, write the flowchart. A pipeline of three fixed model calls is cheaper, faster, testable one step at a time, and structurally incapable of looping forever.</p>
+    <p>An agent loop earns its extra cost in exactly one situation: when the next step genuinely depends on what the last step found. An unknown number of searches. A repair loop. A branch that only the data can choose. If you can name the steps in advance, you do not have that situation.</p>
+    <p>So test your own capstone against that. If the honest answer is always "retrieve, then answer, then check the shape", you have a pipeline. Building a loop around it anyway buys you nothing and costs you extra calls, a longer p95, and a class of bug you cannot reproduce twice.</p>
+    <p>Most good capstones turn out to be a pipeline with one small, bounded agent living inside a single step. That is usually the right shape, and it is worth writing down.</p>
+    <p>So write it down — into your README, on Day 25, one paragraph, with the reason attached. It is the first tradeoff your Day 29 write-up will explain, and writing it while you still remember the alternative is far easier than reconstructing it a week later.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 240" role="img" aria-label="A pipeline runs a fixed sequence of steps, while an agent loop repeats a decide, act and read cycle until a step cap stops it">
+        <text x="20" y="26" font-size="14" fill="var(--dg-ink)">pipeline</text>
+        <rect x="20" y="40" width="130" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="85" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">retrieve</text>
+        <line x1="150" y1="63" x2="172" y2="63" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="172,57 184,63 172,69" fill="var(--dg-line)"/>
+        <rect x="190" y="40" width="130" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="255" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">answer</text>
+        <line x1="320" y1="63" x2="342" y2="63" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="342,57 354,63 342,69" fill="var(--dg-line)"/>
+        <rect x="360" y="40" width="130" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="425" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">check the shape</text>
+        <text x="20" y="112" font-size="13" fill="var(--dg-muted)">a fixed number of calls, testable one at a time</text>
+        <text x="20" y="156" font-size="14" fill="var(--dg-ink)">agent loop</text>
+        <rect x="20" y="170" width="130" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="85" y="198" text-anchor="middle" font-size="13" fill="var(--dg-ink)">decide</text>
+        <line x1="150" y1="193" x2="172" y2="193" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="172,187 184,193 172,199" fill="var(--dg-line)"/>
+        <rect x="190" y="170" width="130" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="255" y="198" text-anchor="middle" font-size="13" fill="var(--dg-ink)">call a tool</text>
+        <line x1="320" y1="193" x2="342" y2="193" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="342,187 354,193 342,199" fill="var(--dg-line)"/>
+        <rect x="360" y="170" width="130" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="425" y="198" text-anchor="middle" font-size="13" fill="var(--dg-ink)">read the result</text>
+        <polyline points="490,193 520,193 520,150 85,150 85,162" fill="none" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="4 4"/>
+        <polygon points="79,162 91,162 85,170" fill="var(--dg-line)"/>
+        <text x="530" y="228" text-anchor="end" font-size="13" fill="var(--dg-muted)">only with a step cap</text>
+      </svg>
+      <figcaption>The loop buys you steps you could not name in advance, and it is the only thing it buys you.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Three days, three modes</h4>
+    <p><strong>Day 25 — skeleton.</strong> The ugliest end-to-end path that works, deployed and traced by evening. Twenty documents, hard-coded. No styling. One question in, one cited answer out, one tool call that does a real thing.</p>
+    <p><strong>Day 26 — quality.</strong> Use it for real, ten times, first thing in the morning. Every failure becomes a golden-set case. Then run the harness, read the failures, label them, and fix by cluster rather than by whichever bug annoyed you most. Feature freeze at the end of this day.</p>
+    <p><strong>Day 27 — ship.</strong> Auth, failure paths, README with real numbers, deploy, and then actually use the thing for a task you needed doing. On this day you fix what is broken, not what is imperfect.</p>
+    <p>Now decide the cuts before you need them. On the morning of Day 25, write a "not doing" list: no multi-user, no billing, no mobile layout, no second data source, no settings page.</p>
+    <p>Because you will fall behind on Day 27 — everyone does — and the list decides in advance what gives way. You cut features. You do not cut the evals, the tracing or the README.</p>
+    <p>So: the feature is only the demo; those three are the proof, and the deadline exists to make you choose between them.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 180" role="img" aria-label="Three days: skeleton deployed on day 25, quality work on day 26, feature freeze then ship on day 27, with a hard stop at the end">
+        <rect x="20" y="50" width="190" height="56" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="115" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Day 25</text>
+        <text x="115" y="94" text-anchor="middle" font-size="13" fill="var(--dg-muted)">skeleton, deployed, traced</text>
+        <rect x="225" y="50" width="190" height="56" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="320" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Day 26</text>
+        <text x="320" y="94" text-anchor="middle" font-size="13" fill="var(--dg-muted)">golden set, fix by cluster</text>
+        <rect x="430" y="50" width="190" height="56" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="525" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Day 27</text>
+        <text x="525" y="94" text-anchor="middle" font-size="13" fill="var(--dg-muted)">auth, README, ship</text>
+        <line x1="425" y1="30" x2="425" y2="50" stroke="var(--dg-accent2)" stroke-width="2"/>
+        <text x="418" y="26" text-anchor="end" font-size="13" fill="var(--dg-ink)">feature freeze</text>
+        <line x1="20" y1="132" x2="620" y2="132" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="620" y1="120" x2="620" y2="144" stroke="var(--dg-ink)" stroke-width="3"/>
+        <text x="614" y="164" text-anchor="end" font-size="13" fill="var(--dg-muted)">hard stop · no extensions</text>
+      </svg>
+      <figcaption>The deadline is a design tool: it decides what the product is, faster than you can.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Write the README first, before any code: one paragraph on the problem, a sketch of the architecture, the agent-or-pipeline decision, and the "not doing" list. Twenty minutes here saves you a day later.</li>
+      <li>Create the repo with tracing wired before the first model call, so you own the traces of your own earliest failures.</li>
+      <li>Build the thinnest path that answers one real question: ingest about twenty documents, retrieve, generate with citations. Deploy it that same afternoon even though it is ugly.</li>
+      <li>Add the one action that turns it into a product. Give it a dry-run mode, and a human confirmation step for anything irreversible.</li>
+      <li>On Day 26 morning, use it ten times for real work. Turn every failure into a golden-set case with the expected answer or the expected source written down.</li>
+      <li>Run the harness, cluster the failures by cause, fix the two biggest clusters, re-run. Wire <code>make eval</code> into CI with a threshold, then break a prompt on purpose to confirm the build actually fails.</li>
+      <li>On Day 27 add auth and per-user scoping, then walk every failure path: provider down, empty retrieval, tool error, oversized input, injected instruction inside a document. Each one has to return something useful.</li>
+      <li>Deploy, use it for something you genuinely needed, and record cost per request, p95 latency and eval score in the README. Commit at the end of Day 27, finished or not.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Restarting on Day 26 because you saw a better architecture. You are two days from a deadline. Write the idea in <code>LOG.md</code>, finish the thing you started, and let the write-up mention what you would do differently.</li>
+      <li>Leaving the golden set until Day 28. Then every change you made on Day 26 was made blind, and you cannot say whether the system got better or only different.</li>
+      <li>Picking a corpus you do not actually have. If it needs scraping, a negotiation, or a day of cleaning, choose a different capstone. Data access is the quiet capstone killer.</li>
+      <li>Saving auth and deploy for the last afternoon. Those two are the most likely to eat six hours, and the most visible when they are missing.</li>
+      <li>Polishing the interface. Streamlit is enough. Nobody reading your write-up will comment on the padding.</li>
+    </ul>
+  </div>

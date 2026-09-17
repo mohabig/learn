@@ -1,0 +1,71 @@
+<p class="day-lede">Third ship day. The repo is an agent with real tools, a harness that scores it, and a gate that blocks a bad change — a rarer combination than it should be. Publish it so a stranger can see all three in two minutes.</p>
+
+  <div class="concept">
+    <h4>The section that does the work is "How I evaluate this"</h4>
+    <p>Most repos show what a system does. Yours shows how you know it works, and that is the part a reader cannot fake having read.</p>
+    <p>So give it its own heading, and put six things under it. How the dataset was built and how many cases it holds. What the assertions check. What the judge asks, and how often it agreed with your own labels. The gate threshold, and why it sits there. The current scores, including the per-cluster breakdown. And the failure clusters you have not fixed yet.</p>
+    <p>That last one feels wrong to write. Write it anyway. Naming what is still broken reads as confidence, not weakness.</p>
+    <p>"22 of 50 failures were retrieval misses; hybrid search cut that to 9; the remaining ones are all tables inside PDFs" is a sentence that ends an interview question early.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="A README stack in which the evaluation section sits in the middle and carries the most weight">
+        <rect x="140" y="30" width="360" height="30" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="320" y="50" text-anchor="middle" font-size="13" fill="var(--dg-ink)">what it does, in one paragraph</text>
+        <rect x="140" y="68" width="360" height="30" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="320" y="88" text-anchor="middle" font-size="13" fill="var(--dg-ink)">an architecture diagram</text>
+        <rect x="140" y="106" width="360" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)" stroke-width="2"/>
+        <text x="320" y="134" text-anchor="middle" font-size="14" fill="var(--dg-ink)">How I evaluate this</text>
+        <rect x="140" y="160" width="360" height="30" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="320" y="180" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the numbers, with denominators</text>
+        <rect x="140" y="198" width="360" height="30" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="320" y="218" text-anchor="middle" font-size="13" fill="var(--dg-ink)">known failure modes</text>
+        <text x="508" y="126" font-size="13" fill="var(--dg-accent2)">the part a</text>
+        <text x="508" y="144" font-size="13" fill="var(--dg-accent2)">reader believes</text>
+      </svg>
+      <figcaption>Everything else in the README is context for the one section that shows your work.</figcaption>
+    </figure>
+    <p>So: the eval section is the README, and the rest is scaffolding around it.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Publish numbers, not adjectives</h4>
+    <p>Five numbers, each with its conditions attached: the eval score with the case count and the date, cost per completed task, p95 latency, the median and worst-case step count for the agent, and what red-teaming found.</p>
+    <p>A number without its denominator is decoration. "0.86 on 40 cases, judge agreement 0.88" beats "high accuracy" by a wide margin, and the reason is simple: the first one can be checked and the second one cannot.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 170" role="img" aria-label="An adjective with nothing behind it beside a score reported with its case count and judge agreement">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">Decoration</text>
+        <rect x="20" y="44" width="260" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="150" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">high accuracy</text>
+        <text x="340" y="30" font-size="13" fill="var(--dg-muted)">A claim someone can check</text>
+        <rect x="340" y="44" width="280" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="480" y="64" text-anchor="middle" font-size="13" fill="var(--dg-ink)">0.86 on 40 cases,</text>
+        <text x="480" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">judge agreement 0.88</text>
+        <text x="20" y="124" font-size="13" fill="var(--dg-ink)">Every number carries its case count, its date, and the model it ran on.</text>
+        <text x="20" y="148" font-size="13" fill="var(--dg-muted)">Then the reader can argue with the number instead of with you.</text>
+      </svg>
+      <figcaption>The denominator is what turns a claim into evidence.</figcaption>
+    </figure>
+    <p>So: write the number, the denominator, and the date, and let the reader do the judging.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Split the repo cleanly: <code>src/</code> for the agent and tools, <code>evals/</code> for the dataset, scorers, and baseline, <code>.github/workflows/</code> for the gate.</li>
+      <li>Check that the repo runs from a fresh clone: install, environment variables documented in <code>.env.example</code>, and one command that produces output.</li>
+      <li>Run the full eval one last time and paste the results table into the README, with the date and the model name.</li>
+      <li>Write the README top to bottom: what it does in one paragraph for a non-expert, an architecture diagram, "How I evaluate this", the numbers, known failure modes, and what you would do with another week.</li>
+      <li>Add the CI badge, and link to the commit where a deliberately worsened prompt blocked the merge. That link is the proof.</li>
+      <li>Confirm no secrets are committed, then scrub the eval dataset of anything private.</li>
+      <li>Deploy the agent behind an interface a stranger can use, with the spend cap and rate limit from yesterday switched on.</li>
+      <li>Write five bullets in <code>LOG.md</code>: what surprised you this week, and which of the four ceilings on your loop fired most often.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Polishing the agent instead of the README. The eval section is the differentiator; the agent is the thing it measures.</li>
+      <li>A public repo with a live deployment and no spend cap. Set the cap before you post the link anywhere.</li>
+      <li>Skipping the fresh-clone test, so the first visitor hits an import error you cannot reproduce.</li>
+    </ul>
+  </div>

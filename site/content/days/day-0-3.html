@@ -1,0 +1,173 @@
+<p class="day-lede">Three things separate code that survives contact with a network from code that doesn't: what happens when a call fails, how one thread does ten things at once, and how you prove tomorrow that it all still works. Today you build a downloader that does all three, and you time it — because the timing is the lesson.</p>
+
+  <div class="concept">
+    <h4>An exception is the second way out of a function</h4>
+    <p>A function has two exits. The one you know is <code>return</code>. The other is a raise, and it does not go back the way it came.</p>
+    <p>When something raises, Python stops mid-function and unwinds the call stack. It discards the current frame and looks in the caller for an <code>except</code> clause whose type matches. If there isn't one, it discards that frame too and looks in the caller's caller. And so on, upward.</p>
+    <p>If nobody matches, the program stops and prints the traceback — the whole chain of frames, oldest first, with the actual error on the last line. So read a Python traceback from the bottom: the bottom line is the error, and the lines above it are the route it took. That is the opposite of an install log, where the cause is at the top.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 240" role="img" aria-label="An exception raised deep in the call stack unwinds upward until a matching except clause catches it">
+        <text x="185" y="26" text-anchor="middle" font-size="13" fill="var(--dg-muted)">call stack</text>
+        <rect x="60" y="40" width="250" height="44" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="185" y="68" text-anchor="middle" font-size="13" fill="var(--dg-muted)">main()</text>
+        <rect x="60" y="110" width="250" height="44" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="185" y="138" text-anchor="middle" font-size="13" fill="var(--dg-ink)">run_all()</text>
+        <rect x="60" y="180" width="250" height="44" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="185" y="208" text-anchor="middle" font-size="13" fill="var(--dg-ink)">fetch()</text>
+        <line x1="44" y1="196" x2="44" y2="134" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="38,134 44,122 50,134" fill="var(--dg-line)"/>
+        <text x="330" y="68" font-size="13" fill="var(--dg-muted)">never sees it</text>
+        <text x="330" y="132" font-size="13" fill="var(--dg-ink)">except TimeoutException:</text>
+        <text x="330" y="150" font-size="13" fill="var(--dg-muted)">unwinding stops here</text>
+        <text x="330" y="208" font-size="13" fill="var(--dg-ink)">raise TimeoutException</text>
+      </svg>
+      <figcaption>The exception travels up one frame at a time and stops at the first clause whose type matches.</figcaption>
+    </figure>
+    <p>Now the rule that saves hours: catch narrowly. <code>except httpx.TimeoutException</code> says you thought about one specific failure and decided what to do about it.</p>
+    <p><code>except Exception</code> says something else entirely. It catches your own typos. It catches your <code>NameError</code>. It catches the bug you'd have found in five seconds from a traceback — and turns it into an hour. A bare <code>except:</code> is worse: it also swallows the interrupt you press to stop the program.</p>
+    <p>And catch only where you can do something useful: retry, substitute a default, record the failure and move on. Anywhere else, let it travel up to code that can. When you re-raise something wrapped in your own error, write <code>raise MyError(...) from err</code> so the original cause stays attached.</p>
+    <p>So: a raise unwinds upward until a matching <code>except</code> stops it, so catch the failure you named, where you can actually act on it.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Context managers guarantee the cleanup</h4>
+    <p>Write <code>with open(path) as f:</code> and two methods run for you: one on the way into the block, one on the way out.</p>
+    <p>Here's the part that matters. The way out includes the exception path. The file closes whether the block finished normally or blew up in the middle — you don't have to remember, and you can't forget.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 250" role="img" aria-label="The same failure with and without a context manager: without one the close never runs, with one the exit closes the socket anyway">
+        <text x="150" y="26" text-anchor="middle" font-size="13" fill="var(--dg-muted)">plain code</text>
+        <rect x="30" y="40" width="240" height="42" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="150" y="66" text-anchor="middle" font-size="13" fill="var(--dg-ink)">open socket</text>
+        <line x1="150" y1="82" x2="150" y2="104" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="144,104 150,116 156,104" fill="var(--dg-line)"/>
+        <rect x="30" y="116" width="240" height="42" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="150" y="142" text-anchor="middle" font-size="13" fill="var(--dg-ink)">something raises</text>
+        <line x1="150" y1="158" x2="150" y2="180" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="144,180 150,192 156,180" fill="var(--dg-line)"/>
+        <rect x="30" y="192" width="240" height="42" rx="6" fill="none" stroke="var(--dg-muted)"/>
+        <text x="150" y="218" text-anchor="middle" font-size="13" fill="var(--dg-muted)">close() is skipped — leak</text>
+        <text x="490" y="26" text-anchor="middle" font-size="13" fill="var(--dg-ink)">async with client:</text>
+        <rect x="370" y="40" width="240" height="42" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="490" y="66" text-anchor="middle" font-size="13" fill="var(--dg-ink)">open socket</text>
+        <line x1="490" y1="82" x2="490" y2="104" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="484,104 490,116 496,104" fill="var(--dg-line)"/>
+        <rect x="370" y="116" width="240" height="42" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="490" y="142" text-anchor="middle" font-size="13" fill="var(--dg-ink)">something raises</text>
+        <line x1="490" y1="158" x2="490" y2="180" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="484,180 490,192 496,180" fill="var(--dg-line)"/>
+        <rect x="370" y="192" width="240" height="42" rx="6" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="490" y="218" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the exit runs — closed</text>
+      </svg>
+      <figcaption>Same failure, two outcomes: the block's exit runs on the exception path too.</figcaption>
+    </figure>
+    <p>This matters more for network clients than for files. An HTTP client holds open sockets. If one raise skips your cleanup, that socket leaks.</p>
+    <p>Do it in a loop over ten thousand URLs and you exhaust the operating system's file handles. The error you get then mentions handles or descriptors — it will not mention the raise three functions away that actually caused it.</p>
+    <p><code>async with httpx.AsyncClient() as client:</code> costs one line and removes the whole category. <code>try/finally</code> is the same guarantee written out by hand.</p>
+    <p>So: <code>with</code> is a promise that the cleanup runs even when the code inside it fails — which is exactly when cleanup otherwise gets skipped.</p>
+  </div>
+
+  <div class="concept">
+    <h4>One thread, ten downloads: what the event loop does</h4>
+    <p>Downloading is mostly waiting. You send a request, and for the next 300 milliseconds your program does nothing at all while bytes travel.</p>
+    <p>Do that ten times in a row and you have spent three seconds being almost entirely idle. No amount of faster code fixes it, because your code was never the bottleneck.</p>
+    <p><code>async def</code> defines a coroutine: a function that can suspend itself partway through. <code>await</code> on an I/O operation means "register interest with the operating system, then hand control back".</p>
+    <p>Hand it back to what? The event loop. It is one thread holding a queue of tasks that are ready to run. It runs one until that task awaits, parks it, and picks up the next. When the operating system reports that a socket has bytes waiting, the parked task goes back in the queue.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 240" role="img" aria-label="One thread pulls a ready task from a queue, parks it when it awaits, and requeues it when the operating system says its data arrived">
+        <rect x="24" y="70" width="170" height="120" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="109" y="94" text-anchor="middle" font-size="13" fill="var(--dg-muted)">ready queue</text>
+        <rect x="44" y="106" width="130" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="109" y="124" text-anchor="middle" font-size="13" fill="var(--dg-ink)">task A</text>
+        <rect x="44" y="134" width="130" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="109" y="152" text-anchor="middle" font-size="13" fill="var(--dg-ink)">task B</text>
+        <rect x="44" y="162" width="130" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="109" y="180" text-anchor="middle" font-size="13" fill="var(--dg-ink)">task C</text>
+        <line x1="194" y1="128" x2="236" y2="128" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="236,122 250,128 236,134" fill="var(--dg-line)"/>
+        <text x="222" y="112" text-anchor="middle" font-size="13" fill="var(--dg-muted)">run</text>
+        <rect x="250" y="100" width="140" height="56" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="320" y="133" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the one thread</text>
+        <line x1="390" y1="128" x2="426" y2="128" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="426,122 440,128 426,134" fill="var(--dg-line)"/>
+        <text x="415" y="112" text-anchor="middle" font-size="13" fill="var(--dg-muted)">await</text>
+        <rect x="440" y="70" width="176" height="120" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="528" y="136" text-anchor="middle" font-size="13" fill="var(--dg-muted)">parked, waiting</text>
+        <line x1="528" y1="190" x2="528" y2="212" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="109" y1="212" x2="528" y2="212" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="109" y1="212" x2="109" y2="202" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="103,202 109,190 115,202" fill="var(--dg-line)"/>
+        <text x="320" y="232" text-anchor="middle" font-size="13" fill="var(--dg-ink)">bytes arrived — back in the queue</text>
+      </svg>
+      <figcaption>Nothing runs in parallel here; the thread simply refuses to sit still while a task waits.</figcaption>
+    </figure>
+    <p>That is why ten downloads started with <code>asyncio.gather</code> finish in about the time of the slowest one, not the sum of all ten. Nothing got faster. The waiting just happened at the same time.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Ten sequential downloads laid end to end compared with ten concurrent downloads overlapping in one short window">
+        <text x="20" y="40" font-size="13" fill="var(--dg-muted)">sync</text>
+        <rect x="90" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="142" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="194" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="246" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="298" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="350" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="402" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="454" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="506" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="558" y="48" width="50" height="26" rx="3" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="350" y="94" text-anchor="middle" font-size="13" fill="var(--dg-ink)">one after another: 3.1 s</text>
+        <text x="20" y="122" font-size="13" fill="var(--dg-muted)">async</text>
+        <rect x="90" y="112" width="62" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="120" width="54" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="128" width="68" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="136" width="49" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="144" width="60" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="152" width="71" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="160" width="52" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="168" width="64" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="176" width="57" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="90" y="184" width="66" height="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="200" y="152" font-size="13" fill="var(--dg-ink)">all ten in flight: 0.42 s</text>
+        <text x="350" y="212" text-anchor="middle" font-size="13" fill="var(--dg-muted)">same requests, same network, same one thread</text>
+      </svg>
+      <figcaption>Concurrency doesn't make any single request faster; it stops you from waiting through them one at a time.</figcaption>
+    </figure>
+    <p>Math gets nothing from this. A loop multiplying numbers never awaits, so it never yields, so the single thread stays occupied and every other task waits behind it. Heavy computation belongs in separate processes.</p>
+    <p>The matching trap looks completely innocent: a blocking call inside a coroutine — <code>time.sleep</code>, or the synchronous <code>requests</code> library. It freezes the entire loop and every task in it, and nothing warns you.</p>
+    <p>This machinery is not a side quest. It is exactly what streams tokens on Day 5 and runs your evals concurrently in Week 3.</p>
+    <p>So: one thread gets a lot done by never standing still while it waits — and one blocking call takes all of that away.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Tests you will actually run</h4>
+    <p><code>pytest</code> finds your tests by name: files called <code>test_*.py</code>, functions called <code>test_*</code>. No base class, no registration.</p>
+    <p>You assert with the plain <code>assert</code> keyword, and pytest rewrites those statements so a failure prints both sides of the comparison instead of just "false". That rewriting is most of the reason to use it.</p>
+    <p>Run everything with <code>pytest</code>. Run one file with <code>pytest tests/test_fetch.py</code>. Run one test with <code>-k name</code>. Add <code>-x</code> to stop at the first failure, which is what you want while you're fixing something.</p>
+    <p>Here's the test worth writing first, though: the failure path. <code>with pytest.raises(TimeoutException):</code> asserts that bad input produces the right error, rather than a crash or — worse — a silently wrong answer that looks fine.</p>
+    <p>One rule about the network. Don't test against the live internet. A test that fails when the wifi drops teaches you nothing and trains you to ignore red, which is an expensive habit. Point it at a local server, or replace the client with a fake.</p>
+    <p>Async tests need a plugin such as <code>pytest-asyncio</code>, because pytest itself is synchronous; see the <a href="https://docs.pytest.org/en/stable/">pytest docs</a>. Days 18 and 19 build the entire eval harness on top of exactly this.</p>
+    <p>So: name the file and the function so pytest finds them, assert plainly, and test the failure you're afraid of.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li><code>uv add httpx pytest pytest-asyncio</code>. Collect ten real URLs in a list.</li>
+      <li>Write the synchronous version first: a loop calling <code>httpx.get(url, timeout=10)</code>. Time it with <code>time.perf_counter</code> and write the number down — you need the baseline to believe the next step.</li>
+      <li>Rewrite it: <code>async def fetch(client, url)</code>, one shared <code>async with httpx.AsyncClient()</code>, and <code>await asyncio.gather(*[fetch(client, u) for u in urls])</code> inside <code>asyncio.run(main())</code>. Time it. Compare.</li>
+      <li>Make failures data instead of crashes. Catch <code>httpx.HTTPError</code> narrowly inside <code>fetch</code> and return a small record: url, status, bytes, error. One dead URL must not lose the other nine.</li>
+      <li>Write <code>test_fetch_success</code> against a local file server or a stubbed client, asserting the status and the byte count.</li>
+      <li>Write <code>test_fetch_timeout</code> using <code>timeout=0.001</code> or a stub that raises, asserting your record comes back with the error set and no exception escaping.</li>
+      <li>Run <code>pytest -x</code>. Then break an assertion on purpose and read exactly what pytest prints — that output is the reason to use it.</li>
+      <li>Record both timings in <code>LOG.md</code> with one sentence explaining the gap in terms of waiting, not speed.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>A blocking call inside a coroutine. Everything still works and nothing is faster, which is the most confusing possible outcome.</li>
+      <li>No timeout on a request. The default in some clients is to wait forever, so one unresponsive server hangs your whole program with no error to read.</li>
+      <li><code>except Exception</code> around the network call, which quietly catches the typo three lines below it.</li>
+      <li>Firing all ten thousand URLs at once with <code>gather</code>. Concurrency still needs a ceiling — a semaphore or a bounded pool — or you get rate-limited and blocked.</li>
+    </ul>
+  </div>

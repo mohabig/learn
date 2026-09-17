@@ -1,0 +1,155 @@
+<p class="day-lede">A prompt that works on your three favorite examples isn't a prompt. It's a coincidence. Today you turn prompting into something you can change on purpose and immediately see the effect of, which is the whole difference between tweaking and engineering.</p>
+
+  <div class="concept">
+    <h4>An output contract, not a wish</h4>
+    <p>Say exactly what you want back. The fields, their order, their length limits, and what the model should do when the input simply doesn't contain one of them.</p>
+    <p>Compare two asks. "Summarize this well" leaves thousands of plausible shapes. "Return a title under 60 characters, then exactly three bullet points, then one sentence starting with 'Unclear:'" leaves very few.</p>
+    <p>Here's why that works, mechanically. The model is choosing a continuation from a probability distribution. A tight contract doesn't make it try harder — it removes most of the wrong shapes from contention before any sampling happens.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="A loose request leaves a wide band of plausible answer shapes while a strict contract leaves only a narrow one">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">ask loosely: summarize this well</text>
+        <rect x="20" y="42" width="596" height="38" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="318" y="66" text-anchor="middle" font-size="13" fill="var(--dg-ink)">every shape in here is a plausible continuation</text>
+        <text x="20" y="122" font-size="13" fill="var(--dg-muted)">ask with a contract: title · 3 bullets · one Unclear line</text>
+        <rect x="20" y="134" width="150" height="38" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="95" y="158" text-anchor="middle" font-size="13" fill="var(--dg-ink)">only these</text>
+        <rect x="176" y="134" width="440" height="38" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="396" y="158" text-anchor="middle" font-size="13" fill="var(--dg-muted)">ruled out before sampling starts</text>
+        <text x="20" y="192" font-size="13" fill="var(--dg-muted)">same model, same effort — a much smaller target to miss</text>
+      </svg>
+      <figcaption>A contract doesn't ask for a better answer; it shrinks the set of answers the model is able to give.</figcaption>
+    </figure>
+    <p>Now a trap that feels like good advice. Negative instructions behave worse than people expect. "Don't apologize" puts the concept of apologizing into the context, and the phrasing you just banned is now sitting nearby in the model's attention.</p>
+    <p>State the positive form instead — "begin with the title, no preamble" — and save one or two sharp negatives for failures you have actually watched happen.</p>
+    <p>So: describe the shape you want, not the shape you're afraid of.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Examples do what explanations can't</h4>
+    <p>A few-shot prompt puts complete input-and-output pairs in front of the real input. They're just more tokens. What makes them work is that they demonstrate the mapping instead of describing it.</p>
+    <p>That difference is bigger than it sounds. Matching a demonstrated pattern is far easier than following a paragraph of rules — for the model, and honestly for you too.</p>
+    <p>So choose your examples at the edges, not in the middle. The ambiguous case. The empty case. The case that should come back "unknown". The case with a trap in it. Three to five is usually enough; past that you're paying rent on those tokens for every future call.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="The range of inputs with a cluster of easy cases in the middle and the hard cases at both ends, where the few-shot examples should be chosen">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">every input you will actually see, laid out end to end</text>
+        <line x1="40" y1="86" x2="600" y2="86" stroke="var(--dg-line)" stroke-width="2"/>
+        <circle cx="255" cy="86" r="6" fill="var(--dg-muted)"/>
+        <circle cx="290" cy="86" r="6" fill="var(--dg-muted)"/>
+        <circle cx="325" cy="86" r="6" fill="var(--dg-muted)"/>
+        <circle cx="360" cy="86" r="6" fill="var(--dg-muted)"/>
+        <text x="307" y="64" text-anchor="middle" font-size="13" fill="var(--dg-muted)">the easy middle: already works</text>
+        <circle cx="60" cy="86" r="8" fill="var(--dg-accent)"/>
+        <circle cx="110" cy="86" r="8" fill="var(--dg-accent)"/>
+        <circle cx="530" cy="86" r="8" fill="var(--dg-accent)"/>
+        <circle cx="580" cy="86" r="8" fill="var(--dg-accent)"/>
+        <text x="40" y="118" font-size="13" fill="var(--dg-ink)">empty · ambiguous</text>
+        <text x="600" y="118" text-anchor="end" font-size="13" fill="var(--dg-ink)">should say unknown · trap</text>
+        <text x="20" y="152" font-size="13" fill="var(--dg-muted)">pick your three to five examples from the ends</text>
+        <text x="20" y="178" font-size="13" fill="var(--dg-muted)">and check they don't all share a property you didn't mean to teach</text>
+      </svg>
+      <figcaption>Examples teach by demonstration, so pick them where the mapping is hard rather than where it is obvious.</figcaption>
+    </figure>
+    <p>The trap here is an accidental shared property. If all four of your examples happen to be short, English, and cheerful, the model copies short, English, and cheerful.</p>
+    <p>Then your long German complaint comes back wrong, for a reason nothing in your prompt mentions and nothing in your prompt can explain.</p>
+    <p>So: examples teach everything they have in common, including the parts you didn't notice putting there.</p>
+  </div>
+
+  <div class="concept">
+    <h4>One call, one job</h4>
+    <p>Quality drops when a single call has to satisfy several goals at once: extract the facts, judge them, decide a tone, and hit a format.</p>
+    <p>Think about why. Each requirement is another chance for the sampled continuation to drift. The chance that all four land together is the product of four smaller chances, and products of numbers under one get small fast.</p>
+    <p>So decompose. Extract to a typed object in one call. Decide in a second. Write the prose in a third.</p>
+    <p>Now every step is separately testable, separately fixable, and often runs on a cheaper model. When something breaks, you know which step broke it.</p>
+    <p>This isn't free — you pay in extra calls and extra latency. So decompose where the failures actually are, not everywhere.</p>
+    <p>So: one call, one job turns a single unexplainable failure into three inspectable ones.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="One call carrying four jobs compared with three chained calls each carrying one job">
+        <text x="20" y="24" font-size="13" fill="var(--dg-muted)">one call, four jobs</text>
+        <rect x="20" y="34" width="300" height="58" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="170" y="60" text-anchor="middle" font-size="14" fill="var(--dg-ink)">extract · judge · write · format</text>
+        <text x="170" y="80" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one slip ruins the whole output</text>
+        <text x="20" y="124" font-size="13" fill="var(--dg-muted)">three calls, one job each</text>
+        <rect x="20" y="134" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="95" y="161" text-anchor="middle" font-size="14" fill="var(--dg-ink)">extract</text>
+        <line x1="170" y1="156" x2="200" y2="156" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="200,150 212,156 200,162" fill="var(--dg-line)"/>
+        <rect x="216" y="134" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="291" y="161" text-anchor="middle" font-size="14" fill="var(--dg-ink)">judge</text>
+        <line x1="366" y1="156" x2="396" y2="156" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="396,150 408,156 396,162" fill="var(--dg-line)"/>
+        <rect x="412" y="134" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="487" y="161" text-anchor="middle" font-size="14" fill="var(--dg-ink)">write</text>
+      </svg>
+      <figcaption>Splitting the work turns one unexplainable failure into three you can inspect one at a time.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Reasoning is tokens, and tokens are money</h4>
+    <p>Asking a model to work step by step makes it generate intermediate tokens. Those tokens become part of the context it reads while producing the final answer. That's the whole mechanism: it gets to think on paper.</p>
+    <p>It genuinely helps when the answer isn't determined by the input alone. Multi-step arithmetic. Constraint satisfaction. A classification that needs a policy applied to a case that's honestly ambiguous.</p>
+    <p>It helps almost nothing when the answer is already sitting in the input. Pulling a date out of an invoice. Mapping text onto one of five obvious labels. Reformatting. There you pay for hundreds of extra tokens and added latency to arrive at the same result.</p>
+    <p>Reasoning models make the bill explicit with an effort or thinking setting. The internal tokens are billed, and often not even shown to you.</p>
+    <p>Don't argue about this with anyone, including yourself. Measure it. Run your 20 cases with reasoning on and off, and compare accuracy against tokens spent.</p>
+    <p>So: if the accuracy is equal, reasoning is a tax.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Prompts are code</h4>
+    <p>Move every prompt out of f-strings and into files: <code>prompts/summarize.v3.md</code>, loaded and rendered by one small function that fills in the variables.</p>
+    <p>Store the version string alongside every result you produce. Now a prompt change is a diff you can read, a rollback is a checkout, and any output you're holding can be traced back to the exact text that made it.</p>
+    <p>The other half is the case file: 20 real inputs in one <code>.jsonl</code> file, and a runner that executes the prompt across all of them and writes <code>results.v3.json</code>.</p>
+    <p>Watch what that buys you. Changing a prompt now means diffing two result files and seeing precisely which cases moved, and in which direction.</p>
+    <p>Why twenty? Small enough to eyeball in one sitting, big enough to catch the fix that quietly breaks two other things. This is the seed of the eval harness you build in Week 3.</p>
+    <p>So: once the prompt is a file and the inputs are a file, prompting stops being a feeling and becomes a diff.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 170" role="img" aria-label="Prompt text copied into three source files compared with one versioned prompt file plus a case file feeding a runner">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">before</text>
+        <rect x="86" y="12" width="104" height="32" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="138" y="33" text-anchor="middle" font-size="13" fill="var(--dg-muted)">app.py</text>
+        <rect x="200" y="12" width="104" height="32" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="252" y="33" text-anchor="middle" font-size="13" fill="var(--dg-muted)">worker.py</text>
+        <rect x="314" y="12" width="104" height="32" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="366" y="33" text-anchor="middle" font-size="13" fill="var(--dg-muted)">notebook</text>
+        <text x="430" y="33" font-size="13" fill="var(--dg-muted)">same prompt, three copies</text>
+        <text x="20" y="112" font-size="13" fill="var(--dg-muted)">after</text>
+        <rect x="86" y="70" width="150" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="161" y="93" text-anchor="middle" font-size="13" fill="var(--dg-ink)">summarize.v3.md</text>
+        <rect x="86" y="118" width="150" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="161" y="141" text-anchor="middle" font-size="13" fill="var(--dg-ink)">cases.jsonl</text>
+        <line x1="236" y1="88" x2="278" y2="102" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="236" y1="136" x2="278" y2="122" stroke="var(--dg-line)" stroke-width="2"/>
+        <rect x="286" y="82" width="110" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="341" y="117" text-anchor="middle" font-size="14" fill="var(--dg-ink)">runner</text>
+        <line x1="396" y1="112" x2="428" y2="112" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="428,106 440,112 428,118" fill="var(--dg-line)"/>
+        <rect x="446" y="92" width="170" height="40" rx="6" fill="none" stroke="var(--dg-accent)"/>
+        <text x="531" y="117" text-anchor="middle" font-size="13" fill="var(--dg-ink)">results.v3.json</text>
+      </svg>
+      <figcaption>Once the prompt is a file and the inputs are a file, a change becomes a diff.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Create a <code>prompts/</code> folder. Move yesterday's prompt into <code>summarize.v1.md</code> with a placeholder for the input.</li>
+      <li>Write a loader: read the file, fill placeholders, return the text plus the version string. No prompt text anywhere else in the codebase.</li>
+      <li>Collect 20 real inputs into <code>cases.jsonl</code>, one object per line with an id and the raw text. Include three you expect to fail, so the file has an edge.</li>
+      <li>Write a runner that loops the cases, calls the model, and writes one result file per prompt version, recording output, tokens, cost, and latency for each case.</li>
+      <li>Add few-shot examples and a strict output contract as <code>summarize.v2.md</code>. Run it. Diff the two result files by case id.</li>
+      <li>Split one overloaded prompt into two calls and measure whether the split actually helped, in accuracy and in cost.</li>
+      <li>Run the reasoning comparison: same cases, step-by-step instruction on and off. Record accuracy and token counts side by side.</li>
+      <li>Commit the prompts, the cases, and the result files. The result files are evidence.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Editing a prompt and a case file in the same commit, so you can't tell whether the score moved because of the prompt or the data.</li>
+      <li>Judging by reading three outputs. Twenty cases exist so that you notice the two that quietly got worse.</li>
+      <li>Piling on instructions. A prompt with 30 rules contradicts itself somewhere, and the model resolves the contradiction unpredictably.</li>
+      <li>Few-shot examples that are subtly wrong. The model copies the mistake faithfully, and you will blame the model.</li>
+    </ul>
+  </div>

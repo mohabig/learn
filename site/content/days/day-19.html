@@ -1,0 +1,166 @@
+<p class="day-lede">Yesterday you learned what to measure. Today you make the measuring automatic, so it happens on every commit whether or not you feel like it. By tonight, making a prompt worse on purpose should block your own merge.</p>
+
+  <div class="concept">
+    <h4>A harness is five parts, and none of them are clever</h4>
+    <p>Five parts, in a line: dataset, runner, scorers, metrics, gate. Take them one at a time.</p>
+    <p>The <strong>dataset</strong> is a JSON-lines file, one case per line: the input, any fixed setup, and whatever ground truth you have — the correct source chunk, the expected field values, the end state a successful agent run should reach. Forty cases is a real dataset. Every production failure you see afterward gets appended, so it only ever grows.</p>
+    <p>The <strong>runner</strong> executes your system on each case, several at a time, and records everything: the output, the tool calls, tokens in and out, cost, and wall-clock time. One row per case, written to a results file.</p>
+    <p>Notice what the runner does not do. It does not score anything. Keeping running and scoring apart means you can re-score an old run with a better rubric for free, without paying for the model calls a second time.</p>
+    <p>The <strong>scorers</strong> are functions that take a result row and return a number or a boolean: assertions first, then the judge you validated yesterday.</p>
+    <p>The <strong>metrics</strong> step adds them up — the overall score, a score per error cluster from Day 18, cost per case, and p95 latency, which is a short way of saying the slowest one in twenty.</p>
+    <p>The <strong>gate</strong> compares those numbers to a committed baseline file and exits with a failure code if things got worse. That is the piece that turns a measurement into a rule.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Five stage pipeline from dataset to runner to scorers to metrics to a gate that blocks a merge">
+        <rect x="16" y="40" width="110" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="71" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">dataset</text>
+        <text x="71" y="108" text-anchor="middle" font-size="13" fill="var(--dg-muted)">40 cases</text>
+        <line x1="126" y1="65" x2="132" y2="65" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="132,59 146,65 132,71" fill="var(--dg-line)"/>
+        <rect x="146" y="40" width="110" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="201" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">runner</text>
+        <text x="201" y="108" text-anchor="middle" font-size="13" fill="var(--dg-muted)">runs your system</text>
+        <line x1="256" y1="65" x2="262" y2="65" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="262,59 276,65 262,71" fill="var(--dg-line)"/>
+        <rect x="276" y="40" width="110" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="331" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">scorers</text>
+        <text x="331" y="108" text-anchor="middle" font-size="13" fill="var(--dg-muted)">assert + judge</text>
+        <line x1="386" y1="65" x2="392" y2="65" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="392,59 406,65 392,71" fill="var(--dg-line)"/>
+        <rect x="406" y="40" width="110" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="461" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">metrics</text>
+        <text x="461" y="108" text-anchor="middle" font-size="13" fill="var(--dg-muted)">score, cost, p95</text>
+        <line x1="516" y1="65" x2="522" y2="65" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="522,59 536,65 522,71" fill="var(--dg-line)"/>
+        <rect x="536" y="40" width="88" height="50" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="580" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">gate</text>
+        <line x1="580" y1="90" x2="580" y2="128" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="574,128 580,140 586,128" fill="var(--dg-line)"/>
+        <rect x="396" y="146" width="228" height="52" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="510" y="170" text-anchor="middle" font-size="13" fill="var(--dg-ink)">worse than the baseline?</text>
+        <text x="510" y="190" text-anchor="middle" font-size="13" fill="var(--dg-ink)">exit nonzero, block the merge</text>
+      </svg>
+      <figcaption>Running and scoring stay separate, so a better rubric can re-score yesterday's run for free.</figcaption>
+    </figure>
+    <p>So: five small pieces, each boring on its own, and the boringness is exactly why it keeps running.</p>
+  </div>
+
+  <div class="concept">
+    <h4>The gate, and the noise you have to beat</h4>
+    <p>A gate is only useful if it fires on real regressions and stays quiet otherwise. So before you pick a threshold, measure your own noise.</p>
+    <p>Run the unchanged system three times and look at the spread. If the score wobbles between 0.83 and 0.86 with no code change at all, then a threshold of 0.01 will fail builds at random.</p>
+    <p>And a gate that fails at random gets ignored, then bypassed, then deleted. You have to earn the right to block a merge.</p>
+    <p>First shrink the noise where you can: temperature 0 for anything deterministic, fixed seeds, a frozen retrieval index.</p>
+    <p>Then set the threshold outside whatever noise is left. Something like: fail if the overall score drops more than 0.02 below the committed baseline, or if any single cluster drops more than 0.05.</p>
+    <p>That second rule is the one people skip, and it is the one that catches real damage. An average can hold perfectly steady while your refusal rate doubles.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Eval score plotted per commit against a baseline band, with the last commit falling below the threshold and failing the build">
+        <line x1="60" y1="30" x2="60" y2="180" stroke="var(--dg-line)" stroke-width="1"/>
+        <line x1="60" y1="180" x2="612" y2="180" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="52" y="46" text-anchor="end" font-size="13" fill="var(--dg-muted)">0.90</text>
+        <text x="52" y="184" text-anchor="end" font-size="13" fill="var(--dg-muted)">0.70</text>
+        <line x1="60" y1="82" x2="612" y2="82" stroke="var(--dg-muted)" stroke-width="1" stroke-dasharray="5 4"/>
+        <text x="150" y="76" font-size="13" fill="var(--dg-muted)">baseline 0.84</text>
+        <line x1="60" y1="96" x2="612" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="410" y="114" font-size="13" fill="var(--dg-muted)">gate: fail below 0.82</text>
+        <polyline points="100,82 180,75 260,82 340,68 420,75 500,68 580,110" fill="none" stroke="var(--dg-accent)" stroke-width="2"/>
+        <circle cx="100" cy="82" r="5" fill="var(--dg-accent)"/>
+        <circle cx="180" cy="75" r="5" fill="var(--dg-accent)"/>
+        <circle cx="260" cy="82" r="5" fill="var(--dg-accent)"/>
+        <circle cx="340" cy="68" r="5" fill="var(--dg-accent)"/>
+        <circle cx="420" cy="75" r="5" fill="var(--dg-accent)"/>
+        <circle cx="500" cy="68" r="5" fill="var(--dg-accent)"/>
+        <circle cx="580" cy="110" r="7" fill="var(--dg-accent2)"/>
+        <text x="580" y="136" text-anchor="middle" font-size="13" fill="var(--dg-ink)">build blocked</text>
+        <text x="336" y="204" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one eval run per commit</text>
+      </svg>
+      <figcaption>The threshold sits outside your measured noise, so a failure means something real changed.</figcaption>
+    </figure>
+    <p>So: measure the wobble first, draw the line outside it, and gate on the clusters as well as the headline.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Fast enough that nobody disables it</h4>
+    <p>An eval that takes 20 minutes and two dollars per push gets switched off within a week. Not by a decision — by a Friday afternoon.</p>
+    <p>So split it in two. A smoke set: 15 cases, assertions only, finishing in under two minutes, on every push. And the full set with the judge, run nightly and before any release.</p>
+    <p>Then cache aggressively. Key each model call by a hash of the prompt, the model name, and the parameters, and store the response.</p>
+    <p>Re-running an unchanged case now costs nothing, which means the only cases you pay for are the ones your change actually touched. That is the difference between an eval you run and an eval you keep meaning to run.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="A fifteen-case assertion-only smoke set on every push, beside the full forty-case judged set run nightly, with a cache making unchanged cases free">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">On every push</text>
+        <rect x="20" y="44" width="280" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="160" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">15 cases, assertions only</text>
+        <text x="160" y="90" text-anchor="middle" font-size="13" fill="var(--dg-ink)">under two minutes, free</text>
+        <text x="340" y="30" font-size="13" fill="var(--dg-muted)">Nightly and before a release</text>
+        <rect x="340" y="44" width="280" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="480" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">40 cases, judge included</text>
+        <text x="480" y="90" text-anchor="middle" font-size="13" fill="var(--dg-ink)">minutes, and cents</text>
+        <text x="20" y="142" font-size="13" fill="var(--dg-ink)">A cache keyed by prompt, model and settings makes an unchanged case free.</text>
+        <text x="20" y="166" font-size="13" fill="var(--dg-muted)">So you only pay for the cases your change actually touched.</text>
+      </svg>
+      <figcaption>Two speeds and a cache: the fast one guards every push, the slow one guards the release.</figcaption>
+    </figure>
+    <p>Run cases concurrently while you are at it. Forty cases at 8 in flight is 5 rounds, not 40.</p>
+    <p>Print a compact table at the end with score, cost per case, and p95 latency, and write the same numbers as JSON for the gate to read.</p>
+    <p>So: make it cheap and fast enough to be boring, and it will still be running a month from now.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Test the test, on purpose</h4>
+    <p>An eval nobody has ever seen fail is not known to work. It is only known to be quiet.</p>
+    <p>So sabotage it deliberately. Delete the sentence in your prompt that requires citations, or drop the reranker, and run <code>make eval</code>. The score should fall, and the gate should stop the merge.</p>
+    <p>If it stays clean, your eval does not measure what you thought it measured. It is usually one of three things: the cases are too easy, the scorer never actually checks the property, or the judge passes everything.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="Breaking the prompt on purpose either makes the score fall and the gate fire, or leaves the score unchanged, which means the eval is blind">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">You remove the citation rule, and…</text>
+        <rect x="20" y="44" width="150" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="95" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">worse prompt</text>
+        <line x1="170" y1="66" x2="196" y2="66" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="196,60 210,66 196,72" fill="var(--dg-line)"/>
+        <rect x="210" y="44" width="150" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="285" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the score falls</text>
+        <line x1="360" y1="66" x2="386" y2="66" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="386,60 400,66 386,72" fill="var(--dg-line)"/>
+        <rect x="400" y="44" width="180" height="44" rx="8" fill="none" stroke="var(--dg-good)" stroke-width="2"/>
+        <text x="490" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the gate blocks it</text>
+        <line x1="20" y1="110" x2="620" y2="110" stroke="var(--dg-line)" stroke-width="1"/>
+        <text x="20" y="134" font-size="13" fill="var(--dg-muted)">…or nothing happens, which is the real finding</text>
+        <rect x="20" y="146" width="150" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="95" y="174" text-anchor="middle" font-size="13" fill="var(--dg-ink)">worse prompt</text>
+        <line x1="170" y1="168" x2="196" y2="168" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="196,162 210,168 196,174" fill="var(--dg-line)"/>
+        <rect x="210" y="146" width="150" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="285" y="174" text-anchor="middle" font-size="13" fill="var(--dg-ink)">score unchanged</text>
+        <line x1="360" y1="168" x2="386" y2="168" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="386,162 400,168 386,174" fill="var(--dg-line)"/>
+        <rect x="400" y="146" width="180" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="490" y="174" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your eval is blind</text>
+      </svg>
+      <figcaption>The green build only means something once you have watched a deliberate mistake turn it red.</figcaption>
+    </figure>
+    <p>Fix it today, while the sabotage is still in your working tree and you can see exactly what went uncaught. This exercise is the difference between owning an eval suite and owning a folder named "evals".</p>
+    <p>So: break it on purpose once, or you will never know what a passing build is telling you.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Create <code>evals/dataset.jsonl</code> for the agent: multi-step tasks with a checkable end state, such as a file that must exist with a specific field in it.</li>
+      <li>Reuse your Day 11 golden set as the RAG dataset so both systems share one harness.</li>
+      <li>Write the runner with a concurrency limit and a response cache keyed by prompt hash. Save results to a timestamped file.</li>
+      <li>Write <code>evals/scorers.py</code>: assertions first, then the validated judge, each returning a score and a short reason string.</li>
+      <li>Aggregate into overall score, per-cluster scores from your Day 18 labels, cost per case, and p95 latency; print a table and write JSON.</li>
+      <li>Add <code>make eval</code> and <code>make eval-smoke</code>. Commit <code>evals/baseline.json</code> with today's numbers.</li>
+      <li>Add a CI job that runs the smoke set on every push and the full set nightly, with API keys from repository secrets and a spend cap.</li>
+      <li>Break a prompt on purpose, push it, and confirm the job stops the merge. Revert, confirm it passes, and put that story in your README.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>A threshold tighter than the noise. Random failures teach everyone to bypass the gate, which is worse than having none.</li>
+      <li>Gating on the average only, so one cluster can collapse invisibly behind a steady headline number.</li>
+      <li>Silent judge drift. When the judge model changes, re-run your human-labeled 40 and check agreement before trusting a single score.</li>
+      <li>An eval that never grows. Every failure a user reports should land in the dataset the same day.</li>
+    </ul>
+  </div>

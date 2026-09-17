@@ -1,0 +1,149 @@
+<p class="day-lede">Models now read hundreds of pages in a single call, and that quietly changes what you should build. For a large class of problems, the retrieval pipeline you were about to spend a week on is unnecessary. Today you put documents straight in the prompt, budget the space, and make the repeats nearly free.</p>
+
+  <div class="concept">
+    <h4>A page is tokens too</h4>
+    <p>An image doesn't escape the token meter. It gets cut into a grid of small square patches, each patch becomes a vector, and each vector occupies token slots.</p>
+    <p>So a bigger image means more patches and more tokens, until you cross a limit and the provider downscales it for you. A full page scan typically costs one to two thousand tokens. Which means photographing a table is not cheaper than typing it.</p>
+    <p>PDFs travel two different paths, and you should pick deliberately rather than by accident. Extract the text layer — fast, exact, cheap, and it throws the layout away. Or render each page as an image — expensive, but now the model sees the table structure, the checked box, the signature.</p>
+    <p>Many providers do both automatically, and bill you for both.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A PDF taking two paths: text extraction which is cheap but drops layout, and page images which cost far more but preserve structure">
+        <rect x="20" y="80" width="110" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="75" y="110" text-anchor="middle" font-size="14" fill="var(--dg-ink)">your PDF</text>
+        <polyline points="130,105 165,105 165,55 194,55" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="194,49 206,55 194,61" fill="var(--dg-line)"/>
+        <polyline points="130,105 165,105 165,165 194,165" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="194,159 206,165 194,171" fill="var(--dg-line)"/>
+        <rect x="210" y="32" width="200" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="310" y="60" text-anchor="middle" font-size="13" fill="var(--dg-ink)">extract the text layer</text>
+        <text x="426" y="52" font-size="13" fill="var(--dg-muted)">cheap and exact</text>
+        <text x="426" y="72" font-size="13" fill="var(--dg-muted)">layout thrown away</text>
+        <rect x="210" y="142" width="200" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="310" y="170" text-anchor="middle" font-size="13" fill="var(--dg-ink)">render the page as an image</text>
+        <text x="426" y="162" font-size="13" fill="var(--dg-muted)">1,000–2,000 tokens a page</text>
+        <text x="426" y="182" font-size="13" fill="var(--dg-muted)">tables and checkboxes survive</text>
+        <text x="20" y="205" font-size="13" fill="var(--dg-muted)">a scanned page has no text layer at all, so the top path returns nothing</text>
+      </svg>
+      <figcaption>Two paths out of the same file, and the cheap one silently returns nothing on a scan.</figcaption>
+    </figure>
+    <p>That's the trap, in fact: the scanned PDF. It has no text layer, so a text extractor returns empty strings and your pipeline cheerfully summarizes nothing at all.</p>
+    <p>So: print the extracted character count per page before you call anything — one line of code that catches a whole category of silent failure.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Budget the window</h4>
+    <p>The context window is one shared space, and everything competes for it: your system prompt, the documents, the conversation history, any internal reasoning tokens, and the answer itself.</p>
+    <p>So if the window is 200,000 tokens and your document is 190,000, there is no room left to write with. Decide the reserve for output first. Then fill what's left.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 180" role="img" aria-label="A context window bar divided into document tokens, task instructions, reserved output space, and unused room">
+        <text x="20" y="32" font-size="13" fill="var(--dg-muted)">context window: 200,000 tokens</text>
+        <rect x="20" y="46" width="340" height="46" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="362" y="46" width="56" height="46" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="420" y="46" width="96" height="46" rx="6" fill="none" stroke="var(--dg-good)"/>
+        <rect x="518" y="46" width="100" height="46" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="190" y="114" text-anchor="middle" font-size="13" fill="var(--dg-ink)">document 45,000</text>
+        <text x="390" y="114" text-anchor="middle" font-size="13" fill="var(--dg-ink)">task 1k</text>
+        <text x="468" y="114" text-anchor="middle" font-size="13" fill="var(--dg-ink)">output 4k</text>
+        <text x="568" y="114" text-anchor="middle" font-size="13" fill="var(--dg-muted)">spare</text>
+        <text x="20" y="152" font-size="13" fill="var(--dg-muted)">the model reads all of it, and the answer has to fit in what you left over</text>
+      </svg>
+      <figcaption>Reserve the output space before you decide how much document you can afford.</figcaption>
+    </figure>
+    <p>Quality also degrades well before you reach the hard limit, which is the part people miss. Facts buried in the middle of a very long input are recalled less reliably than facts near the beginning or the end. That's the "lost in the middle" effect.</p>
+    <p>Two practical consequences fall straight out of it. Put the instructions and the question after the document, where they sit closest to where generation begins. And put the document you care most about first.</p>
+    <p>So: reserve the answer's room before you spend the input's, and keep what matters at the edges.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Prompt caching, and why order suddenly matters</h4>
+    <p>Reading your input is real computation. The result is internal state the model builds up as it goes.</p>
+    <p>Prompt caching stores that state for a prefix of your request. If the next request starts with byte-identical content, the provider resumes from the stored state instead of recomputing it.</p>
+    <p>The savings are large. Cached input bills at roughly a tenth of the normal rate, writing to the cache costs slightly more than normal input, and time to first token drops sharply on a hit.</p>
+    <p>Now, the word doing all the work here is <strong>prefix</strong>. Caching matches from the start of the request forward, and stops at the first byte that differs.</p>
+    <p>Your whole structure follows from that one fact. Stable content first — tool definitions, system prompt, the document. Volatile content last — the user's question, the timestamp, the request id.</p>
+    <p>Watch how easy this is to break: put <code>datetime.now()</code> at the top of your system prompt and you have disabled caching for your entire application, while everything still looks like it works.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Two calls sharing an identical prefix, where the second call reads the prefix from cache and only the trailing question is new">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">call 1</text>
+        <rect x="20" y="42" width="380" height="44" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="210" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">system + tools + document (stable prefix)</text>
+        <rect x="404" y="42" width="212" height="44" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="510" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">question</text>
+        <text x="20" y="126" font-size="13" fill="var(--dg-muted)">call 2</text>
+        <rect x="20" y="138" width="380" height="44" rx="6" fill="none" stroke="var(--dg-good)"/>
+        <text x="210" y="166" text-anchor="middle" font-size="13" fill="var(--dg-ink)">same bytes: read from cache, about a tenth the price</text>
+        <rect x="404" y="138" width="212" height="44" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="510" y="166" text-anchor="middle" font-size="13" fill="var(--dg-ink)">new question</text>
+        <text x="20" y="208" font-size="13" fill="var(--dg-muted)">one changed byte anywhere in the prefix and both calls pay full price</text>
+      </svg>
+      <figcaption>Caching matches forward from the first byte, so anything that changes belongs at the end.</figcaption>
+    </figure>
+    <p>Two more limits worth holding: caches expire after minutes, and very short prefixes aren't cached at all.</p>
+    <p>So verify instead of assuming. The response reports cache-read and cache-write tokens, and a cache-read of zero across repeated calls means something in your prefix is changing. See <a href="https://docs.claude.com/en/docs/build-with-claude/prompt-caching">the caching docs</a>.</p>
+    <p>So: put what never changes at the front, and trust the cache-read number rather than your memory of what you put where.</p>
+  </div>
+
+  <div class="concept">
+    <h4>When the whole document beats retrieval</h4>
+    <p>Retrieval exists for one reason: you can't fit a million documents in a prompt. If you don't have a million documents, you may not need it.</p>
+    <p>Put the whole thing in when the corpus is a handful of documents, or one per request. When the question needs the whole text — a summary, a cross-reference, "what's missing from this contract". And while you're still learning what the real questions even look like.</p>
+    <p>Run the numbers instead of arguing. Sixty pages is roughly 45,000 tokens. At $3 per million that's about 13 cents a call, and about 1.3 cents on a cache hit.</p>
+    <p>Now set that against a retrieval pipeline: a week of your work, plus its own failure modes — bad chunking, missed matches, stale indexes — every one of which you then have to evaluate.</p>
+    <p>It flips when the corpus is hundreds of documents, when different users may see different subsets, or when your latency budget can't absorb 45,000 tokens per request. That's Week 2, built knowing exactly what it bought you.</p>
+    <p>So: the cheapest retrieval system is the one the numbers told you not to build yet.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Citations you can check</h4>
+    <p>A summary with page numbers looks trustworthy. That's the hazard — looking trustworthy and being checkable are different properties, and only one of them is yours.</p>
+    <p>So put the citation in the schema: a quoted span plus a page number for every claim. Then verify in code that the quoted string actually appears on that page of your extracted text.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Each claim carries a page number and a quote, which a plain string search either finds on that page or flags">
+        <rect x="20" y="52" width="190" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="115" y="76" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one finding</text>
+        <text x="115" y="98" text-anchor="middle" font-size="13" fill="var(--dg-ink)">claim · page 12 · quote</text>
+        <line x1="210" y1="82" x2="238" y2="82" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="238,76 250,82 238,88" fill="var(--dg-line)"/>
+        <rect x="254" y="52" width="150" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="329" y="76" text-anchor="middle" font-size="13" fill="var(--dg-ink)">string search</text>
+        <text x="329" y="98" text-anchor="middle" font-size="13" fill="var(--dg-muted)">in page 12's text</text>
+        <polyline points="404,82 424,82 424,48 440,48" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="440,42 452,48 440,54" fill="var(--dg-line)"/>
+        <polyline points="404,82 424,82 424,138 440,138" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="440,132 452,138 440,144" fill="var(--dg-line)"/>
+        <rect x="456" y="26" width="164" height="44" rx="8" fill="none" stroke="var(--dg-good)"/>
+        <text x="538" y="53" text-anchor="middle" font-size="13" fill="var(--dg-ink)">found: keep it</text>
+        <rect x="456" y="116" width="164" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="538" y="143" text-anchor="middle" font-size="13" fill="var(--dg-muted)">missing: flag or drop</text>
+        <text x="20" y="188" font-size="13" fill="var(--dg-muted)">ten lines of code, and the page number stops being decoration</text>
+      </svg>
+      <figcaption>A quote you can search for is the difference between a citation and a costume.</figcaption>
+    </figure>
+    <p>The verification really is just a string search. Ten lines of work, and it turns a claim into a checkable one. Flag or drop any claim whose quote doesn't match.</p>
+    <p>Some providers return citation objects natively, with character or page locations. That saves you the schema work. It does not save you the checking.</p>
+    <p>So: an unverified citation makes a wrong answer more convincing, not less.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Choose a PDF you care about, 20 to 60 pages. Extract per-page text and print the character count per page, so a scanned page is obvious immediately.</li>
+      <li>Count the whole document with your provider's token-counting endpoint. Compare it to your window and your output reserve.</li>
+      <li>Build the prompt in cache-friendly order: system instructions, then the document with page labels, then the question at the very end.</li>
+      <li>Define the output schema from Day 3: a summary, plus a list of findings where each has a claim, a page number, and an exact quote.</li>
+      <li>Turn on prompt caching for the document block. Run the same document with three different questions and record cache-read tokens, cost, and time to first token for each.</li>
+      <li>Write the quote verifier: for every finding, check the quote appears in that page's text. Report the pass rate and print any mismatch.</li>
+      <li>For a scanned page, send it as an image instead and compare the extraction quality and the token cost against the text path.</li>
+      <li>Commit the numbers: tokens per document, cost cached and uncached, citation pass rate.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>A timestamp, a request id, or an unsorted dictionary at the front of the prompt, quietly making every cache hit impossible.</li>
+      <li>Filling the window to the brim and leaving no room for the answer, which shows up as truncated output rather than a clear error.</li>
+      <li>Trusting page numbers nobody verified. Without the quote check, citations are decoration that makes wrong answers more convincing.</li>
+      <li>A scanned PDF that extracts to empty strings, producing a confident summary of nothing at all.</li>
+    </ul>
+  </div>

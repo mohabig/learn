@@ -1,0 +1,186 @@
+<p class="day-lede">Your index answers questions phrased the way the documents are written. Today you fix the ones it gets embarrassingly wrong — the error code, the surname, the part number — and put a slower, smarter model in front of the results.</p>
+
+  <div class="concept">
+    <h4>What a real vector store adds</h4>
+    <p>Move the numpy array into pgvector, Qdrant, or Chroma. Pick in ten minutes and move on; comparing them is not a day's work, and any of the three will do everything this week asks.</p>
+    <p>Underneath, the shape is boring, which is the good news. It is a row per chunk holding an identifier, the vector, the text, and a JSON column of metadata. Search becomes <code>ORDER BY embedding &lt;=&gt; $1 LIMIT 20</code>, and that operator is cosine distance — the same Day 8 dot product, just run closer to the data.</p>
+    <p>So what did you actually gain over the array? Four things, and it's worth naming them one at a time.</p>
+    <p>It survives a restart, so your index stops living inside one Python process. The approximate index keeps search fast as rows grow, which is the thing your matrix multiply eventually can't do. Metadata filters are applied <em>during</em> the search instead of after it, which turns out to matter enormously on Day 13. And upsert-by-identifier makes yesterday's incremental re-index a single call instead of a delete-and-rebuild dance.</p>
+    <p>So: a vector store is the same arithmetic you already wrote, wrapped in durability, an index, filters, and safe updates.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="One row per chunk holding identifier, vector, text and metadata, with the four things a store adds over an in-memory array">
+        <text x="20" y="30" font-size="14" fill="var(--dg-ink)">One row per chunk</text>
+        <rect x="20" y="44" width="90" height="44" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="65" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">id</text>
+        <rect x="118" y="44" width="170" height="44" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="203" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">vector</text>
+        <rect x="296" y="44" width="140" height="44" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="366" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">text</text>
+        <rect x="444" y="44" width="176" height="44" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="532" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">metadata (JSON)</text>
+        <line x1="20" y1="106" x2="620" y2="106" stroke="var(--dg-line)"/>
+        <text x="20" y="132" font-size="13" fill="var(--dg-muted)">survives a restart</text>
+        <text x="330" y="132" font-size="13" fill="var(--dg-muted)">index stays fast as rows grow</text>
+        <text x="20" y="158" font-size="13" fill="var(--dg-muted)">filters run inside the search</text>
+        <text x="330" y="158" font-size="13" fill="var(--dg-muted)">upsert by id, not rebuild</text>
+        <text x="20" y="186" font-size="13" fill="var(--dg-ink)">Not intelligence. Those four.</text>
+      </svg>
+      <figcaption>The store holds the same numbers your array did; what it adds is everything around them.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Why dense search misses names, ids, and rare terms</h4>
+    <p>Remember what an embedding is: lossy compression into a fixed number of slots. It has to preserve meaning, and exact character sequences are the very first thing it throws overboard. Three failures follow directly from that, and you will meet all three.</p>
+    <p>Error codes. To an embedding model, <code>ERR-4021</code> and <code>ERR-4012</code> are the same thing — an error code, roughly this shape. Their vectors sit nearly on top of each other, and ranking one above the other is a coin flip.</p>
+    <p>Rare names. A surname the model barely saw during training has no learned position, so it lands somewhere generic.</p>
+    <p>Short queries. One rare token on its own carries almost no signal to embed in the first place.</p>
+    <p>Now meet BM25, which works the opposite way around. It scores a document from three quantities, and all three are countable — no model involved.</p>
+    <p>First, how often the query's words appear in the document, with diminishing returns: the tenth occurrence adds almost nothing over the ninth. Second, how rare each word is across the whole corpus, so "the" contributes near zero and <code>ERR-4021</code> contributes enormously. Third, the document's length, so long documents don't win just by containing more words.</p>
+    <p>Put plainly: it is exact-token matching that weights rare terms heavily — precisely the inverse of dense retrieval's weakness.</p>
+    <p>So run both. Hybrid search is not hedging your bets. The two methods fail on different inputs, and that is the only reason combining them helps at all.</p>
+    <p>So: dense search knows what you meant, keyword search knows what you typed, and you need both because your users do both.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 320" role="img" aria-label="A question runs down two retrieval lanes, dense and keyword, whose results are fused by rank and then reranked to five chunks">
+        <rect x="250" y="10" width="140" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="320" y="36" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Question</text>
+        <polyline points="320,50 320,66 140,66 140,80" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="134,80 140,90 146,80" fill="var(--dg-line)"/>
+        <polyline points="320,50 320,66 500,66 500,80" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="494,80 500,90 506,80" fill="var(--dg-line)"/>
+        <rect x="40" y="90" width="200" height="82" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="140" y="116" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Dense vectors</text>
+        <text x="140" y="138" text-anchor="middle" font-size="13" fill="var(--dg-muted)">finds paraphrases</text>
+        <text x="140" y="160" text-anchor="middle" font-size="13" fill="var(--dg-muted)">misses ERR-4021</text>
+        <rect x="400" y="90" width="200" height="82" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="500" y="116" text-anchor="middle" font-size="14" fill="var(--dg-ink)">BM25 keywords</text>
+        <text x="500" y="138" text-anchor="middle" font-size="13" fill="var(--dg-muted)">finds ERR-4021</text>
+        <text x="500" y="160" text-anchor="middle" font-size="13" fill="var(--dg-muted)">misses paraphrases</text>
+        <polyline points="140,172 140,196 320,196" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polyline points="500,172 500,196 320,196" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="320" y1="196" x2="320" y2="208" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="314,208 320,218 326,208" fill="var(--dg-line)"/>
+        <rect x="210" y="218" width="220" height="40" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="320" y="244" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Fuse by rank: top 50</text>
+        <line x1="320" y1="258" x2="320" y2="268" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="314,268 320,278 326,268" fill="var(--dg-line)"/>
+        <rect x="180" y="278" width="280" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="320" y="304" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Rerank 50, keep the best 5</text>
+      </svg>
+      <figcaption>Two lanes with opposite blind spots, merged by rank, then re-ordered by a model that reads query and chunk together.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Fusing two ranked lists</h4>
+    <p>You have two lists. You need one. The obvious move is to add the scores together, and it is wrong.</p>
+    <p>Here's why. Cosine similarity lives roughly in 0 to 1. BM25 is unbounded and its range depends on your corpus. Adding them is not combining two opinions — it is silently letting whichever lane happens to have bigger numbers decide everything.</p>
+    <p>Reciprocal rank fusion sidesteps that completely by throwing the scores away. It uses only the positions. For each document, add up <code>1 / (60 + rank)</code> across the lanes it appears in.</p>
+    <p>Run the numbers and the behavior jumps out. Rank 1 scores 1/61 = 0.0164. Rank 5 scores 1/65 = 0.0154. Almost identical.</p>
+    <p>That flattening is the entire point. When first place and fifth place are worth nearly the same, appearing in <em>both</em> lists matters more than topping one of them — which is exactly the behavior you want when the two lanes disagree about a document.</p>
+    <p>The alternative is normalizing each lane's scores into 0-to-1 within the result set, then taking a weighted sum — 0.6 dense plus 0.4 keyword. More tunable, more fragile, and worth doing only once Day 11 can tell you it actually helped.</p>
+    <p>So: fuse on rank, not on score, because ranks from two lanes are comparable and their raw scores never were.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 180" role="img" aria-label="A short cosine scale next to a much longer unbounded BM25 scale, showing that adding the two lets the larger one dominate">
+        <text x="20" y="32" font-size="14" fill="var(--dg-ink)">Two lanes, two rulers</text>
+        <text x="90" y="80" text-anchor="end" font-size="13" fill="var(--dg-ink)">cosine</text>
+        <line x1="106" y1="74" x2="266" y2="74" stroke="var(--dg-accent)" stroke-width="3"/>
+        <text x="106" y="98" text-anchor="middle" font-size="13" fill="var(--dg-muted)">0</text>
+        <text x="266" y="98" text-anchor="middle" font-size="13" fill="var(--dg-muted)">1</text>
+        <text x="90" y="136" text-anchor="end" font-size="13" fill="var(--dg-ink)">BM25</text>
+        <line x1="106" y1="130" x2="606" y2="130" stroke="var(--dg-accent2)" stroke-width="3"/>
+        <text x="106" y="154" text-anchor="middle" font-size="13" fill="var(--dg-muted)">0</text>
+        <text x="420" y="154" font-size="13" fill="var(--dg-muted)">unbounded, depends on your corpus</text>
+        <text x="300" y="32" font-size="13" fill="var(--dg-muted)">add these and the longer ruler wins every time</text>
+      </svg>
+      <figcaption>The two lanes do not share a scale, so any sum of their raw scores is decided by the units.</figcaption>
+    </figure>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="Bars for ranks one through five under reciprocal rank fusion, nearly equal in height, labeled 0.0164 at rank one and 0.0154 at rank five">
+        <text x="20" y="30" font-size="14" fill="var(--dg-ink)">one lane's contribution = 1 / (60 + rank)</text>
+        <rect x="80" y="82" width="60" height="98" fill="var(--dg-accent)"/>
+        <rect x="180" y="84" width="60" height="96" fill="var(--dg-accent)"/>
+        <rect x="280" y="85" width="60" height="95" fill="var(--dg-accent)"/>
+        <rect x="380" y="87" width="60" height="93" fill="var(--dg-accent)"/>
+        <rect x="480" y="88" width="60" height="92" fill="var(--dg-accent)"/>
+        <line x1="60" y1="180" x2="600" y2="180" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="110" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">0.0164</text>
+        <text x="510" y="78" text-anchor="middle" font-size="13" fill="var(--dg-ink)">0.0154</text>
+        <text x="110" y="200" text-anchor="middle" font-size="13" fill="var(--dg-muted)">rank 1</text>
+        <text x="210" y="200" text-anchor="middle" font-size="13" fill="var(--dg-muted)">2</text>
+        <text x="310" y="200" text-anchor="middle" font-size="13" fill="var(--dg-muted)">3</text>
+        <text x="410" y="200" text-anchor="middle" font-size="13" fill="var(--dg-muted)">4</text>
+        <text x="510" y="200" text-anchor="middle" font-size="13" fill="var(--dg-muted)">rank 5</text>
+        <text x="320" y="222" text-anchor="middle" font-size="13" fill="var(--dg-muted)">nearly flat, so being in both lists beats topping one</text>
+      </svg>
+      <figcaption>Reciprocal rank fusion deliberately makes first and fifth place almost equally valuable.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Reranking, and shaping what it sees</h4>
+    <p>Everything so far has used a bi-encoder. Query and chunk are embedded separately, never seen together, and compared with one dot product.</p>
+    <p>That separation is what makes it fast: you embed the corpus once, months before anyone asks the question. It is also what makes it blunt. The chunk's vector was computed with no idea what you would eventually ask.</p>
+    <p>A cross-encoder does the opposite. It reads the query and one chunk together, in a single pass, and outputs one relevance score. Because it sees both at once, it can tell that the "it" in the chunk refers to the thing you asked about.</p>
+    <p>It is far more accurate, and structurally unable to scale. One forward pass per query-chunk pair means 50,000 passes over a 50,000-chunk corpus, per question. That is not a tuning problem, it is arithmetic.</p>
+    <p>So it goes second. Retrieve 50 candidates cheaply, rerank those 50, keep 5. The cost is typically 100 to 400 milliseconds and a small fee, once per query. That's the trade: a fixed slice of latency, spent entirely on fixing the ordering.</p>
+    <p>While you're here, shape the candidate set too — four levers, all cheap. Metadata filters belong inside the search, not after it. Maximal marginal relevance drops near-duplicates, so your five slots hold five different facts instead of one paragraph copied across five documents. Query rewriting turns a follow-up like "what about the second one?" into a standalone question, because that sentence on its own retrieves nothing. And multi-query generates three phrasings, retrieves for each, and fuses them: more recall, more embedding calls.</p>
+    <p>So: cheap retrieval decides what is possible, and the reranker decides what the model actually reads.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A bi-encoder embeds query and chunk separately and compares vectors, while a cross-encoder reads both together and outputs one score">
+        <text x="160" y="28" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Bi-encoder: fast, blunt</text>
+        <rect x="20" y="48" width="86" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="63" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">query</text>
+        <rect x="20" y="100" width="86" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="63" y="124" text-anchor="middle" font-size="13" fill="var(--dg-ink)">chunk</text>
+        <line x1="106" y1="66" x2="128" y2="66" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="128,60 140,66 128,72" fill="var(--dg-line)"/>
+        <line x1="106" y1="118" x2="128" y2="118" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="128,112 140,118 128,124" fill="var(--dg-line)"/>
+        <rect x="140" y="48" width="70" height="36" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="175" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">model</text>
+        <rect x="140" y="100" width="70" height="36" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="175" y="124" text-anchor="middle" font-size="13" fill="var(--dg-ink)">model</text>
+        <text x="222" y="72" font-size="13" fill="var(--dg-muted)">vector</text>
+        <text x="222" y="124" font-size="13" fill="var(--dg-muted)">vector</text>
+        <text x="160" y="176" text-anchor="middle" font-size="13" fill="var(--dg-muted)">compare: one multiply</text>
+        <text x="160" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">corpus embedded once</text>
+        <line x1="320" y1="18" x2="320" y2="204" stroke="var(--dg-line)"/>
+        <text x="480" y="28" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Cross-encoder: slow, sharp</text>
+        <rect x="350" y="56" width="180" height="70" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="440" y="84" text-anchor="middle" font-size="13" fill="var(--dg-ink)">query + chunk</text>
+        <text x="440" y="108" text-anchor="middle" font-size="13" fill="var(--dg-muted)">read as one input</text>
+        <line x1="530" y1="91" x2="548" y2="91" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="548,85 560,91 548,97" fill="var(--dg-line)"/>
+        <rect x="560" y="64" width="60" height="54" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="590" y="96" text-anchor="middle" font-size="13" fill="var(--dg-ink)">score</text>
+        <text x="480" y="176" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one pass per pair</text>
+        <text x="480" y="198" text-anchor="middle" font-size="13" fill="var(--dg-muted)">so only the top 50</text>
+      </svg>
+      <figcaption>The reranker is accurate because it reads both texts together, and slow for exactly the same reason.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Stand up one vector store and load yesterday's chunks with metadata and identifiers. Confirm re-running ingestion updates rather than duplicates.</li>
+      <li>Keep the Day 8 numpy search as a reference. When the store returns something strange, you want a known-good comparison.</li>
+      <li>Add a keyword lane: the store's built-in BM25 or full-text index, or a small local index. Same chunks, same identifiers.</li>
+      <li>Write ten queries the dense lane fails — an error code, a name, a version string — and confirm the keyword lane finds them.</li>
+      <li>Fuse: take the top 50 from each lane and combine with <code>1 / (60 + rank)</code>. Keep the top 50 of the fused list.</li>
+      <li>Add a hosted reranker over those 50 and keep 5. Time the call and write the number down; it is your latency budget's second-largest line.</li>
+      <li>Add a metadata filter to the search path and prove it runs before ranking, not after.</li>
+      <li>Save three retrieval configurations behind one function: dense only, hybrid, hybrid plus rerank. Tomorrow you score all three.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Believing the upgrade worked because your demo query looks better. Two configurations, one query, no measurement — the exact state Day 11 exists to end.</li>
+      <li>Reranking too few candidates. A reranker can only reorder what it receives; if recall at 50 is bad, a perfect reranker changes nothing.</li>
+      <li>Adding the two lanes' raw scores together. Different scales, so one lane silently wins every time.</li>
+      <li>Filtering after retrieval. You ask for 20, the filter removes 18, and the user sees two results.</li>
+    </ul>
+  </div>

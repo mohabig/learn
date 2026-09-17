@@ -1,0 +1,134 @@
+<p class="day-lede">Every model call you have made so far ran on someone else's hardware. Today you run one on your own machine, find out what shrinking a model costs, and build a working picture of how serving works. Timebox it hard — this is the biggest rabbit hole in the plan, and the payoff is two sentences of judgment, not a deployment.</p>
+
+  <div class="concept">
+    <h4>Weights on your own machine</h4>
+    <p>An open-weights model is a file. That is the whole mystery: a few billion numbers, plus a description of how they are arranged. A runner like Ollama or llama.cpp loads the file and does the arithmetic. Type <code>ollama run llama3.1:8b</code> and you get a download and then a prompt. No key, no per-token price, no network.</p>
+    <p>Three things you will notice in the first ten minutes. It is yours — nothing leaves the machine, which in some industries is the only argument that matters. It is slower than you expected, and for a reason worth knowing: the bottleneck is moving weights out of memory, not multiplying them. And an eight-billion-parameter model is visibly weaker than the frontier model you have been calling all month — fine for classifying, shaky on long reasoning.</p>
+    <p>One piece of vocabulary before you go further. "Open weights" is not "open source". You get the numbers. You rarely get the training data, and the license may restrict what you are allowed to do with the model.</p>
+    <p>So: a local model is a file plus a runner, and running one for ten minutes teaches you more about the tradeoff than a week of reading benchmarks.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="A weights file and a runner on your own laptop produce tokens without a key, a bill, or a network hop">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">everything below happens on your laptop</text>
+        <rect x="16" y="40" width="608" height="110" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <rect x="40" y="64" width="150" height="64" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="115" y="92" text-anchor="middle" font-size="13" fill="var(--dg-ink)">weights file</text>
+        <text x="115" y="112" text-anchor="middle" font-size="13" fill="var(--dg-muted)">8 billion numbers</text>
+        <line x1="190" y1="96" x2="214" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="214,90 226,96 214,102" fill="var(--dg-line)"/>
+        <rect x="236" y="64" width="150" height="64" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="311" y="92" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the runner</text>
+        <text x="311" y="112" text-anchor="middle" font-size="13" fill="var(--dg-muted)">does the arithmetic</text>
+        <line x1="386" y1="96" x2="410" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="410,90 422,96 410,102" fill="var(--dg-line)"/>
+        <rect x="432" y="64" width="168" height="64" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="516" y="92" text-anchor="middle" font-size="13" fill="var(--dg-ink)">tokens, slowly</text>
+        <text x="516" y="112" text-anchor="middle" font-size="13" fill="var(--dg-muted)">no key, no bill</text>
+        <text x="16" y="178" font-size="13" fill="var(--dg-muted)">the slow part is moving weights out of memory, not the multiplying</text>
+      </svg>
+      <figcaption>No network hop, no vendor, no per-token price — and that is exactly what you are paying for in speed.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Quantization: fewer bits per weight</h4>
+    <p>Start with the memory arithmetic, because it decides everything else. Each weight is normally stored in 16 bits, which is two bytes. Eight billion weights therefore need about 16 GB of memory just to sit there, before a single token of your context arrives. Most machines do not have that.</p>
+    <p>Quantization stores each weight in fewer bits. Here is the mechanism, and it is simpler than it sounds. Split the weights into blocks. For each block, keep one scale factor plus a small integer per weight. To use a weight, multiply its integer by the block's scale. That is it.</p>
+    <p>Now watch the numbers fall. At 8 bits you halve the memory. At 4 bits you quarter it. Those same eight billion weights land near 4.5 GB — small enough for a laptop, and faster too, because there is less memory to move for every token.</p>
+    <p>What you pay for that is accuracy. Rounding every weight adds a little noise everywhere. On easy work you will not see it at all. It shows up where the model has the least slack: long reasoning, strict output formats, rare names, languages other than English, the far end of a long context.</p>
+    <p>And notice the shape of that failure. It is a slow leak, not a cliff. Nothing breaks loudly, so people quantize hard, feel fine about it, and never find out what it cost them.</p>
+    <p>So measure it instead of feeling it. Run the 4-bit build, the 8-bit build and your hosted model through the same golden set. The usual result: 8-bit is nearly free, 4-bit is a real but acceptable drop, and below 4 bits things get strange in ways your evals catch and you do not.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="An eight billion parameter model needs 16 GB at 16-bit, 8 GB at 8-bit and about 4.5 GB at 4-bit, against an 8 GB memory limit">
+        <text x="16" y="20" font-size="13" fill="var(--dg-muted)">8 billion weights, before any context</text>
+        <text x="16" y="54" font-size="13" fill="var(--dg-ink)">16-bit</text>
+        <text x="16" y="104" font-size="13" fill="var(--dg-ink)">8-bit</text>
+        <text x="16" y="154" font-size="13" fill="var(--dg-ink)">4-bit</text>
+        <rect x="110" y="34" width="480" height="32" rx="4" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="350" y="55" text-anchor="middle" font-size="13" fill="var(--dg-ink)">16 GB</text>
+        <rect x="110" y="84" width="240" height="32" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="230" y="105" text-anchor="middle" font-size="13" fill="var(--dg-ink)">8 GB</text>
+        <rect x="110" y="134" width="135" height="32" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="177" y="155" text-anchor="middle" font-size="13" fill="var(--dg-ink)">4.5 GB</text>
+        <line x1="350" y1="28" x2="350" y2="180" stroke="var(--dg-ink)" stroke-width="2" stroke-dasharray="5 5"/>
+        <text x="358" y="196" font-size="13" fill="var(--dg-muted)">what your 8 GB card can hold</text>
+      </svg>
+      <figcaption>Quantization is first a memory decision — memory decides what runs at all, speed and accuracy follow.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Serving: the KV cache and batching</h4>
+    <p>Here is a puzzle worth sitting with. A hosted API stays fast for a thousand users at once, while your laptop struggles with two. Same arithmetic, wildly different result. Two mechanisms explain the gap.</p>
+    <p>The first is the <strong>KV cache</strong>. To produce token 501, the model looks back at all 500 earlier tokens, and it needs a key vector and a value vector for each of them, in every layer. Recomputing all of that at every step would make a long answer quadratically expensive — the cost of each new token growing with everything before it.</p>
+    <p>So the server computes those vectors once and keeps them. Each new token then costs one fresh step plus a read of what is already stored. The price you pay is memory: the cache grows with tokens times layers times conversations at once, and it is usually what decides how many users fit on a GPU. Not the weights — the cache.</p>
+    <p>The second is <strong>batching</strong>. A GPU running one request is mostly idle, waiting on memory. Run 32 requests together and each step handles 32 tokens for close to the price of one. Throughput multiplies; each individual request gets slightly slower. <a href="https://docs.vllm.ai">vLLM</a>'s trick is continuous batching: requests join and leave between steps instead of waiting for the slowest member of their group.</p>
+    <p>Now put those together and you get the consequence that decides Day 24. Self-hosting is a utilization problem. A GPU costs the same per hour whether you send it one request or five hundred. Providers are cheap because everyone's traffic keeps their batches full. Yours will not.</p>
+    <p>So: speed at scale comes from not repeating work and from never letting the GPU sit idle, and only one of those is something you can buy.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Without a cache each new token recomputes keys and values for every earlier token; with a cache it reads stored pairs and computes only the new one">
+        <text x="20" y="30" font-size="14" fill="var(--dg-ink)">no cache</text>
+        <rect x="20" y="44" width="270" height="66" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="34" y="72" font-size="13" fill="var(--dg-ink)">recompute keys and values</text>
+        <text x="34" y="94" font-size="13" fill="var(--dg-ink)">for all 500 earlier tokens</text>
+        <text x="20" y="132" font-size="13" fill="var(--dg-muted)">work per token grows with length</text>
+        <text x="350" y="30" font-size="14" fill="var(--dg-ink)">KV cache</text>
+        <rect x="350" y="44" width="270" height="66" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="364" y="72" font-size="13" fill="var(--dg-ink)">read 500 stored pairs,</text>
+        <text x="364" y="94" font-size="13" fill="var(--dg-ink)">compute only the new one</text>
+        <text x="350" y="132" font-size="13" fill="var(--dg-muted)">work per token stays flat</text>
+        <line x1="20" y1="152" x2="620" y2="152" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="20" y="176" font-size="13" fill="var(--dg-muted)">the stored pairs grow with tokens × batch size — usually what fills</text>
+        <text x="20" y="194" font-size="13" fill="var(--dg-muted)">the GPU before the weights do</text>
+      </svg>
+      <figcaption>Speed at scale comes from not repeating work and from never letting the GPU idle.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>When self-hosting is actually right</h4>
+    <p><strong>Privacy and compliance.</strong> The data legally or contractually cannot leave your network. This is the most common honest reason, and no cost calculation overrides it — the arithmetic simply does not get a vote.</p>
+    <p><strong>Extreme, steady volume.</strong> Here you do the arithmetic rather than the vibe. A GPU instance at two dollars an hour is about $1,450 a month. If it serves two million requests of your size, that works out to $0.0007 each. Now compare that against your provider's price for the same tokens.</p>
+    <p>The word doing the work in that paragraph is <em>steady</em>. The GPU bills you all month; only the traffic is optional. Below the break-even you are renting idle silicon and calling it savings.</p>
+    <p><strong>Latency floors.</strong> No network hop, no shared queue, nobody ahead of you. A small model on your own hardware answers a routing call in tens of milliseconds, which matters a lot when that call sits in front of everything else you do.</p>
+    <p>Against all three, put the ownership: uptime, capacity planning, upgrades, and the awkward fact that the frontier moves every few months while your deployment sits exactly where you left it.</p>
+    <p>So: say these two sentences cold. "I self-host when the data cannot leave, or when volume is huge and steady. Otherwise I pay per token and spend the time on the product."</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A flat monthly GPU cost line crosses a rising pay-per-token line at a break-even volume, below which the GPU is mostly idle">
+        <text x="20" y="26" font-size="13" fill="var(--dg-muted)">cost per month</text>
+        <line x1="70" y1="30" x2="70" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="70" y1="170" x2="610" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="90" y1="90" x2="600" y2="90" stroke="var(--dg-accent2)" stroke-width="3"/>
+        <text x="600" y="80" text-anchor="end" font-size="13" fill="var(--dg-ink)">own a GPU: $1,450, flat</text>
+        <polyline points="90,165 600,40" fill="none" stroke="var(--dg-accent)" stroke-width="3"/>
+        <text x="330" y="148" font-size="13" fill="var(--dg-ink)">pay per token</text>
+        <line x1="396" y1="60" x2="396" y2="170" stroke="var(--dg-muted)" stroke-width="2" stroke-dasharray="5 5"/>
+        <text x="404" y="56" font-size="13" fill="var(--dg-ink)">break-even</text>
+        <text x="90" y="196" font-size="13" fill="var(--dg-muted)">below here you are renting idle silicon</text>
+        <text x="610" y="196" text-anchor="end" font-size="13" fill="var(--dg-muted)">monthly requests</text>
+      </svg>
+      <figcaption>The GPU bills you all month whether or not the traffic shows up; that is the entire self-hosting decision.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Set a timer for four hours before you install anything. When it rings, commit what you have. This is the day that eats weeks.</li>
+      <li>Install Ollama, pull an 8B model at 4-bit, run one prompt. Note the memory it takes and the tokens per second you get.</li>
+      <li>Point one existing project at it. Local runners expose an interface compatible with the common provider SDK, so this is a base URL and a model name — the payoff for having learned the raw SDK in Week 1.</li>
+      <li>Run your golden set through the local model with your existing harness. Record score, tokens per second and p95.</li>
+      <li>Pull the same model at 8-bit and re-run. One table, three rows: hosted model, local 8-bit, local 4-bit.</li>
+      <li>Read the vLLM docs for thirty minutes — continuous batching and paged attention only, so you can explain the mechanism. Do not deploy it.</li>
+      <li>Work out your own break-even: monthly volume times cost per request, against $1,450 of GPU.</li>
+      <li>Four sentences in <code>LOG.md</code>: what the local model was good at, where it fell over, what serving actually costs, and when you would choose it.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>The rabbit hole itself. Quantization formats, sampler settings and GPU shopping can eat a week and teach you nothing about building products. Hence the timer.</li>
+      <li>Comparing a local 8B model to a frontier model on hard reasoning, then concluding open models are useless. Compare on your task, with your evals: for routing, classification and extraction, small models are often fine — and that is exactly where the volume lives.</li>
+      <li>Forgetting that context needs memory too. A model that fits in 6 GB may not fit once you send it 32,000 tokens, because the KV cache is not free.</li>
+    </ul>
+  </div>

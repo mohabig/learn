@@ -1,0 +1,158 @@
+<p class="day-lede">Today you build the smallest thing that talks to a model, and then you learn to describe it in numbers. By tonight you should be able to point at one run and say: two cents, 0.4 seconds to the first word, 2.1 seconds to the last. That one sentence is the point of the whole day.</p>
+
+  <div class="concept">
+    <h4>Your workbench: one folder, one environment, one secret</h4>
+    <p>Three things before you write a line of code. A folder under git. An isolated Python environment made with <code>uv</code>. Exactly one package installed in it: your provider's SDK.</p>
+    <p>Isolated is the word worth slowing down on. It means the packages live in this folder and nowhere else. Today's install cannot reach back and break the project you finished last month, because the two never share a shelf.</p>
+    <p>Now the secret. Your API key goes into an environment variable that your code reads at startup. Never a string in a source file — not for five minutes, not in a branch you plan to delete.</p>
+    <p>The reason is mechanical, not moral. Bots scan public repositories around the clock for anything shaped like a key, and one found that way gets used within minutes. Someone else does the spending. You get the bill.</p>
+    <p>Put the key in a <code>.env</code> file and tell git to ignore that file. Don't pass keys as command-line arguments either — those land in your shell history, which is one more file you will forget about.</p>
+    <p>So: one folder, one environment, and one secret that never touches anything git can see.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A key travelling safely from a dotenv file through an environment variable into your process, compared with a key committed to code that ends up in a public repository">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">the safe path</text>
+        <rect x="20" y="40" width="150" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="95" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">.env file</text>
+        <line x1="170" y1="63" x2="194" y2="63" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="194,57 206,63 194,69" fill="var(--dg-line)"/>
+        <rect x="210" y="40" width="180" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="300" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">environment variable</text>
+        <line x1="390" y1="63" x2="414" y2="63" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="414,57 426,63 414,69" fill="var(--dg-line)"/>
+        <rect x="430" y="40" width="170" height="46" rx="8" fill="none" stroke="var(--dg-good)"/>
+        <text x="515" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your process</text>
+        <text x="20" y="122" font-size="13" fill="var(--dg-muted)">the path that costs you money</text>
+        <rect x="20" y="134" width="150" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="95" y="162" text-anchor="middle" font-size="13" fill="var(--dg-ink)">key in a source file</text>
+        <line x1="170" y1="157" x2="194" y2="157" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="194,151 206,157 194,163" fill="var(--dg-line)"/>
+        <rect x="210" y="134" width="180" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="300" y="162" text-anchor="middle" font-size="13" fill="var(--dg-ink)">git history, forever</text>
+        <line x1="390" y1="157" x2="414" y2="157" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="414,151 426,157 414,163" fill="var(--dg-line)"/>
+        <rect x="430" y="134" width="170" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="515" y="162" text-anchor="middle" font-size="13" fill="var(--dg-ink)">a bot, minutes later</text>
+        <text x="320" y="202" text-anchor="middle" font-size="13" fill="var(--dg-muted)">the second path is one paste long, and rotating the key is the only way back</text>
+      </svg>
+      <figcaption>The key should only ever travel through the environment; the moment it touches a file git can see, it belongs to somebody else.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Tokens: the unit you pay in</h4>
+    <p>A language model doesn't see words. It sees tokens — chunks of text, each one mapped to a number. The word "strawberry" might arrive as two tokens: <code>straw</code> + <code>berry</code>.</p>
+    <p>Where do the chunks come from? A tokenizer splits your text using a fixed vocabulary that was built when the model was trained. Think of it as a phrasebook with a set number of entries. Common words earned an entry of their own, so they cost one token. Rare words, names, code, and anything that isn't English weren't worth an entry each, so they get spelled out of smaller pieces.</p>
+    <p>For ordinary English there's a rough rule: about four characters per token, or about 0.75 words per token. "Rough" is doing real work in that sentence — don't build a budget on it.</p>
+    <p>Here's why any of this matters. The model reads every input token, then produces output tokens one at a time. You're billed for both, at two different prices, and output usually costs four to five times more. The context window is the ceiling on input and output added together, for one call.</p>
+    <p>Now the trap, and it catches everybody once. Tokenizers differ between model families, so a count from a generic library can be off by 10 to 30 percent for the model you're actually calling. Off by 30 percent is the difference between a budget and a wish.</p>
+    <p>You never have to estimate. Every provider hands you the real number twice: a counting endpoint you can call before the request, and exact usage in the response after it. See <a href="https://docs.claude.com/en/docs/build-with-claude/token-counting">the token counting docs</a>.</p>
+    <p>So: tokens are the unit of both the bill and the clock, and you should never be guessing at them.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Input tokens and output tokens are billed at different rates and add up to the cost of one call">
+        <rect x="20" y="50" width="180" height="70" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="110" y="80" text-anchor="middle" font-size="14" fill="var(--dg-ink)">input</text>
+        <text x="110" y="102" text-anchor="middle" font-size="13" fill="var(--dg-muted)">3,000 tokens</text>
+        <line x1="200" y1="85" x2="250" y2="85" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="250,79 262,85 250,91" fill="var(--dg-line)"/>
+        <rect x="266" y="45" width="106" height="80" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="319" y="90" text-anchor="middle" font-size="14" fill="var(--dg-ink)">model</text>
+        <line x1="372" y1="85" x2="425" y2="85" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="425,79 437,85 425,91" fill="var(--dg-line)"/>
+        <rect x="437" y="50" width="180" height="70" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="527" y="80" text-anchor="middle" font-size="14" fill="var(--dg-ink)">output</text>
+        <text x="527" y="102" text-anchor="middle" font-size="13" fill="var(--dg-muted)">700 tokens</text>
+        <text x="110" y="150" text-anchor="middle" font-size="13" fill="var(--dg-muted)">at $3 per million: $0.009</text>
+        <text x="527" y="150" text-anchor="middle" font-size="13" fill="var(--dg-muted)">at $15 per million: $0.0105</text>
+        <text x="319" y="182" text-anchor="middle" font-size="14" fill="var(--dg-ink)">one call: $0.0195</text>
+      </svg>
+      <figcaption>Two meters run at two different rates, and output is the expensive one.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>The parts of a call</h4>
+    <p>A request is a list of messages. Each message carries a role — <code>user</code> or <code>assistant</code> — and alongside them sits a separate system prompt holding your standing instructions.</p>
+    <p>Here's the part that surprises people. The API is stateless. The model remembers nothing between calls. A conversation is you resending the entire history every single turn, which is exactly why the tenth turn costs more than the first.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="Three turns of a conversation, each one resending the whole history and so occupying a longer input bar than the last">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">the model keeps nothing between calls, so you resend it all</text>
+        <text x="20" y="66" font-size="13" fill="var(--dg-muted)">turn 1</text>
+        <rect x="90" y="44" width="150" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="165" y="66" text-anchor="middle" font-size="13" fill="var(--dg-ink)">system + Q1</text>
+        <text x="20" y="114" font-size="13" fill="var(--dg-muted)">turn 2</text>
+        <rect x="90" y="92" width="290" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="235" y="114" text-anchor="middle" font-size="13" fill="var(--dg-ink)">system + Q1 + A1 + Q2</text>
+        <text x="20" y="162" font-size="13" fill="var(--dg-muted)">turn 3</text>
+        <rect x="90" y="140" width="430" height="34" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="305" y="162" text-anchor="middle" font-size="13" fill="var(--dg-ink)">system + Q1 + A1 + Q2 + A2 + Q3</text>
+        <text x="20" y="198" font-size="13" fill="var(--dg-muted)">same conversation, more input tokens on every single turn</text>
+      </svg>
+      <figcaption>Nothing is remembered on the other end, so each turn pays for the whole conversation again.</figcaption>
+    </figure>
+    <p>Then the knobs. <strong>Temperature</strong> acts on the sampling step. At every position the model produces a probability for every token in its vocabulary, and temperature reshapes that distribution before one token is drawn.</p>
+    <p>Near 0, the highest-probability token wins almost every time. That's nearly repeatable — never guaranteed. Turn it up and the distribution flattens, letting unlikely tokens through.</p>
+    <p><strong>max_tokens</strong> is a hard ceiling on output. Hit it and generation stops mid-sentence, with no apology. <strong>Stop sequences</strong> end generation the moment they appear, and they aren't included in what you get back.</p>
+    <p>One portability note, and it's your first: some newer reasoning models reject temperature entirely and give you an effort setting instead.</p>
+    <p>The response also tells you how it ended, and you should read that field on every call. <code>end_turn</code> means the model finished. <code>max_tokens</code> means you cut it off.</p>
+    <p>So: a call is a history you resend, a few knobs that reshape sampling, and one field that says whether the answer is finished.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Cost, to the cent</h4>
+    <p>Every response comes back carrying usage numbers: input tokens, output tokens, cached tokens. The arithmetic is one line — put the two prices in your code as constants, multiply, and print the result next to the answer.</p>
+    <p>Do it per call, not per month. A monthly number arrives far too late to change anything you did.</p>
+    <p>Watch what the per-call number does for you. Three thousand input tokens and seven hundred output, at $3 and $15 per million, is $0.0195 — about two cents. Twenty debugging runs is 39 cents. Ten thousand users a day is $195.</p>
+    <p>That's one number answering two different questions: can you afford to iterate this afternoon, and can this product exist at all.</p>
+    <p>Two traps. The first is guessing from character counts, which you now know better than to do. The second is quieter: failures bill too. A call that produced 400 tokens before your client gave up still generated 400 tokens, and you pay for all 400.</p>
+    <p>So: print the cost of every call, in cents, right next to its output.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Two clocks</h4>
+    <p>Two numbers, not one. Time to first token is the gap between sending the request and the first piece of the answer showing up. Total time runs until the last token.</p>
+    <p>They move for different reasons, and that's the useful part. The first clock is queueing plus the model reading your input, so it grows with prompt length. The second is generation — roughly output tokens divided by the model's tokens-per-second rate.</p>
+    <p>Do that arithmetic once and it sticks: a 900-token answer at 60 tokens per second takes 15 seconds, no matter how fast the model started.</p>
+    <p>So the split tells you what to fix. Long prompt, short answer: attack the input. Short prompt, long answer: attack the output, or stream it.</p>
+    <p>And one fact about people. They perceive time to first token as speed. That is the entire reason streaming exists, and you build it on Day 5.</p>
+    <p>So: measure both clocks separately, because they have different causes and only one of them is yours to fix today.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 180" role="img" aria-label="A timeline showing time to first token as a short early interval and total time as a longer one">
+        <line x1="60" y1="90" x2="600" y2="90" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="60" y1="76" x2="60" y2="104" stroke="var(--dg-ink)" stroke-width="2"/>
+        <text x="60" y="60" text-anchor="middle" font-size="13" fill="var(--dg-muted)">you send</text>
+        <circle cx="220" cy="90" r="7" fill="var(--dg-accent)"/>
+        <text x="220" y="60" text-anchor="middle" font-size="13" fill="var(--dg-muted)">first token</text>
+        <circle cx="520" cy="90" r="7" fill="var(--dg-accent2)"/>
+        <text x="520" y="60" text-anchor="middle" font-size="13" fill="var(--dg-muted)">last token</text>
+        <line x1="60" y1="120" x2="220" y2="120" stroke="var(--dg-accent)" stroke-width="2"/>
+        <text x="140" y="140" text-anchor="middle" font-size="13" fill="var(--dg-ink)">first token: 0.4 s</text>
+        <line x1="60" y1="152" x2="520" y2="152" stroke="var(--dg-accent2)" stroke-width="2"/>
+        <text x="290" y="172" text-anchor="middle" font-size="13" fill="var(--dg-ink)">total: 2.1 s</text>
+      </svg>
+      <figcaption>Two numbers, two causes: input length moves the first, output length moves the second.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Create the repo, run <code>uv init</code>, add your provider's SDK, and put your key in a <code>.env</code> file that <code>.gitignore</code> already covers.</li>
+      <li>Write one input function: given a URL or a file path, return plain text. Fetch or read, strip markup, and stop at a token count you chose deliberately, so one huge page can't surprise you.</li>
+      <li>Write one call. The system prompt states the contract — a title, three bullet points, one open question. Set temperature to 0, <code>max_tokens</code> to 500.</li>
+      <li>Print the usage numbers from the response and compute cost inline from your price constants. Print the stop reason too; it's how you learn whether the answer is whole.</li>
+      <li>Wrap the call in a monotonic timer. Stream it so you can record the clock time of the first chunk and the last. Print both.</li>
+      <li>Run it on five inputs of very different sizes. Put the rows in <code>LOG.md</code>: tokens in, tokens out, cost, first-token time, total.</li>
+      <li>Set temperature to 1.0 and run the same input three times. Write down what changed and what didn't — that's the knob explaining itself.</li>
+      <li>Commit. Day 1 ends with a commit even if the day went badly.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Counting tokens with a library built for a different model family, then wondering why the bill doesn't match the estimate.</li>
+      <li>Setting <code>max_tokens</code> too low and shipping silently truncated output. If you never read the stop reason, you never find out.</li>
+      <li>Timing the whole program instead of the request. Imports and file reads pollute the number, so start the clock immediately before the call.</li>
+      <li>A key pasted into a notebook cell, then committed. Once it's in git history, rotating the key is the only real fix.</li>
+    </ul>
+  </div>

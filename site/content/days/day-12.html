@@ -1,0 +1,160 @@
+<p class="day-lede">Retrieval is solved and measured. Now the model has to use what you found without quietly adding things you never gave it. Today every sentence in an answer gets a receipt you can click.</p>
+
+  <div class="concept">
+    <h4>Grounding is a contract you enforce, not a request</h4>
+    <p>Start with the prompt side, which is the easy half. Number the chunks. Give each one a short tag and a header line carrying its source, section and date, then the text. Instruct the model to answer only from these chunks, and to put the relevant tag after each sentence it writes.</p>
+    <p>The model will comply most of the time. And "most of the time" is not a system.</p>
+    <p>So you check it in code, and the check is three lines of logic. Parse the tags out of the answer. Confirm every tag matches a chunk you actually sent. Confirm at least one tag is present.</p>
+    <p>When the check fails, retry once with the failure named in the prompt — models usually fix a mistake they can see. If it fails a second time, return a safe fallback instead of the answer. Do not ship the third attempt.</p>
+    <p>Here's the upgrade worth the extra work: keep character offsets when you chunk. Then a tag resolves to a document <em>plus a highlighted span</em>, not just a filename. That is the difference between "source: handbook.pdf", which nobody can check, and a link that scrolls the reader to the exact sentence.</p>
+    <p>The trap is shipping citations you never verify. Users learn to trust them within a day, and an unverified citation sitting next to an invented claim is worse than no citation at all — you have lent your credibility to a guess.</p>
+    <p>So: a citation is a claim your code checks, not a formatting instruction you hope the model followed.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Tagged chunks go to the model, the answer comes back with tags, and every tag is checked against the chunks that were sent">
+        <rect x="14" y="66" width="134" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="81" y="92" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Chunks tagged</text>
+        <text x="81" y="112" text-anchor="middle" font-size="13" fill="var(--dg-muted)">S1 to S5</text>
+        <line x1="148" y1="96" x2="164" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="164,90 176,96 164,102" fill="var(--dg-line)"/>
+        <rect x="176" y="66" width="110" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="231" y="102" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Model</text>
+        <line x1="286" y1="96" x2="306" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="306,90 318,96 306,102" fill="var(--dg-line)"/>
+        <rect x="318" y="66" width="146" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="391" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Answer with tags</text>
+        <line x1="464" y1="96" x2="480" y2="96" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="480,90 492,96 480,102" fill="var(--dg-line)"/>
+        <rect x="492" y="66" width="134" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="559" y="92" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Every tag checked</text>
+        <text x="559" y="112" text-anchor="middle" font-size="13" fill="var(--dg-muted)">against the pack</text>
+        <polyline points="559,126 559,166 231,166 231,132" fill="none" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="6 4"/>
+        <polygon points="225,132 231,122 237,132" fill="var(--dg-line)"/>
+        <text x="395" y="186" text-anchor="middle" font-size="13" fill="var(--dg-muted)">tag not in the pack: one repair, then refuse</text>
+      </svg>
+      <figcaption>A citation is only worth something once code has confirmed it points at text you actually sent.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Refusing, and the escape hatch</h4>
+    <p>Ask a model a question its context cannot answer and it will usually answer anyway. That is not a bug in the model. Predicting plausible next tokens is the entire mechanism; there is no separate part of it that knows it is out of material.</p>
+    <p>So you need two defenses, and you need both of them.</p>
+    <p>The first sits before generation: gate on retrieval. If the top reranked score is below a threshold you calibrated on your golden set, don't call the generator at all. You just saved the money <em>and</em> the wrong answer.</p>
+    <p>The second sits inside the prompt: make refusal an allowed output with an exact shape. One specified sentence, plus the closest topics you did find so the person can re-ask usefully.</p>
+    <p>Why does that work better than a rule? Because models refuse far more reliably when refusal is a format they can produce than when it is a prohibition they must respect. Give it something to say, and it will say that instead of inventing.</p>
+    <p>And notice what you now have: those five unanswerable questions in your golden set finally have a right answer to score against.</p>
+    <p>So: refuse in two places — before the call, on a score you calibrated, and inside the call, as an output shape the model can actually produce.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Top reranked scores from golden set misses and hits separated by a calibrated threshold, below which the system refuses without calling the generator">
+        <text x="20" y="32" font-size="14" fill="var(--dg-ink)">top reranked score, scored on your golden set</text>
+        <line x1="60" y1="140" x2="600" y2="140" stroke="var(--dg-line)" stroke-width="2"/>
+        <circle cx="100" cy="92" r="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <circle cx="140" cy="110" r="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <circle cx="182" cy="86" r="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <circle cx="222" cy="112" r="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <circle cx="262" cy="96" r="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <circle cx="396" cy="90" r="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <circle cx="436" cy="112" r="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <circle cx="478" cy="84" r="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <circle cx="518" cy="108" r="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <circle cx="558" cy="94" r="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <line x1="330" y1="56" x2="330" y2="150" stroke="var(--dg-ink)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="330" y="48" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your threshold</text>
+        <text x="190" y="170" text-anchor="middle" font-size="13" fill="var(--dg-muted)">questions that missed</text>
+        <text x="480" y="170" text-anchor="middle" font-size="13" fill="var(--dg-muted)">questions that hit</text>
+        <text x="190" y="192" text-anchor="middle" font-size="14" fill="var(--dg-ink)">refuse, no model call</text>
+        <text x="480" y="192" text-anchor="middle" font-size="14" fill="var(--dg-ink)">generate</text>
+      </svg>
+      <figcaption>The threshold is not a feeling: it is the crossing point you read off your golden set's hits and misses.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Conflicting and stale sources</h4>
+    <p>Retrieval does not check dates. It hands over the 2023 policy and the 2025 policy with identical enthusiasm, because they are about the same topic and that is the only thing it measures.</p>
+    <p>Then the model does what models do: it blends them into one fluent answer that matches neither document. Nobody involved has lied. The answer is still wrong.</p>
+    <p>Fix number one: put the metadata where the model can see it. Each chunk's header line carries source, section, and last-modified date — the same header you already built for citations.</p>
+    <p>Fix number two: state the tie-break rule explicitly. Prefer the most recent. And when two current sources disagree, say so and cite both. A visible disagreement is a genuinely useful answer; a silent average is not.</p>
+    <p>But prefer index hygiene to prompt gymnastics wherever you can. The cheapest way to stop the model citing a superseded document is to not retrieve it in the first place: mark superseded documents in metadata, filter them out by default, and keep archives in a separate collection.</p>
+    <p>So: the model can only weigh dates you gave it, and it should never have to weigh a document you could have filtered out.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="Without dates two versions of a policy blend into one answer, while dated headers plus a tie-break rule prefer the newest and surface real disagreement">
+        <text x="155" y="26" text-anchor="middle" font-size="14" fill="var(--dg-ink)">No dates, no rule</text>
+        <rect x="30" y="42" width="110" height="34" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="85" y="64" text-anchor="middle" font-size="13" fill="var(--dg-muted)">old policy</text>
+        <rect x="170" y="42" width="110" height="34" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="225" y="64" text-anchor="middle" font-size="13" fill="var(--dg-muted)">new policy</text>
+        <polyline points="85,76 85,94 155,94" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polyline points="225,76 225,94 155,94" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="155" y1="94" x2="155" y2="106" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="149,106 155,116 161,106" fill="var(--dg-line)"/>
+        <rect x="55" y="118" width="200" height="42" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="155" y="145" text-anchor="middle" font-size="14" fill="var(--dg-ink)">one blended answer</text>
+        <text x="155" y="184" text-anchor="middle" font-size="13" fill="var(--dg-muted)">matches neither document</text>
+        <line x1="320" y1="16" x2="320" y2="196" stroke="var(--dg-line)"/>
+        <text x="480" y="26" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Dated headers + a rule</text>
+        <rect x="360" y="42" width="250" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="485" y="67" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the most recent one wins</text>
+        <rect x="360" y="96" width="250" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="485" y="121" text-anchor="middle" font-size="13" fill="var(--dg-ink)">both current and disagreeing?</text>
+        <text x="485" y="156" text-anchor="middle" font-size="13" fill="var(--dg-muted)">say so, and cite both</text>
+        <text x="485" y="184" text-anchor="middle" font-size="13" fill="var(--dg-muted)">superseded docs never enter the search</text>
+      </svg>
+      <figcaption>Dates in the header and one written tie-break rule turn a silent average into an answer you can audit.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Lost in the middle, and why five chunks beat twenty</h4>
+    <p>Models do not attend evenly across a long context. Put a fact near the start or the end and they use it reliably. Put the same fact in the middle of twenty chunks and accuracy drops measurably — same model, same question, same document, different position.</p>
+    <p>Sit with that for a second, because it is strange. The information is present. The model has read it. And it still gets used less.</p>
+    <p>Three consequences you can act on today. Order deliberately: the reranker's best chunk goes first, not last. Repeat the question after the context as well as before it, so the instruction sits in the strong end position.</p>
+    <p>And stop padding. Twenty chunks at recall@20 of 0.95 can produce worse answers than five chunks at recall@5 of 0.84, because the right chunk got buried in the middle. More context is not more information. It is more places to lose the point — and it costs more tokens and more seconds while it does that.</p>
+    <p>Don't take the claim on faith, though; test it on your own stack. Take questions your system answers correctly with five chunks and re-run them with the same five in reverse order. If the answers change, ordering is a lever you own.</p>
+    <p>So: position is a variable you control, and the best chunk goes where the model actually looks.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Accuracy plotted against the position of the answer chunk in the prompt, high at both ends and sagging in the middle">
+        <line x1="70" y1="180" x2="610" y2="180" stroke="var(--dg-line)" stroke-width="2"/>
+        <line x1="70" y1="180" x2="70" y2="40" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="76" y="34" font-size="13" fill="var(--dg-muted)">accuracy</text>
+        <polyline points="90,60 190,82 290,99 390,103 490,88 590,68" fill="none" stroke="var(--dg-accent)" stroke-width="3"/>
+        <circle cx="90" cy="60" r="5" fill="var(--dg-accent)"/>
+        <circle cx="190" cy="82" r="5" fill="var(--dg-accent)"/>
+        <circle cx="290" cy="99" r="5" fill="var(--dg-accent)"/>
+        <circle cx="390" cy="103" r="5" fill="var(--dg-accent)"/>
+        <circle cx="490" cy="88" r="5" fill="var(--dg-accent)"/>
+        <circle cx="590" cy="68" r="5" fill="var(--dg-accent)"/>
+        <text x="90" y="46" text-anchor="middle" font-size="13" fill="var(--dg-ink)">first</text>
+        <text x="590" y="52" text-anchor="middle" font-size="13" fill="var(--dg-ink)">last</text>
+        <text x="340" y="130" text-anchor="middle" font-size="13" fill="var(--dg-muted)">buried</text>
+        <text x="90" y="200" text-anchor="middle" font-size="13" fill="var(--dg-muted)">1</text>
+        <text x="590" y="200" text-anchor="middle" font-size="13" fill="var(--dg-muted)">20</text>
+        <text x="340" y="214" text-anchor="middle" font-size="13" fill="var(--dg-muted)">position of the answer chunk in the prompt</text>
+      </svg>
+      <figcaption>The same chunk is worth more at the edges of the context than in the middle, which is why ordering is not cosmetic.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Build the context pack as a function: take the reranked top 5, emit a numbered block per chunk with tag, source, section, date, then text.</li>
+      <li>Write the answer prompt: answer only from the pack, tag every sentence, and use the exact refusal sentence when the pack does not cover the question.</li>
+      <li>Order the pack by reranker score, best first, and put the question again after the context.</li>
+      <li>Parse the tags out of the answer. Verify each one exists in the pack; verify at least one is present.</li>
+      <li>On a failed check, retry once with the offending tags quoted back. On a second failure, return the refusal and log it.</li>
+      <li>Return citation objects alongside the answer text: tag, document identifier, character range, and a short quote. The interface links to them.</li>
+      <li>Add a retrieval gate: if the top reranked score is below your threshold, refuse without calling the generator.</li>
+      <li>Score faithfulness on 20 answers, and check that all five unanswerable questions from your golden set now refuse.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Citations that look right and point nowhere. Without the code check, the model invents plausible tags under pressure.</li>
+      <li>A refusal threshold picked by feel. Read the score distribution of your golden set's hits and misses, then choose the crossing point.</li>
+      <li>Prompting for refusal without an escape hatch. "Never answer outside the documents", with no allowed alternative output, still produces an answer.</li>
+      <li>Sorting the pack oldest-first because it reads more naturally. The model reads position, not chronology.</li>
+    </ul>
+  </div>

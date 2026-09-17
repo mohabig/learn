@@ -1,0 +1,143 @@
+<p class="day-lede">Fine-tuning is what everyone assumes AI engineers do all day. You get exactly one day for it, on purpose — enough to run a real job end to end and find out where it wins, which is a narrower place than it looks from outside. The deliverable is not a model. It is a decision you can defend with numbers.</p>
+
+  <div class="concept">
+    <h4>What fine-tuning actually changes</h4>
+    <p>A model is a pile of numbers called weights — billions of them. Prompting never touches those numbers. It hands the model some text at call time, and the weights decide what to do with it. Fine-tuning is different: it edits the numbers themselves.</p>
+    <p>Here is how the supervised kind works. You supply pairs: an input, and the output you wanted. For each pair the trainer runs the input through the model, compares what the model would have said against what you said, and nudges the weights so that your version becomes a little more likely. Do that across a few hundred to a few thousand pairs and the model's default behavior drifts toward your examples.</p>
+    <p><strong>LoRA</strong> is the cheap version, and the one you will actually use. Updating every weight means writing out a second copy of a very large model. LoRA does not do that. It freezes the original and trains two small matrices that get added into a few layers — perhaps 20 MB of trained numbers sitting against 16 GB of frozen base.</p>
+    <p>That one fact explains two things you may have wondered about. It is why a tuning run costs a few dollars instead of a few thousand. And it is why a provider can serve fifty different tuned variants out of one base model: they are swapping 20 MB adapters, not loading fifty models.</p>
+    <p>Now the consequence that settles most arguments about fine-tuning. <strong>You are shaping behavior, not adding facts.</strong> Tuning makes outputs shaped like your examples more likely. It is bad at making a model know something new, because the fact ends up smeared across millions of weights — with no citation, and no way to update it when it changes.</p>
+    <p>So: prompting rents behavior for one call; tuning buys it into the weights, and buying behavior is not the same as buying knowledge.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 240" role="img" aria-label="A prompted large model needs two thousand tokens of instructions and examples every call; a fine-tuned small model needs a short instruction because the behavior lives in an adapter">
+        <text x="20" y="24" font-size="14" fill="var(--dg-ink)">prompt path</text>
+        <rect x="20" y="36" width="250" height="64" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="34" y="62" font-size="13" fill="var(--dg-ink)">instructions + 12 examples</text>
+        <text x="34" y="84" font-size="13" fill="var(--dg-ink)">+ your input</text>
+        <line x1="270" y1="68" x2="326" y2="68" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="326,62 338,68 326,74" fill="var(--dg-line)"/>
+        <rect x="344" y="36" width="150" height="64" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="419" y="73" text-anchor="middle" font-size="13" fill="var(--dg-ink)">large model</text>
+        <line x1="494" y1="68" x2="540" y2="68" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="540,62 552,68 540,74" fill="var(--dg-line)"/>
+        <text x="558" y="73" font-size="13" fill="var(--dg-muted)">answer</text>
+        <text x="20" y="120" font-size="13" fill="var(--dg-muted)">2,000 input tokens on every single call</text>
+        <text x="20" y="154" font-size="14" fill="var(--dg-ink)">fine-tuned path</text>
+        <rect x="20" y="166" width="250" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="34" y="197" font-size="13" fill="var(--dg-ink)">short instruction + your input</text>
+        <line x1="270" y1="192" x2="326" y2="192" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="326,186 338,192 326,198" fill="var(--dg-line)"/>
+        <rect x="344" y="166" width="150" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="419" y="188" text-anchor="middle" font-size="13" fill="var(--dg-ink)">small model</text>
+        <text x="419" y="206" text-anchor="middle" font-size="13" fill="var(--dg-muted)">+ adapter</text>
+        <line x1="494" y1="192" x2="540" y2="192" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="540,186 552,192 540,198" fill="var(--dg-line)"/>
+        <text x="558" y="197" font-size="13" fill="var(--dg-muted)">answer</text>
+      </svg>
+      <figcaption>Tuning moves the behavior out of the prompt and into the weights — which is a cost and latency trade, not a knowledge trade.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>When it genuinely wins</h4>
+    <p><strong>Fixed style or format.</strong> Every output has to look one specific way — a house voice, a rigid template, a schema your prompt keeps almost obeying. In a prompt, that costs you a long instruction block plus examples on every single call, and it still drifts on the awkward inputs. Tuned, the shape becomes the default and the instruction gets short.</p>
+    <p><strong>Latency and cost at high volume.</strong> This is the one that pays. Tuning lets a small model do a job a large model was doing. Take the numbers from the diagram above: 2,000 input tokens on a large model against 150 on a small one. At a million calls a month, that gap is your whole feature budget, plus a useful slice of your p95. Below ten thousand calls a month, it is not worth owning a model.</p>
+    <p><strong>A narrow, repeated task.</strong> Sort tickets into fourteen categories. Turn a clinical note into six fields. Bounded input, bounded output, a stable definition of correct, and a lot of volume. Here a tuned small model can beat a prompted large one on accuracy, not just on price.</p>
+    <p>Notice what those three have in common: the job is small and it happens constantly. That is the shape of a task worth tuning.</p>
+    <p>So: tuning wins when the output shape is fixed, the task is narrow, and the volume is high enough that per-call tokens turn into real money.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="LoRA keeps the base weights frozen and trains two small matrices that are added to them, producing a tuned model from a twenty megabyte adapter">
+        <rect x="40" y="40" width="180" height="120" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="130" y="94" text-anchor="middle" font-size="14" fill="var(--dg-ink)">base weights</text>
+        <text x="130" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">frozen · 16 GB</text>
+        <text x="243" y="107" font-size="16" fill="var(--dg-ink)">+</text>
+        <rect x="272" y="40" width="26" height="120" rx="4" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <rect x="308" y="40" width="130" height="26" rx="4" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="285" y="180" text-anchor="middle" font-size="13" fill="var(--dg-muted)">two small</text>
+        <text x="373" y="86" text-anchor="middle" font-size="13" fill="var(--dg-muted)">trained matrices · 20 MB</text>
+        <text x="455" y="107" font-size="16" fill="var(--dg-ink)">=</text>
+        <rect x="480" y="40" width="140" height="120" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="550" y="94" text-anchor="middle" font-size="14" fill="var(--dg-ink)">tuned model</text>
+        <text x="550" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">new behavior</text>
+      </svg>
+      <figcaption>You train megabytes, not gigabytes — which is why one tuning run costs less than a lunch.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>When it loses, which is most of the time</h4>
+    <p><strong>Knowledge injection.</strong> Facts belong in retrieval, and the reason is worth spelling out. A retrieved fact can be updated the moment it changes, cited so a reader can check it, scoped so only the right people see it, and deleted when someone asks. A fact baked into weights has none of those four properties, and you cannot add them later.</p>
+    <p><strong>Fast-changing data.</strong> Follow the loop through. Every change in the underlying truth means another training run, another evaluation, another deployment. You have built a pipeline where a database row would have done the job.</p>
+    <p><strong>Small datasets.</strong> Under a few hundred clean, consistent examples, what you mostly teach the model is your own labeling noise. And consistent is harder than it sounds. Two examples that answer near-identical inputs differently teach the model to be random in exactly the place you wanted it to be certain.</p>
+    <p><strong>Anything you have not first pushed hard with a prompt.</strong> Most "we need to fine-tune" claims dissolve under a good prompt with few-shot examples, an output contract and retrieval. That takes an hour, and it can be changed in an hour. Then count the ongoing cost of the alternative: you now own a model version, a base model that will be deprecated, and a retraining cadence forever.</p>
+    <p>So: if the failure is "it didn't know", tuning is the wrong tool, and no amount of well-shaped training data will change that.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A fact trained into weights cannot be updated, cited or deleted, while the same fact stored in a retrievable document can be">
+        <text x="20" y="26" font-size="14" fill="var(--dg-ink)">a fact trained into weights</text>
+        <rect x="20" y="38" width="280" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="160" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">smeared across millions of numbers</text>
+        <text x="20" y="126" font-size="13" fill="var(--dg-muted)">update it: retrain the model</text>
+        <text x="20" y="156" font-size="13" fill="var(--dg-muted)">cite it: you cannot</text>
+        <text x="20" y="186" font-size="13" fill="var(--dg-muted)">delete it: retrain the model</text>
+        <text x="340" y="26" font-size="14" fill="var(--dg-ink)">the same fact in a document</text>
+        <rect x="340" y="38" width="280" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="480" y="70" text-anchor="middle" font-size="13" fill="var(--dg-ink)">one row you can point at</text>
+        <text x="340" y="126" font-size="13" fill="var(--dg-good)">update it: edit the row</text>
+        <text x="340" y="156" font-size="13" fill="var(--dg-good)">cite it: link the source</text>
+        <text x="340" y="186" font-size="13" fill="var(--dg-good)">delete it: delete the row</text>
+      </svg>
+      <figcaption>Retrieval keeps a fact addressable; training dissolves it, and you cannot get it back out.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>The deliverable is the judgment</h4>
+    <p>Run the comparison properly, because the comparison is the actual product of today. Same golden set, same judge, three columns: your best prompt; prompt plus retrieval; the fine-tuned model. For each column write down the eval score, the cost per request and the p95 — and for the tuned column, add the training cost and how often you would have to retrain.</p>
+    <p>One rule protects the whole exercise. The baseline must be your <em>best</em> prompt, not your first one. Look at how people usually prove fine-tuning wins: they compare a tuned model against a prompt nobody bothered to improve, and of course the tuned model looks brilliant. That comparison tells you nothing except that you can train a model.</p>
+    <p>Here is the outcome you should expect. Prompt plus retrieval wins on quality, the tuned model wins on cost and latency, and at your volume that trade is not worth making. Write it down with the numbers beside it.</p>
+    <p>And do not be disappointed by that. Spending a day on something and concluding "no, and here is the evidence" is a senior signal, and it is rarer than being able to run the training job.</p>
+    <p>So: the thing you carry out of today is a defensible verdict, and a verdict needs an honest baseline more than it needs a good model.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="Comparing a tuned model against a weak first prompt makes tuning look like a large win, while comparing it against the best prompt with retrieval shows almost no difference">
+        <text x="20" y="26" font-size="14" fill="var(--dg-ink)">the comparison people run</text>
+        <rect x="60" y="130" width="60" height="40" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="180" y="60" width="60" height="110" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <line x1="20" y1="170" x2="300" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="90" y="190" text-anchor="middle" font-size="13" fill="var(--dg-muted)">first prompt</text>
+        <text x="210" y="190" text-anchor="middle" font-size="13" fill="var(--dg-muted)">tuned</text>
+        <text x="20" y="216" font-size="13" fill="var(--dg-ink)">looks like a huge win</text>
+        <text x="340" y="26" font-size="14" fill="var(--dg-ink)">the comparison that counts</text>
+        <rect x="380" y="66" width="60" height="104" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="500" y="60" width="60" height="110" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <line x1="340" y1="170" x2="620" y2="170" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="410" y="190" text-anchor="middle" font-size="13" fill="var(--dg-muted)">best prompt</text>
+        <text x="530" y="190" text-anchor="middle" font-size="13" fill="var(--dg-muted)">tuned</text>
+        <text x="340" y="216" font-size="13" fill="var(--dg-ink)">now decide on cost and p95</text>
+      </svg>
+      <figcaption>Bar height is the eval score: the baseline you pick decides the answer before the data does.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Pick the narrowest task in your three projects — a classifier, a formatter, an extractor. Not "the assistant": a broad task cannot be tuned or evaluated in a single day.</li>
+      <li>Lock the baseline first, before you are emotionally invested: run your best prompt over the golden set and write score, cost per request and p95 into <code>LOG.md</code>.</li>
+      <li>Build the dataset from yesterday's traces: 200 to 800 pairs, with the outputs corrected by hand. This takes most of the day, which is itself the lesson.</li>
+      <li>Split into a training set and a held-out test set that share no inputs. Keep the golden set out of training entirely, or your final number is meaningless.</li>
+      <li>Run one small LoRA job on a hosted service, with the default epochs and learning rate. Do not tune the tuner; that is a week you do not have.</li>
+      <li>Evaluate all three variants through the harness and judge you built on Day 19. Record score, cost per request and p95 for each.</li>
+      <li>Write the verdict: what won, by how much, on which axis, and what would make you revisit it.</li>
+      <li>Keep the dataset and the eval; delete the tuned model if it lost. The dataset outlives every model version you will ever train.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Leakage. If a golden-set question is sitting in your training file, the tuned model looks brilliant and is lying to you. Deduplicate before you train, not after you are excited.</li>
+      <li>Overfitting a small set. It nails your 200 examples and gets worse everywhere else. Check the held-out set, and a few unrelated requests, to see whether general behavior degraded.</li>
+      <li>Watching the loss curve instead of the evals. Falling training loss means the model matches your examples. It says nothing at all about whether the output is good.</li>
+      <li>Tuning to fix a knowledge gap. If the failures read as "it did not know that", no amount of answer-shaped data fixes it. That is a retrieval bug wearing a costume.</li>
+    </ul>
+  </div>

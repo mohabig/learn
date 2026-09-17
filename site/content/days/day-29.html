@@ -1,0 +1,147 @@
+<p class="day-lede">Today you write the thing that actually does the hiring — not the code, the story about the code. It is the highest-leverage day of the month, and it takes real work, so treat it as a build day with a deliverable at the end.</p>
+
+  <div class="concept">
+    <h4>Why a write-up outperforms a repo</h4>
+    <p>Start from the other side of the table, because that is where the decision gets made. Someone reviewing you spends four to eight minutes. They cannot run your code. They cannot tell which parts were yours, which came from a tutorial, and which came from a model. And they have seen two hundred retrieval demos this year, every one of which worked in the screenshot.</p>
+    <p>So what <em>can</em> they evaluate in six minutes? Reasoning. Did this person understand the choices in front of them, pick one deliberately, and know what it cost?</p>
+    <p>And notice: that is not a proxy for the job. It <em>is</em> the job. Which is why the tradeoff, not the feature list, is the thing you are actually selling.</p>
+    <p>Watch two candidates ship the same assistant. One writes "built with a vector database, a rerank step and a frontier model". The other writes "dense-only retrieval missed every question with a part number in it, so I added keyword search and a reranker: recall@5 went from 0.62 to 0.84, and p95 rose 180 ms, which I paid because a wrong answer costs support an hour."</p>
+    <p>Only the second one is checkable. And only the second one is impossible to write without having done the work — which is exactly why it is believed.</p>
+    <p>The trap is writing a tutorial. Nobody needs your explanation of what embeddings are; there are ten thousand of those already.</p>
+    <p>So: your decisions, your numbers and your failures are the whole product of today.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A vague claim listing technologies compared with a specific claim naming the failure, the fix and the measured before and after">
+        <text x="20" y="26" font-size="13" fill="var(--dg-muted)">what most people write</text>
+        <rect x="20" y="38" width="600" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="36" y="66" font-size="13" fill="var(--dg-muted)">built with a vector database, a rerank step and a frontier model</text>
+        <text x="20" y="112" font-size="13" fill="var(--dg-muted)">what you can write, because you measured it</text>
+        <rect x="20" y="124" width="600" height="76" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="150" font-size="13" fill="var(--dg-ink)">dense-only retrieval missed every question with a part number,</text>
+        <text x="36" y="172" font-size="13" fill="var(--dg-ink)">so I added keyword search and a reranker: recall@5 went 0.62 to</text>
+        <text x="36" y="194" font-size="13" fill="var(--dg-ink)">0.84, p95 rose 180 ms, and I paid it on purpose.</text>
+      </svg>
+      <figcaption>The second one cannot be written by someone who did not do the work, and a reviewer knows it.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Six sections, and the job each one does</h4>
+    <p><strong>Problem, one paragraph, for a non-expert.</strong> Who was doing what by hand, how often, and what it cost them. If this paragraph is vague, everything after it reads as a toy no matter how good the engineering was.</p>
+    <p><strong>Architecture diagram.</strong> A Mermaid block is fine. The boxes should be your real steps, with the model calls marked, so a reader can point at where the money and the latency go.</p>
+    <p><strong>Key tradeoffs</strong> — the load-bearing section. Three to five of them, each in the same shape: I chose X over Y because Z, and it cost me W. Include at least one thing you rejected. You already have data on three good ones: agent versus pipeline, fine-tuning versus prompt plus retrieval, and self-hosting versus paying per token.</p>
+    <p><strong>What failed and why.</strong> This is the section almost everyone skips, which is precisely why it separates you fastest. Your fine-tuning day belongs here. So does the retrieval approach that lost, and the failure mode you decided not to fix, and the reason you decided that.</p>
+    <p><strong>Eval results with numbers.</strong> Golden set size, how you built it, which metrics and why those ones, before-and-after for your two biggest changes, and how you checked that your judge agrees with a human.</p>
+    <p><strong>Cost and latency.</strong> Cost per request and per user, p95 with the breakdown by step, and the one thing you would optimize next. Close with your known failure modes and what you would do with another week. That last line reads as maturity because it is maturity.</p>
+    <p>So: six sections, each one answering a question the reviewer already has, in the order they will ask them.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 300" role="img" aria-label="The six sections of the write-up and the question each one answers for a reviewer">
+        <rect x="16" y="30" width="212" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="28" y="53" font-size="13" fill="var(--dg-ink)">1 · Problem, in a paragraph</text>
+        <text x="244" y="53" font-size="13" fill="var(--dg-muted)">did someone actually need this?</text>
+        <rect x="16" y="74" width="212" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="28" y="97" font-size="13" fill="var(--dg-ink)">2 · Architecture diagram</text>
+        <text x="244" y="97" font-size="13" fill="var(--dg-muted)">can I see where the money goes?</text>
+        <rect x="16" y="118" width="212" height="36" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="28" y="141" font-size="13" fill="var(--dg-ink)">3 · Key tradeoffs</text>
+        <text x="244" y="141" font-size="13" fill="var(--dg-muted)">did they choose, or copy a tutorial?</text>
+        <rect x="16" y="162" width="212" height="36" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="28" y="185" font-size="13" fill="var(--dg-ink)">4 · What failed and why</text>
+        <text x="244" y="185" font-size="13" fill="var(--dg-muted)">did they measure, or guess?</text>
+        <rect x="16" y="206" width="212" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="28" y="229" font-size="13" fill="var(--dg-ink)">5 · Eval results, with numbers</text>
+        <text x="244" y="229" font-size="13" fill="var(--dg-muted)">is the claim checkable?</text>
+        <rect x="16" y="250" width="212" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="28" y="273" font-size="13" fill="var(--dg-ink)">6 · Cost and p95 latency</text>
+        <text x="244" y="273" font-size="13" fill="var(--dg-muted)">would this survive real use?</text>
+      </svg>
+      <figcaption>Each section answers one question a reviewer is already asking; the two shaded ones are what they cannot get anywhere else.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Write from your log, not from memory</h4>
+    <p>You already have twenty-eight days of notes with the numbers and the surprises in them. So the write-up is an edit of raw material you own, not a fresh act of invention — which is exactly why the daily log was in the plan from Day 1.</p>
+    <p>Open <code>LOG.md</code>, pull out every number and every "that surprised me", and sort them into the six sections. Most of the piece assembles itself from there.</p>
+    <p>Then run one filter over everything that is left. Can you point at the measurement behind this sentence? If not, cut it today or re-measure it today. An unsupported number is worse than no number at all, because it is exactly the thing an interviewer will probe first.</p>
+    <p>The standard for every sentence is narrow on purpose: it is either a number you measured, a decision you made, or a limitation you know about. No adjective is allowed to do the work of data. "Fast" is not a claim. "p95 2.1 s, 78 percent of it inside the generation call" is a claim, and it invites exactly the follow-up question you can answer well.</p>
+    <p>So: write from the log, keep only what you can source, and let the numbers carry the adjectives.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Every claim in the write-up passes a filter: if you can point at a measurement you keep it with its conditions, otherwise you cut it or measure it today">
+        <text x="20" y="28" font-size="13" fill="var(--dg-ink)">every sentence in the write-up</text>
+        <rect x="20" y="42" width="170" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="105" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">a claim you made</text>
+        <line x1="190" y1="66" x2="212" y2="66" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="212,60 224,66 212,72" fill="var(--dg-line)"/>
+        <rect x="230" y="36" width="160" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="310" y="62" text-anchor="middle" font-size="13" fill="var(--dg-ink)">can you point at</text>
+        <text x="310" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">a measurement?</text>
+        <line x1="390" y1="54" x2="418" y2="54" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="418,48 430,54 418,60" fill="var(--dg-line)"/>
+        <rect x="432" y="32" width="190" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="527" y="60" text-anchor="middle" font-size="13" fill="var(--dg-ink)">keep it, with conditions</text>
+        <polyline points="390,80 410,80 410,118 418,118" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="418,112 430,118 418,124" fill="var(--dg-line)"/>
+        <rect x="432" y="96" width="190" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="527" y="124" text-anchor="middle" font-size="13" fill="var(--dg-muted)">cut it, or measure it today</text>
+        <text x="20" y="176" font-size="13" fill="var(--dg-muted)">no adjective is allowed to do the work of a number</text>
+      </svg>
+      <figcaption>One filter, applied to every sentence, is what turns a project diary into evidence.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Ship the story where it can be found</h4>
+    <p>Publish somewhere linkable and stable. Then title it with the result rather than the topic: "What 40 golden questions taught me about retrieval" beats "My RAG project", because the first one promises a finding and the second one promises a demo.</p>
+    <p>Now distribute it, which takes ten minutes and roughly doubles the value of the day. Link it from the top of all four READMEs, from your resume, and from your profile. Put the live link and the repo link on the first screen, before anyone has to scroll.</p>
+    <p>Last, send it to two people who work in this area and ask them one question: what was unclear? The paragraphs they stumble on are the paragraphs that need rewriting, and you will never find those by rereading your own words — you already know what you meant.</p>
+    <p>So: one stable link, pointed at from everywhere you exist, checked by two people who are not you.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="One published write-up linked from four READMEs, a resume and a profile, and sent to two people for a readability check">
+        <text x="20" y="26" font-size="13" fill="var(--dg-muted)">publish once, point everything at it</text>
+        <rect x="20" y="36" width="170" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="60" font-size="13" fill="var(--dg-ink)">four READMEs</text>
+        <rect x="20" y="96" width="170" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="120" font-size="13" fill="var(--dg-ink)">your resume</text>
+        <rect x="20" y="156" width="170" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="36" y="180" font-size="13" fill="var(--dg-ink)">your profile</text>
+        <polyline points="190,54 206,54 206,84 218,84" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="218,78 230,84 218,90" fill="var(--dg-line)"/>
+        <line x1="190" y1="114" x2="218" y2="114" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="218,108 230,114 218,120" fill="var(--dg-line)"/>
+        <polyline points="190,174 206,174 206,124 218,124" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="218,118 230,124 218,130" fill="var(--dg-line)"/>
+        <rect x="230" y="76" width="180" height="56" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="320" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the write-up</text>
+        <text x="320" y="120" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one stable link</text>
+        <line x1="410" y1="104" x2="438" y2="104" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="438,98 450,104 438,110" fill="var(--dg-line)"/>
+        <rect x="452" y="86" width="170" height="36" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="466" y="110" font-size="13" fill="var(--dg-ink)">two readers, one question</text>
+      </svg>
+      <figcaption>A write-up nobody can find is a write-up you did not publish; distribution is ten minutes of the day.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Read <code>LOG.md</code> end to end and copy every number and every surprise into a scratch file, grouped under the six section headings.</li>
+      <li>Draw the architecture diagram first. A Mermaid block in the README works, and the drawing usually reveals which tradeoff is worth explaining.</li>
+      <li>Write the tradeoffs section second, while your attention is fresh. Three to five, each with the alternative you rejected and the price you paid.</li>
+      <li>Write "what failed and why" third, including the fine-tuning result from Day 23 and anything your load test exposed on Day 28.</li>
+      <li>Fill in eval results and cost/latency from yesterday's measurements. Re-measure anything you cannot source.</li>
+      <li>Write the problem paragraph last — it is easiest once you know what the piece proved — and cut it until a non-engineer could read it aloud.</li>
+      <li>Publish, then link it from the four READMEs, your resume and your profile.</li>
+      <li>Send it to two people and ask one question: which part did you have to read twice?</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Explaining the technology instead of the decisions. If a paragraph would fit unchanged in someone else's post, delete it.</li>
+      <li>Hiding failures to look strong. The failures are the evidence that you measured; a write-up without them reads as a demo that was never pushed hard.</li>
+      <li>Waiting for the project to get better first. An unwritten good system loses to a written adequate one, every time.</li>
+      <li>Numbers with no conditions. "0.84 recall" invites "on what set, at what k, measured when?" Answer that inside the sentence.</li>
+    </ul>
+  </div>

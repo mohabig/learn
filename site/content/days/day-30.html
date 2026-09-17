@@ -1,0 +1,80 @@
+<p class="day-lede">Everything is built, measured and written up. Today is packaging: making it possible for someone who has never met you to see, in about a minute, that you ship AI systems and can defend how they work.</p>
+
+  <div class="concept">
+    <h4>A resume bullet is a claim someone can check</h4>
+    <p>A list of tools says you were in the room. A shipped system with a number says you did the work — and it is falsifiable, which is exactly why it gets believed. So every bullet takes the same shape: what the system does, the measured result, and the link.</p>
+    <p>That means cutting every "familiar with" line. The tools do not disappear; they move inside the bullets, where they are attached to something you built.</p>
+    <p>So: four repos and one write-up beat a skills section listing fourteen libraries, because nobody can test fourteen libraries in the six minutes they are giving you.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="A resume bullet listing tools rewritten as a shipped system with measured results and a link">
+        <text x="16" y="26" font-size="13" fill="var(--dg-muted)">before</text>
+        <rect x="16" y="36" width="608" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="32" y="64" font-size="13" fill="var(--dg-muted)">Experienced with RAG, vector databases, agents and LLM APIs</text>
+        <text x="16" y="108" font-size="13" fill="var(--dg-muted)">after</text>
+        <rect x="16" y="118" width="608" height="66" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="32" y="144" font-size="13" fill="var(--dg-ink)">Shipped a docs assistant over 12,000 pages: recall@5 0.62 to 0.84 on a</text>
+        <text x="32" y="166" font-size="13" fill="var(--dg-ink)">40-question set, $0.004 per request, p95 2.1 s. Live link and repo.</text>
+      </svg>
+      <figcaption>One is a list of rooms you were in; the other is a claim a stranger can verify in a click.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Cold means from your own numbers</h4>
+    <p>The fifteen questions in the plan are not trivia. Each one has a good answer that begins "in my capstone" and continues into a measurement.</p>
+    <p>So "cold" does not mean memorized. It means you never have to reach for the general explanation, because you have a specific one sitting right there.</p>
+    <p>Say them out loud, sixty to ninety seconds each, once through. The ones where you drift into textbook language are your study list — not because the textbook answer is wrong, but because the interviewer has heard it fifty times and cannot tell it apart from someone who read a blog post this morning.</p>
+    <p>So: the study list writes itself, and it is short.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Depth or breadth — choose one, in writing</h4>
+    <p>Depth means going further into one mechanism: evals, retrieval quality, inference optimization. Breadth means picking a domain where the problems are specific — legal, health, devtools, finance — and where your systems knowledge becomes leverage over people who know the domain but not the tooling.</p>
+    <p>Both work. What does not work is neither. Reading release notes for a month feels like progress and produces nothing you can show anyone.</p>
+    <p>So: write the choice down with a deliverable and a date attached, or it is not a choice, it is a mood.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="From day 30 the next month goes either into one mechanism or one domain, and either way it ends in a deliverable with a date">
+        <text x="20" y="26" font-size="13" fill="var(--dg-muted)">the next thirty days</text>
+        <rect x="20" y="44" width="140" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="90" y="74" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you, on Day 30</text>
+        <polyline points="160,69 200,69 200,54 244,54" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="244,48 256,54 244,60" fill="var(--dg-line)"/>
+        <polyline points="160,69 200,69 200,128 244,128" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="244,122 256,128 244,134" fill="var(--dg-line)"/>
+        <rect x="258" y="30" width="180" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="348" y="60" text-anchor="middle" font-size="13" fill="var(--dg-ink)">depth: one mechanism</text>
+        <rect x="258" y="104" width="180" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="348" y="134" text-anchor="middle" font-size="13" fill="var(--dg-ink)">breadth: one domain</text>
+        <polyline points="438,54 460,54 460,90 472,90" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polyline points="438,128 460,128 460,90 472,90" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="472,84 484,90 472,96" fill="var(--dg-line)"/>
+        <rect x="486" y="66" width="138" height="48" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="555" y="96" text-anchor="middle" font-size="13" fill="var(--dg-ink)">deliverable + date</text>
+        <text x="20" y="184" font-size="13" fill="var(--dg-muted)">the third path is reading release notes. It ships nothing.</text>
+      </svg>
+      <figcaption>Either fork is fine; the failure mode is standing at the junction reading about both.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Rewrite the top of your resume as four bullets, one per repo, each with what it does, one measured number, and a link. Delete the skills list or shrink it to one line.</li>
+      <li>Rewrite your profile headline the same way: shipped systems, not tool names. The first line should contain a thing you built and a number.</li>
+      <li>Record yourself answering the fifteen questions. Mark every one you could not answer with a measurement from your own work; those are your next three study sessions.</li>
+      <li>Publish the Day 29 write-up publicly and pin it to your profile.</li>
+      <li>Send five targeted applications. For each, read the job post and write three sentences connecting one of your systems to their actual problem. Five targeted beats fifty blind, because the reader has to see the match in ten seconds.</li>
+      <li>Open one pull request to an AI tool you genuinely used this month. A docs fix counts — it puts your name in a place these teams look.</li>
+      <li>Message three people doing this work. Ask one specific question about their system. Do not ask for a job.</li>
+      <li>Write the next thirty days in <code>LOG.md</code>: depth or breadth, one deliverable, one date. Commit. That is the month.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Waiting for polish. The write-up published today beats the better one published never, and a resume with four real links beats the perfect one you are still editing in November.</li>
+      <li>Listing every model and library you have touched. At this level, one system you can defend in depth outranks a wide surface you can only name.</li>
+      <li>Applying broadly with a generic message. The five targeted applications are the work; the fifty blind ones are avoidance that feels like effort.</li>
+    </ul>
+  </div>

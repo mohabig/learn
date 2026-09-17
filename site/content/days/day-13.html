@@ -1,0 +1,160 @@
+<p class="day-lede">Your system works for you, on your machine, over documents you are allowed to read. Production changes all three of those at once. Today you make retrieval respect who is asking, stay fresh, and answer within a budget you wrote down.</p>
+
+  <div class="concept">
+    <h4>Permissions belong in the query, not the prompt</h4>
+    <p>One rule, and it is absolute: the retrieval query must be <em>incapable</em> of returning a document this user cannot see.</p>
+    <p>Never retrieve broadly and then ask the model to be discreet. Think about where that text ends up. Once it is in the context it is one summary, one clever follow-up question, or one injected instruction away from the user's screen. Discretion is not a security boundary.</p>
+    <p>Mechanically it is simple. Every chunk carries its access facts as metadata — tenant, group identifiers, visibility. Every query carries a filter derived from the authenticated session, and never from anything in the request body. A tenant sent by the client is not a permission. It is a suggestion.</p>
+    <p>Now, pre-filter versus post-filter, which matters far more than it sounds like it should.</p>
+    <p>Post-filtering ranks the top 20 across everything, then removes what the user cannot see. So a user in a small tenant matches 20 documents, keeps one, and concludes your product is empty. Nothing leaked — the feature just looks broken.</p>
+    <p>Pre-filtering restricts the candidate set before ranking, so all 20 results are documents this user can read. Check which one your store actually does; some do either, depending on the index.</p>
+    <p>Two architectures work here. A separate collection per tenant gives clean isolation and more moving parts, and stops being pleasant somewhere past a few hundred tenants. One shared index with a mandatory filter is simpler — and one forgotten filter is a data breach. So make it impossible to build a query without it: one function, one required argument, and no raw client anywhere else in the codebase.</p>
+    <p>So: access control is a property of the search call, and the safest design is one where an unfiltered query cannot be written.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 175" role="img" aria-label="Filtering after ranking leaves a user with two results, while filtering before ranking fills all ten slots with documents the user may see">
+        <text x="170" y="26" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Rank first, then drop</text>
+        <rect x="60" y="46" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="104" y="46" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="148" y="46" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="192" y="46" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="236" y="46" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="60" y="78" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="104" y="78" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="148" y="78" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <rect x="192" y="78" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <rect x="236" y="78" width="36" height="24" rx="4" fill="none" stroke="var(--dg-line)"/>
+        <text x="170" y="126" text-anchor="middle" font-size="13" fill="var(--dg-muted)">8 removed after ranking</text>
+        <text x="170" y="150" text-anchor="middle" font-size="14" fill="var(--dg-ink)">the user sees 2 results</text>
+        <line x1="320" y1="16" x2="320" y2="158" stroke="var(--dg-line)"/>
+        <text x="480" y="26" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Filter, then rank</text>
+        <rect x="370" y="46" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="414" y="46" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="458" y="46" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="502" y="46" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="546" y="46" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="370" y="78" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="414" y="78" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="458" y="78" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="502" y="78" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <rect x="546" y="78" width="36" height="24" rx="4" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="480" y="126" text-anchor="middle" font-size="13" fill="var(--dg-muted)">candidates already scoped</text>
+        <text x="480" y="150" text-anchor="middle" font-size="14" fill="var(--dg-ink)">the user sees 10 results</text>
+      </svg>
+      <figcaption>Same permissions, same query, two very different products — the filter has to run inside the search.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Freshness: what triggers a re-index, and how stale is allowed</h4>
+    <p>Say the staleness budget out loud, as a number: "an edited policy is searchable within 15 minutes."</p>
+    <p>That one sentence picks the architecture for you, which is why it is worth saying before you write any code.</p>
+    <p>Minutes means event-driven. The source emits a change, a queue job re-ingests that one document, and nothing else moves. Hours or a day means a scheduled crawl using Day 9's hash gate, which costs nearly nothing on the runs where little has changed.</p>
+    <p>Now the forgotten half, and it is the half that hurts. Deletion. A document removed at the source stays retrievable forever unless something removes its chunks, and answering from a document that no longer exists is the kind of bug that becomes a legal conversation.</p>
+    <p>So reconcile on a schedule, and keep it dumb: list the source identifiers, list the index identifiers, delete the difference.</p>
+    <p>So: pick a staleness number first, let it choose event-driven or scheduled, and remember that deletions need their own job either way.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 215" role="img" aria-label="A staleness budget of minutes leads to event-driven re-ingestion while a budget of a day leads to a scheduled crawl, and both need a deletion reconcile job">
+        <rect x="200" y="14" width="240" height="40" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="320" y="40" text-anchor="middle" font-size="14" fill="var(--dg-ink)">your staleness budget</text>
+        <polyline points="320,54 320,68 155,68 155,84" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="149,84 155,94 161,84" fill="var(--dg-line)"/>
+        <polyline points="320,54 320,68 485,68 485,84" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="479,84 485,94 491,84" fill="var(--dg-line)"/>
+        <text x="120" y="64" text-anchor="middle" font-size="13" fill="var(--dg-muted)">15 minutes</text>
+        <text x="520" y="64" text-anchor="middle" font-size="13" fill="var(--dg-muted)">one day</text>
+        <rect x="40" y="96" width="230" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="155" y="125" text-anchor="middle" font-size="13" fill="var(--dg-ink)">event: re-ingest that one doc</text>
+        <rect x="370" y="96" width="230" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="485" y="125" text-anchor="middle" font-size="13" fill="var(--dg-ink)">crawl + Day 9's hash gate</text>
+        <rect x="140" y="160" width="360" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="320" y="187" text-anchor="middle" font-size="14" fill="var(--dg-ink)">either way: reconcile deletions</text>
+      </svg>
+      <figcaption>The number you promise decides the pipeline, and deletion is the branch everyone forgets to build.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Index versioning and rollback</h4>
+    <p>Three things together define your index: your parser, your chunker, and your embedding model. Change any one of them and every vector has to be rebuilt, because vectors from two models cannot be compared at all.</p>
+    <p>That is why "let's just try the new embedding model" is never a small change. It is a full rebuild wearing a small sentence.</p>
+    <p>So handle it the way you would a database migration. Name the index for its configuration — something like <code>docs-v4-800tok</code> — and build the new one alongside the old, not on top of it.</p>
+    <p>Then run Day 11's golden set against both. That is the whole reason you built it. If the new index wins, flip an alias that the app reads. If it turns out worse under real traffic, flip the alias back, in seconds.</p>
+    <p>That is what rollback actually means: pointing at an index that still exists. Not rebuilding one at two in the morning while the product is down.</p>
+    <p>Keep one row per index version too: configuration, build date, corpus size, recall@5, MRR, and what the build cost. It takes a minute per build, and it answers the question every reviewer asks — why is it configured this way?</p>
+    <p>So: name indexes for their configuration, keep the old one alive, and let an alias be the only thing that changes on ship day.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="The app reads an alias that points at the new index, while the previous index is kept in place so the alias can be flipped back">
+        <text x="20" y="24" font-size="14" fill="var(--dg-ink)">flip the alias, not the app</text>
+        <rect x="20" y="80" width="110" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="75" y="107" text-anchor="middle" font-size="14" fill="var(--dg-ink)">your app</text>
+        <line x1="130" y1="102" x2="146" y2="102" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="146,96 158,102 146,108" fill="var(--dg-line)"/>
+        <rect x="158" y="80" width="110" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="213" y="107" text-anchor="middle" font-size="14" fill="var(--dg-ink)">alias</text>
+        <polyline points="268,102 300,102 300,50 322,50" fill="none" stroke="var(--dg-line)" stroke-width="2" stroke-dasharray="6 4"/>
+        <polygon points="322,44 334,50 322,56" fill="var(--dg-line)"/>
+        <polyline points="268,102 300,102 300,132 322,132" fill="none" stroke="var(--dg-accent)" stroke-width="3"/>
+        <polygon points="322,126 334,132 322,138" fill="var(--dg-accent)"/>
+        <rect x="340" y="28" width="270" height="44" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="475" y="55" text-anchor="middle" font-size="14" fill="var(--dg-muted)">docs-v3 (kept, not deleted)</text>
+        <rect x="340" y="110" width="270" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-good)"/>
+        <text x="475" y="137" text-anchor="middle" font-size="14" fill="var(--dg-ink)">docs-v4-800tok (live)</text>
+        <text x="475" y="180" text-anchor="middle" font-size="13" fill="var(--dg-muted)">the golden set chose the live one; rollback is one flip</text>
+      </svg>
+      <figcaption>Rollback is only fast when the index you are rolling back to was never thrown away.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>The latency and cost budget</h4>
+    <p>Write down the path — embed, search, rerank, generate — then measure each stage on its own. Guessing here is how people optimize the wrong thing for a week.</p>
+    <p>Typical numbers: 20 to 40 milliseconds to embed the query, 10 to 50 to search, 100 to 400 to rerank 50 candidates, and 1 to 4 seconds to generate.</p>
+    <p>Look at the shape of that. Generation dominates everything else combined, which means the only latency the user really feels is time-to-first-token. Stream it, and the 300 milliseconds of retrieval sitting in front of it become invisible.</p>
+    <p>Cost per query is the same exercise with different units. The query embedding is a fraction of a cent. The reranker charges per call. Generation charges for input tokens — five chunks at 600 tokens each is 3,000 tokens before the question is even added — plus output.</p>
+    <p>Compute that once with your real numbers and you can answer "break down your cost per request" cold, which is a question that separates people who built a system from people who called an API.</p>
+    <p>Your levers, in order: cache embeddings for repeated queries; send fewer chunks to the generator, which is cheaper and often more accurate; rerank fewer candidates; and route to a larger model only when the reranker's top score is low.</p>
+    <p>So: measure each stage once, and you will find that streaming, not micro-optimizing search, is what makes the thing feel fast.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Bar chart of the four retrieval stages showing generation dominating the total time to answer">
+        <text x="132" y="60" text-anchor="end" font-size="13" fill="var(--dg-ink)">embed query</text>
+        <rect x="140" y="44" width="6" height="20" fill="var(--dg-accent)"/>
+        <text x="156" y="60" font-size="13" fill="var(--dg-muted)">30 ms</text>
+        <text x="132" y="92" text-anchor="end" font-size="13" fill="var(--dg-ink)">vector search</text>
+        <rect x="140" y="76" width="8" height="20" fill="var(--dg-accent)"/>
+        <text x="158" y="92" font-size="13" fill="var(--dg-muted)">40 ms</text>
+        <text x="132" y="124" text-anchor="end" font-size="13" fill="var(--dg-ink)">rerank 50</text>
+        <rect x="140" y="108" width="50" height="20" fill="var(--dg-accent)"/>
+        <text x="200" y="124" font-size="13" fill="var(--dg-muted)">250 ms</text>
+        <text x="132" y="156" text-anchor="end" font-size="13" fill="var(--dg-ink)">generate</text>
+        <rect x="140" y="140" width="440" height="20" fill="var(--dg-accent2)"/>
+        <text x="352" y="155" font-size="13" fill="var(--dg-ink)">2,200 ms</text>
+        <line x1="140" y1="172" x2="600" y2="172" stroke="var(--dg-line)"/>
+        <text x="370" y="192" text-anchor="middle" font-size="13" fill="var(--dg-muted)">about 2.5 s total, but the user waits only for the first token</text>
+      </svg>
+      <figcaption>Retrieval is a rounding error next to generation, which is why streaming beats shaving milliseconds off search.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Add authentication to the query endpoint. Derive the tenant and group identifiers from the session, and never read them from the request body.</li>
+      <li>Backfill access metadata onto every chunk during ingestion, and refuse to index a chunk that has none.</li>
+      <li>Wrap the store behind one search function that requires the access filter as an argument. Delete every other call path.</li>
+      <li>Prove pre-filtering: create two users with different access, ask the same question, and confirm the answers and the citations differ.</li>
+      <li>Write a test that a chunk visible to user A never appears in user B's results, and run it in CI so it stays true.</li>
+      <li>Add the reconciliation job: source identifiers minus index identifiers, delete the difference. Run it against a document you removed on purpose.</li>
+      <li>Name the index for its configuration and put an alias in front of it. Practice a rollback once, with a timer running.</li>
+      <li>Log per request: stage timings, token counts, and cost. Record p50 and p95 over 50 real queries.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Trusting a tenant identifier the client sent. Any user can change it, and your index will happily obey.</li>
+      <li>Filtering after retrieval and calling it access control. It is not a leak, but the results get so thin the feature looks broken.</li>
+      <li>Changing the embedding model without rebuilding the index. Nothing crashes; retrieval just becomes quietly random.</li>
+      <li>Caching answers without including the user's access scope in the cache key. That one is a real leak.</li>
+    </ul>
+  </div>

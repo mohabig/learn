@@ -1,0 +1,84 @@
+<p class="day-lede">A tool that only runs on your laptop is not evidence. Today you put the service on the public internet, write the README that makes it legible to a stranger in 90 seconds, and then stop for half a day — the rest is scheduled work, not a reward.</p>
+
+  <div class="concept">
+    <h4>Deployed means a stranger can run it</h4>
+    <p>Four things change the moment the URL is public, and none of them are about your code.</p>
+    <p>Configuration moves to the host's secret store, not a file in the repo.</p>
+    <p>A public endpoint needs a spend ceiling and a rate limit before it needs anything else. An open, unmetered endpoint sitting in front of a paid API is a bill waiting to happen, and it takes one bored visitor overnight.</p>
+    <p>Cold starts on free tiers add seconds to the first request after an idle period, which will look exactly like a slow model until you go and check.</p>
+    <p>And the platform's proxy may buffer your stream, turning Day 5's work into an ordinary slow response. You can only see that from outside your own network.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A comparison of what the service relies on locally and what changes once it is reachable from the public internet">
+        <rect x="20" y="30" width="280" height="170" rx="8" fill="none" stroke="var(--dg-line)"/>
+        <text x="160" y="58" text-anchor="middle" font-size="14" fill="var(--dg-ink)">on your laptop</text>
+        <text x="40" y="92" font-size="13" fill="var(--dg-muted)">key in a .env file on disk</text>
+        <text x="40" y="120" font-size="13" fill="var(--dg-muted)">no proxy in the way</text>
+        <text x="40" y="148" font-size="13" fill="var(--dg-muted)">always warm</text>
+        <text x="40" y="176" font-size="13" fill="var(--dg-muted)">nobody else can call it</text>
+        <rect x="340" y="30" width="280" height="170" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="480" y="58" text-anchor="middle" font-size="14" fill="var(--dg-ink)">on the internet</text>
+        <text x="360" y="92" font-size="13" fill="var(--dg-ink)">key in the host's secret store</text>
+        <text x="360" y="120" font-size="13" fill="var(--dg-ink)">a proxy that may buffer the stream</text>
+        <text x="360" y="148" font-size="13" fill="var(--dg-ink)">cold start on the first request</text>
+        <text x="360" y="176" font-size="13" fill="var(--dg-ink)">spend ceiling and rate limit, today</text>
+      </svg>
+      <figcaption>Four things are different the moment the URL is public, and three of them look like a slow model until you check.</figcaption>
+    </figure>
+    <p>So: deployed means a stranger can run it, and a stranger includes the one who wants your key.</p>
+  </div>
+
+  <div class="concept">
+    <h4>The README is the deliverable</h4>
+    <p>Six sections, and you can write them in an hour. What it does, in one paragraph a non-expert understands. An architecture diagram — a Mermaid block is fine. Cost per request, with the arithmetic shown. p50 and p95 latency, and how you measured them. Known failure modes, and what you'd fix with another week. A live link.</p>
+    <p>The reason is unglamorous. A hiring manager reads for about 90 seconds, and what they're looking for is evidence that you reason about tradeoffs.</p>
+    <p>"Uses AI" is not evidence. "$0.004 per request, p95 2.4 seconds, 31 percent cache hit rate, and here's why I chose the small model first" is.</p>
+    <p>So: the numbers you collected all week are the deliverable, and the README is just where they live.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-label="The shipped architecture: client to your API, with a response cache beside it, then a router, then the model provider">
+        <rect x="16" y="60" width="110" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="71" y="90" text-anchor="middle" font-size="14" fill="var(--dg-ink)">client</text>
+        <line x1="126" y1="85" x2="158" y2="85" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="158,79 170,85 158,91" fill="var(--dg-line)"/>
+        <rect x="174" y="60" width="150" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="249" y="90" text-anchor="middle" font-size="14" fill="var(--dg-ink)">your API</text>
+        <line x1="324" y1="85" x2="356" y2="85" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="356,79 368,85 356,91" fill="var(--dg-line)"/>
+        <rect x="372" y="60" width="120" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="432" y="90" text-anchor="middle" font-size="14" fill="var(--dg-ink)">router</text>
+        <line x1="492" y1="85" x2="524" y2="85" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="524,79 536,85 524,91" fill="var(--dg-line)"/>
+        <rect x="516" y="60" width="108" height="50" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="570" y="90" text-anchor="middle" font-size="14" fill="var(--dg-ink)">provider</text>
+        <line x1="249" y1="110" x2="249" y2="132" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="243,132 255,132 249,144" fill="var(--dg-line)"/>
+        <rect x="174" y="144" width="150" height="44" rx="8" fill="none" stroke="var(--dg-good)"/>
+        <text x="249" y="171" text-anchor="middle" font-size="13" fill="var(--dg-ink)">response cache</text>
+        <text x="352" y="171" font-size="13" fill="var(--dg-muted)">$0.004 per request · p95 2.4 s</text>
+      </svg>
+      <figcaption>Four boxes and three numbers: this is the whole architecture section of the README.</figcaption>
+    </figure>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Audit for secrets before anything else. Search the repo and the git history for key-shaped strings. If one was ever committed, rotate the key — removing the line does not help.</li>
+      <li>Add the public-endpoint essentials: a health route, a request id on every response and log line, a per-request token ceiling, and a simple per-address rate limit.</li>
+      <li>Deploy to whatever platform gets you live in under 20 minutes — Render, Fly.io, Railway, Vercel. Put the API key in the host's secret store and set a billing alert on your provider account today, not later.</li>
+      <li>Hit the live URL from a different network — phone tethering works. Record time to first token and total time from there. Localhost numbers are fiction.</li>
+      <li>Run Day 2's 20-case file against the deployed endpoint. Record cost per request and p50/p95, cached and uncached, from real responses.</li>
+      <li>Break the live one: a bad key, an input far past your window, an empty body. Confirm each returns a clean message with a request id, as Day 6 promised.</li>
+      <li>Write the README's six sections and paste the real table. Add the architecture diagram and a one-line install-and-run.</li>
+      <li>Tag a release, commit <code>LOG.md</code>, post the link somewhere public, and close the laptop for half a day.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>A key in git history. Rotation is the only fix, and it's a five-minute job that turns into an hour if you find out later.</li>
+      <li>A buffering proxy in front of the stream. Invisible on localhost, obvious from your phone.</li>
+      <li>A README full of setup instructions and no numbers. The numbers are the entire point of Week 1.</li>
+      <li>Skipping the half day off. Burnout on Day 19 costs far more than a Sunday afternoon does.</li>
+    </ul>
+  </div>

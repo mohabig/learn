@@ -1,0 +1,164 @@
+<p class="day-lede">This is the day the model stops being a chat toy and becomes a component. Prose you have to read is not a system; typed objects are. Nail this one and everything in the next 27 days gets easier.</p>
+
+  <div class="concept">
+    <h4>Why a model produces invalid JSON</h4>
+    <p>Generation is one token at a time, sampled from probabilities. In a plain call, nothing in that loop knows what JSON is.</p>
+    <p>The model has seen enormous amounts of JSON and imitates it beautifully. That's exactly the problem: the failures are rare enough to slip past your testing and land in production.</p>
+    <p>The shapes repeat, and it helps to know them by sight. A fenced code block, or a friendly "Here's the JSON:" wrapped around the object. A trailing comma. An unescaped quote inside a string. A number written as <code>"about 40"</code>. A field you never defined. A value outside your list of allowed options.</p>
+    <p>And the most common one by far: the object simply stops mid-way, because output hit <code>max_tokens</code>.</p>
+    <p>That last one deserves its own shelf. It isn't a model failure at all — it's a configuration failure, and from the outside it looks identical to one.</p>
+    <p>So: before you blame the parser or the model, read the stop reason.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Constrained decoding beats a better prompt</h4>
+    <p>Providers offer a mode where you hand over a JSON Schema and the output is forced to match it. No pleading required.</p>
+    <p>The mechanism is worth knowing, because it tells you exactly what the guarantee covers. At each generation step the provider works out which tokens could still lead to a document valid under your schema, and sets the probability of every other token to zero.</p>
+    <p>Read that again with tired eyes, because it's the whole idea: invalid syntax becomes unreachable, not merely unlikely. It's the difference between asking a river not to flood and building the bank.</p>
+    <p>There are two ways to ask for it. A response-format parameter carrying your schema, or a tool definition whose input schema is your object, with strict validation switched on. Both end in the same place — the model's output validates.</p>
+    <p>Now the honest limit. Enforcement does not buy you correct values. A schema-valid object can still say the invoice total is 4,000 when it's 40.00.</p>
+    <p>So: enforcement gives you parseable, not true. Truth is Day 4's citations and Week 3's evals.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="At one generation step, schema enforcement zeroes out every candidate token that could not continue a valid document">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">so far: {"total":</text>
+        <text x="20" y="72" font-size="13" fill="var(--dg-muted)">plain call</text>
+        <rect x="140" y="50" width="90" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="185" y="72" text-anchor="middle" font-size="14" fill="var(--dg-ink)">42</text>
+        <rect x="248" y="50" width="90" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="293" y="72" text-anchor="middle" font-size="14" fill="var(--dg-ink)">"about</text>
+        <rect x="356" y="50" width="90" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="401" y="72" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Sure!</text>
+        <rect x="464" y="50" width="90" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="509" y="72" text-anchor="middle" font-size="14" fill="var(--dg-ink)">{</text>
+        <text x="20" y="152" font-size="13" fill="var(--dg-muted)">schema on</text>
+        <rect x="140" y="130" width="90" height="34" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="185" y="152" text-anchor="middle" font-size="14" fill="var(--dg-ink)">42</text>
+        <rect x="248" y="130" width="90" height="34" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="293" y="152" text-anchor="middle" font-size="14" fill="var(--dg-muted)">"about</text>
+        <line x1="248" y1="164" x2="338" y2="130" stroke="var(--dg-line)" stroke-width="2"/>
+        <rect x="356" y="130" width="90" height="34" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="401" y="152" text-anchor="middle" font-size="14" fill="var(--dg-muted)">Sure!</text>
+        <line x1="356" y1="164" x2="446" y2="130" stroke="var(--dg-line)" stroke-width="2"/>
+        <rect x="464" y="130" width="90" height="34" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="509" y="152" text-anchor="middle" font-size="14" fill="var(--dg-muted)">{</text>
+        <line x1="464" y1="164" x2="554" y2="130" stroke="var(--dg-line)" stroke-width="2"/>
+        <text x="20" y="192" font-size="13" fill="var(--dg-muted)">crossed-out tokens have probability zero — they cannot be sampled</text>
+      </svg>
+      <figcaption>Enforcement removes the illegal continuations instead of asking the model nicely to avoid them.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>One Pydantic model, three jobs</h4>
+    <p>Define the object once, as a Pydantic class. That single definition then goes to work in three places.</p>
+    <p>It produces the JSON Schema you send to the API. It validates and coerces whatever comes back. And it gives your editor real types to autocomplete against. One definition means no drift between what you asked for and what you check. See <a href="https://docs.pydantic.dev/latest/">the Pydantic docs</a> for the schema and validation surface.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-label="One Pydantic class feeding three consumers: the schema sent to the API, the validator for the reply, and the types in your editor">
+        <rect x="20" y="66" width="180" height="68" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="110" y="94" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Invoice(BaseModel)</text>
+        <text x="110" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">written once</text>
+        <line x1="200" y1="100" x2="266" y2="42" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="262,36 274,42 264,50" fill="var(--dg-line)"/>
+        <line x1="200" y1="100" x2="266" y2="100" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="266,94 278,100 266,106" fill="var(--dg-line)"/>
+        <line x1="200" y1="100" x2="266" y2="158" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="262,150 274,158 264,164" fill="var(--dg-line)"/>
+        <rect x="282" y="20" width="330" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="447" y="47" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the schema you send with the request</text>
+        <rect x="282" y="78" width="330" height="44" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="447" y="105" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the validator that checks the reply</text>
+        <rect x="282" y="136" width="330" height="44" rx="8" fill="none" stroke="var(--dg-good)"/>
+        <text x="447" y="163" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the types your editor autocompletes</text>
+      </svg>
+      <figcaption>Three jobs read the same definition, so what you asked for and what you check can never drift apart.</figcaption>
+    </figure>
+    <p>Design the schema for the model, not for your database. Flat beats deeply nested, because every level of nesting is more structure the model has to hold straight while generating.</p>
+    <p>Use enums instead of free text wherever the values are known. Make optional fields explicitly nullable, and say in the field description what null actually means.</p>
+    <p>Those descriptions are not documentation. The model reads them. They're instructions on a very short leash, so write them as instructions.</p>
+    <p>One more rule, and it heads off a whole category of quiet nonsense: always give the model a legal way to say it doesn't know. A null, an "unknown" enum value, a <code>confidence</code> field. Without one, the only way to produce a valid object is to invent something — and it will.</p>
+    <p>So: one class, three jobs, and an escape hatch for the cases where the answer isn't in the document.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Validate, repair, then stop</h4>
+    <p>The loop is short. Call, parse, validate against the model. On failure, send back the invalid output plus the exact validator error text and ask for a corrected object.</p>
+    <p>The error string is unusually good context. "due_date: input should be a valid date" fixes far more often than "that was wrong", because it names the field and the expectation in the same breath.</p>
+    <p>Now bound it, hard. Two attempts, then record the failure and move on.</p>
+    <p>Here's what an unbounded repair loop actually costs. On one bad input it can spend five times a normal record and still fail — and if it's running inside a request, your user is watching a spinner the whole time.</p>
+    <p>Log which field failed, every time. After 50 inputs you have a ranked list of your schema's weak spots, and the fix is usually a better field description or a split field rather than a bigger model.</p>
+    <p>Track first-attempt and second-attempt success separately. That pair of numbers is how you know whether you've hit today's target.</p>
+    <p>So: repair once, with the error text, then stop and write down what broke.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 220" role="img" aria-label="A call feeds a validator; valid output becomes a typed object and invalid output goes back once with the error text attached">
+        <rect x="20" y="52" width="130" height="52" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="85" y="83" text-anchor="middle" font-size="14" fill="var(--dg-ink)">model call</text>
+        <line x1="150" y1="78" x2="184" y2="78" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="184,72 196,78 184,84" fill="var(--dg-line)"/>
+        <rect x="200" y="52" width="150" height="52" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+        <text x="275" y="83" text-anchor="middle" font-size="14" fill="var(--dg-ink)">parse + validate</text>
+        <line x1="350" y1="78" x2="384" y2="78" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="384,72 396,78 384,84" fill="var(--dg-line)"/>
+        <rect x="400" y="52" width="150" height="52" rx="8" fill="none" stroke="var(--dg-good)"/>
+        <text x="475" y="83" text-anchor="middle" font-size="14" fill="var(--dg-ink)">typed object</text>
+        <line x1="275" y1="104" x2="275" y2="140" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="269,140 281,140 275,152" fill="var(--dg-line)"/>
+        <text x="292" y="128" font-size="13" fill="var(--dg-muted)">invalid</text>
+        <rect x="188" y="152" width="180" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+        <text x="278" y="180" text-anchor="middle" font-size="13" fill="var(--dg-ink)">resend with the error text</text>
+        <polyline points="188,175 85,175 85,116" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
+        <polygon points="79,116 91,116 85,104" fill="var(--dg-line)"/>
+        <text x="396" y="180" font-size="13" fill="var(--dg-muted)">cap at two attempts, then log it</text>
+      </svg>
+      <figcaption>The validator's own error message is the most useful thing you can put in the repair prompt.</figcaption>
+    </figure>
+  </div>
+
+  <div class="concept">
+    <h4>Partial and streaming JSON</h4>
+    <p>If you stream a structured response, what arrives on the wire is a prefix of a document.</p>
+    <p>A normal parser rejects every prefix until the final closing brace lands, so you can't just parse each chunk as it shows up. To display fields filling in live, you need an incremental parser that speculatively closes the open strings and braces and re-parses. Several exist, and providers stream tool inputs in a form built for exactly this.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-label="Two prefixes of a JSON document that no parser will accept, followed by the completed document once the closing brace arrives">
+        <text x="20" y="30" font-size="13" fill="var(--dg-muted)">what a stream actually hands you, chunk by chunk</text>
+        <rect x="20" y="46" width="180" height="42" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="110" y="72" text-anchor="middle" font-size="13" fill="var(--dg-muted)">{"total":</text>
+        <text x="110" y="110" text-anchor="middle" font-size="13" fill="var(--dg-muted)">not a document yet</text>
+        <rect x="220" y="46" width="180" height="42" rx="6" fill="none" stroke="var(--dg-line)"/>
+        <text x="310" y="72" text-anchor="middle" font-size="13" fill="var(--dg-muted)">{"total": 40.00,</text>
+        <text x="310" y="110" text-anchor="middle" font-size="13" fill="var(--dg-muted)">still not</text>
+        <rect x="420" y="46" width="196" height="42" rx="6" fill="none" stroke="var(--dg-good)"/>
+        <text x="518" y="72" text-anchor="middle" font-size="13" fill="var(--dg-ink)">{"total": 40.00}</text>
+        <text x="518" y="110" text-anchor="middle" font-size="13" fill="var(--dg-ink)">valid: the brace landed</text>
+        <text x="20" y="150" font-size="13" fill="var(--dg-muted)">an incremental parser guesses the closing braces so a person can watch fields fill in</text>
+        <text x="20" y="176" font-size="13" fill="var(--dg-muted)">if the stream stops at max_tokens, it just ends here — invalid, same as any other call</text>
+      </svg>
+      <figcaption>Every prefix of a JSON document is invalid until the last brace arrives, which is why streaming structured output needs its own parser.</figcaption>
+    </figure>
+    <p>Most of the time, don't bother. If no human is watching the output appear, wait for the whole object.</p>
+    <p>And notice what partial parsing does not change: correctness. A stream that hits <code>max_tokens</code> ends as an invalid document, exactly like a non-streamed one.</p>
+    <p>So: partial parsing is an interface feature, and it earns its complexity only when somebody is watching.</p>
+  </div>
+
+  <div class="walkthrough">
+    <h4>The build, step by step</h4>
+    <ol>
+      <li>Pick one messy document type you can get 50 real examples of — invoices, job posts, résumés, forwarded emails. Real ones, with the noise still in them.</li>
+      <li>Write the Pydantic model: 6 to 12 fields, enums where the values are fixed, nullable where absence is normal, one description per field written as an instruction.</li>
+      <li>Call with schema enforcement — response format or a strict tool definition — and parse the result straight into your class.</li>
+      <li>Add the repair loop: catch validation errors, resend the failing output plus the error text once, then give up and log the record as failed.</li>
+      <li>Run all 50 inputs. Write a results table: first-attempt valid, second-attempt valid, failed, plus the failing field for every failure.</li>
+      <li>Read every failure. Fix the schema or the field descriptions — not the model choice — and re-run to watch the number move.</li>
+      <li>Deliberately break it: truncate an input mid-sentence, feed a document in the wrong language, feed an empty file. Confirm each produces a logged failure, not a crash.</li>
+      <li>Commit the model, the runner, the 50 inputs, and the results table.</li>
+    </ol>
+  </div>
+
+  <div class="gotchas">
+    <h4>Where people get stuck</h4>
+    <ul>
+      <li>Blaming the model for truncation. The object stopped because <code>max_tokens</code> did; check the stop reason first, every time.</li>
+      <li>Schemas with no way to express "not present", so the model fabricates a plausible date rather than emitting null.</li>
+      <li>Repair loops with no cap, quietly tripling cost on the handful of inputs that were never going to parse.</li>
+      <li>Stripping code fences with a regular expression instead of turning on schema enforcement, and inheriting a new edge case every week.</li>
+    </ul>
+  </div>
