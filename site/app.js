@@ -1,6 +1,6 @@
 /* ==========================================================================
    THE 80/20 AI ENGINEER — CORE APPLICATION ARCHITECTURE & ROUTER (site/app.js)
-   Universal Hash Router · Command Palette · Progress Engine · Themes · Labs
+   Universal Hash Router · Progress Engine · Themes · Labs · Drills
    ========================================================================== */
 
 (function () {
@@ -1243,245 +1243,38 @@
     refreshProgress();
     updateStreak();
     applyFilters();
-    buildPaletteItems();
     flashToast(`Switched to ${currentTrack === "sprint" ? "30-Day Sprint" : "90-Day Flagship"} track!`);
   }
 
   /* ==========================================================================
-     14. Command Palette (<dialog id="command-palette">)
-     ========================================================================== */
-
-  let paletteItems = [];
-  let selectedIndex = 0;
-
-  function buildPaletteItems() {
-    paletteItems = [
-      // Views
-      { type: "view", icon: "🏠", label: "Overview — 90-Day Trajectory", target: "#/overview", group: "Views" },
-      { type: "view", icon: "📚", label: "Curriculum — The 84-Day Plan", target: "#/course", group: "Views" },
-      { type: "view", icon: "🔬", label: "Bug Hunt Labs — 4 Adversarial Outages", target: "#/labs", group: "Views" },
-      { type: "view", icon: "⚡", label: "Spaced Retrieval Drills — Daily Flashcards", target: "#/drills", group: "Views" },
-      { type: "view", icon: "📋", label: "Reference — 25 Senior Questions & Rubrics", target: "#/reference", group: "Views" },
-
-      // Quick Actions
-      { type: "action", icon: "🎯", label: "Resume Where I Left Off", action: () => {
-        const target = resumeTarget();
-        location.hash = target ? `#/day/${target.slug}` : "#/course";
-      }, group: "Quick Actions" },
-      { type: "action", icon: "☀️", label: "Toggle Theme (Light / Dark / OLED)", action: cycleTheme, group: "Quick Actions" },
-      { type: "action", icon: "💾", label: "Export Progress Backup (JSON)", action: () => document.getElementById("export-btn").click(), group: "Quick Actions" },
-      { type: "action", icon: "📂", label: "Import Progress Backup", action: () => document.getElementById("import-btn").click(), group: "Quick Actions" },
-      { type: "action", icon: "🔄", label: "Reset Progress All Ticks", action: () => document.getElementById("reset-btn").click(), group: "Quick Actions" },
-
-      // Lab shortcuts
-      { type: "action", icon: "🚨", label: "Lab 01: The 3:00 AM Thundering Herd & Retry Storm", action: () => {
-        activeLabId = "lab-01";
-        location.hash = "#/labs";
-        renderLabsView();
-      }, group: "Bug Hunt Labs" },
-      { type: "action", icon: "🔄", label: "Lab 02: The Bizarro World Inverted Vector Space", action: () => {
-        activeLabId = "lab-02";
-        location.hash = "#/labs";
-        renderLabsView();
-      }, group: "Bug Hunt Labs" },
-      { type: "action", icon: "🛡️", label: "Lab 03: The Ghost in the Invoice Prompt Injection", action: () => {
-        activeLabId = "lab-03";
-        location.hash = "#/labs";
-        renderLabsView();
-      }, group: "Bug Hunt Labs" },
-      { type: "action", icon: "🌊", label: "Lab 04: The 4-Hour Zombie Memory & Socket Leak", action: () => {
-        activeLabId = "lab-04";
-        location.hash = "#/labs";
-        renderLabsView();
-      }, group: "Bug Hunt Labs" }
-    ];
-
-    // All 84 Days & tasks
-    DAYS.forEach(({ w, day, slug, label }) => {
-      paletteItems.push({
-        type: "day",
-        icon: day.ship ? "🚀" : (day.lever ? "⚡" : "📄"),
-        label: `${label}: ${day.t}`,
-        sub: `Week ${w.n} · ${w.title}`,
-        target: `#/day/${slug}`,
-        group: "Curriculum Days",
-        haystack: stripHtml([label, day.t, ...(day.tasks || []), day.done || ""].join(" ")).toLowerCase()
-      });
-    });
-  }
-
-  function openCommandPalette() {
-    const dialog = document.getElementById("command-palette");
-    if (!dialog) return;
-    if (typeof dialog.showModal === "function") {
-      dialog.showModal();
-    } else {
-      dialog.setAttribute("open", "");
-    }
-    const input = dialog.querySelector(".cp-input");
-    if (input) {
-      input.value = "";
-      input.focus();
-    }
-    renderPaletteResults("");
-  }
-
-  function closeCommandPalette() {
-    const dialog = document.getElementById("command-palette");
-    if (!dialog) return;
-    if (typeof dialog.close === "function") {
-      dialog.close();
-    } else {
-      dialog.removeAttribute("open");
-    }
-  }
-
-  function renderPaletteResults(query) {
-    const list = document.getElementById("cp-results-list");
-    if (!list) return;
-
-    const q = query.trim().toLowerCase();
-    const matches = paletteItems.filter(item => {
-      if (!q) return item.group === "Views" || item.group === "Quick Actions";
-      const matchLabel = item.label.toLowerCase().includes(q);
-      const matchSub = (item.sub || "").toLowerCase().includes(q);
-      const matchHaystack = (item.haystack || "").includes(q);
-      return matchLabel || matchSub || matchHaystack;
-    }).slice(0, 30);
-
-    selectedIndex = 0;
-    list.innerHTML = "";
-
-    if (!matches.length) {
-      list.innerHTML = '<li style="padding:24px; text-align:center; color:var(--muted); font-size:14px;">No matching results found</li>';
-      return;
-    }
-
-    let currentGroup = "";
-    matches.forEach((item, idx) => {
-      if (item.group !== currentGroup) {
-        currentGroup = item.group;
-        const groupEl = document.createElement("li");
-        groupEl.className = "cp-group-title";
-        groupEl.textContent = currentGroup;
-        list.appendChild(groupEl);
-      }
-
-      const li = document.createElement("li");
-      li.className = `cp-item ${idx === selectedIndex ? 'is-selected' : ''}`;
-      li.dataset.idx = idx;
-
-      li.innerHTML = `
-        <span class="cp-item-icon">${item.icon}</span>
-        <span class="cp-item-text">${escapeHtml(item.label)}</span>
-        ${item.type === 'day' ? `<span class="badge ${item.icon === '🚀' ? 'badge-ship' : (item.icon === '⚡' ? 'badge-lever' : '')}">${item.icon === '🚀' ? 'Ship' : (item.icon === '⚡' ? 'Lever' : '')}</span>` : ''}
-      `;
-
-      li.addEventListener("click", () => executePaletteItem(item));
-      li.addEventListener("mouseenter", () => {
-        selectedIndex = idx;
-        updatePaletteSelection();
-      });
-
-      list.appendChild(li);
-    });
-
-    list._matches = matches;
-  }
-
-  function updatePaletteSelection() {
-    const list = document.getElementById("cp-results-list");
-    if (!list) return;
-    const items = list.querySelectorAll(".cp-item");
-    items.forEach((el, idx) => {
-      el.classList.toggle("is-selected", idx === selectedIndex);
-      if (idx === selectedIndex) {
-        el.scrollIntoView({ block: "nearest" });
-      }
-    });
-  }
-
-  function executePaletteItem(item) {
-    closeCommandPalette();
-    if (item.target) {
-      location.hash = item.target;
-    } else if (item.action) {
-      item.action();
-    }
-  }
-
-  function initCommandPalette() {
-    buildPaletteItems();
-
-    const dialog = document.getElementById("command-palette");
-    if (!dialog) return;
-
-    const input = dialog.querySelector(".cp-input");
-    if (input) {
-      input.addEventListener("input", () => {
-        renderPaletteResults(input.value);
-      });
-
-      input.addEventListener("keydown", e => {
-        const list = document.getElementById("cp-results-list");
-        const matches = list ? list._matches || [] : [];
-
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          if (matches.length) {
-            selectedIndex = (selectedIndex + 1) % matches.length;
-            updatePaletteSelection();
-          }
-        } else if (e.key === "ArrowUp") {
-          e.preventDefault();
-          if (matches.length) {
-            selectedIndex = (selectedIndex - 1 + matches.length) % matches.length;
-            updatePaletteSelection();
-          }
-        } else if (e.key === "Enter") {
-          e.preventDefault();
-          if (matches[selectedIndex]) {
-            executePaletteItem(matches[selectedIndex]);
-          }
-        } else if (e.key === "Escape") {
-          closeCommandPalette();
-        }
-      });
-    }
-
-    // Trigger button in top bar
-    const triggerBtn = document.getElementById("search-trigger-btn");
-    if (triggerBtn) {
-      triggerBtn.addEventListener("click", openCommandPalette);
-    }
-
-    // Backdrop click close
-    dialog.addEventListener("click", e => {
-      if (e.target === dialog) closeCommandPalette();
-    });
-  }
-
-  /* ==========================================================================
-     15. Global Keyboard Shortcuts ('j'/'k', 't', 'c', Cmd+K)
+     14. Global Keyboard Shortcuts ('j'/'k', 't', 'c', '/')
      ========================================================================== */
 
   function initKeyboardShortcuts() {
     window.addEventListener("keydown", e => {
-      // Cmd+K or Ctrl+K opens palette
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        const dialog = document.getElementById("command-palette");
-        if (dialog && dialog.hasAttribute("open")) {
-          closeCommandPalette();
-        } else {
-          openCommandPalette();
+      // '/' or Cmd+K / Ctrl+K jumps to and focuses curriculum day search
+      if (e.key === "/" || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) {
+        const activeEl = document.activeElement;
+        if (activeEl && ["INPUT", "TEXTAREA", "SELECT"].includes(activeEl.tagName)) {
+          return;
         }
+        e.preventDefault();
+        if (location.hash !== "#/course") {
+          location.hash = "#/course";
+        }
+        setTimeout(() => {
+          const searchInput = document.getElementById("day-search");
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+          }
+        }, 50);
         return;
       }
 
-      // Ignore single-character hotkeys if typing in inputs or dialogs
+      // Ignore single-character hotkeys if typing in inputs
       const activeEl = document.activeElement;
-      if (activeEl && (["INPUT", "TEXTAREA", "SELECT"].includes(activeEl.tagName) || activeEl.closest("dialog[open]"))) {
+      if (activeEl && ["INPUT", "TEXTAREA", "SELECT"].includes(activeEl.tagName)) {
         return;
       }
 
@@ -1634,7 +1427,6 @@
     initCourseFilters();
     initLogCopyHandlers();
     initTools();
-    initCommandPalette();
     initKeyboardShortcuts();
 
     // 5. Router

@@ -2,7 +2,7 @@
 
 - **[The 90-Day AI Engineer Plan](ai-engineer-90-day-plan.md)** — the flagship 90-day (13-week) journey to build production-ready engineering foundations and a portfolio of 3 shipped milestone AI systems, culminating in the Days 85–90 Capstone Hardening & Hiring Sprint.
 - **[The 80/20 AI Engineer: 30-Day Accelerated Sprint](ai-engineer-30-day-plan.md)** — the compressed 4-week fast track for experienced software engineers.
-- **[site/index.html](site/index.html)** — the modern, self-contained interactive web platform: selectable track switcher (Flagship 90-Day vs 30-Day Sprint), daily step-by-step builds, live 1,536-D Vector Compass, SSE Streaming Ticker, in-browser Spaced Retrieval Drills, and Command Palette (`Cmd+K`).
+- **[site/index.html](site/index.html)** — the modern, self-contained interactive web platform: selectable track switcher (Flagship 90-Day vs 30-Day Sprint), daily step-by-step builds, live 1,536-D Vector Compass, SSE Streaming Ticker, and in-browser Spaced Retrieval Drills.
 - **[LOG.md](LOG.md)** — daily learning log for the plan (`make log` or 1-click export from web).
 - **[starters/](starters/)** — production-grade FastAPI SSE microservice scaffolding with Pydantic v2 schemas and `starters/common/budget_guard.py` for spend caps and eval caching.
 - **[labs/](labs/)** — four adversarial bug hunt production mystery labs (thundering herd, inverted vector metric, prompt injection, and stream leak).

@@ -528,32 +528,6 @@ kbd {
   white-space: nowrap;
 }
 
-/* Search trigger button (Cmd+K) */
-.search-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  padding: 5px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
-}
-
-.search-trigger:hover {
-  color: var(--ink);
-  border-color: var(--accent);
-}
-
-.search-trigger kbd {
-  font-size: 10px;
-  padding: 1px 5px;
-}
-
 /* Theme toggle button */
 .theme-btn {
   display: inline-flex;
@@ -1999,158 +1973,6 @@ kbd {
 }
 
 /* ==========================================================================
-   Command Palette Dialog Modal (Native <dialog id="command-palette">)
-   Modern top-layer with @starting-style entry/exit transitions
-   ========================================================================== */
-
-dialog#command-palette {
-  position: fixed;
-  inset: 0;
-  margin: auto;
-  width: calc(100% - 32px);
-  max-width: 640px;
-  max-height: 80vh;
-  padding: 0;
-  border: 1px solid var(--rule);
-  border-radius: 12px;
-  background: var(--dialog-bg);
-  color: var(--ink);
-  box-shadow: var(--modal-shadow);
-  overflow: hidden;
-  outline: none;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-
-  /* Smooth entry animation */
-  opacity: 1;
-  transform: scale(1) translateY(0);
-  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              display 0.2s allow-discrete,
-              overlay 0.2s allow-discrete;
-}
-
-@starting-style {
-  dialog#command-palette[open] {
-    opacity: 0;
-    transform: scale(0.96) translateY(-14px);
-  }
-}
-
-dialog#command-palette::backdrop {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: opacity 0.2s ease, display 0.2s allow-discrete, overlay 0.2s allow-discrete;
-}
-
-@starting-style {
-  dialog#command-palette[open]::backdrop {
-    opacity: 0;
-  }
-}
-
-.cp-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.cp-search-icon {
-  font-size: 16px;
-  color: var(--muted);
-}
-
-.cp-input {
-  flex: 1;
-  border: 0;
-  outline: none;
-  font-family: var(--font-sans);
-  font-size: 16px;
-  color: var(--ink);
-  background: transparent;
-}
-
-.cp-input::placeholder {
-  color: var(--muted-soft);
-}
-
-.cp-results {
-  list-style: none;
-  margin: 0;
-  padding: 8px;
-  overflow-y: auto;
-  max-height: 55vh;
-}
-
-.cp-group-title {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 8px 12px 4px;
-}
-
-.cp-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 7px;
-  cursor: pointer;
-  transition: background 0.1s ease;
-  font-size: 14.5px;
-}
-
-.cp-item:hover, .cp-item.is-selected {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
-}
-
-.cp-item-icon {
-  font-size: 15px;
-  flex: none;
-  color: var(--muted);
-}
-
-.cp-item.is-selected .cp-item-icon {
-  color: var(--accent-ink);
-}
-
-.cp-item-text {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cp-item-badge {
-  margin-left: auto;
-}
-
-.cp-footer {
-  padding: 8px 16px;
-  border-top: 1px solid var(--rule-soft);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--muted);
-  background: var(--elevated);
-}
-
-.cp-hints {
-  display: flex;
-  gap: 12px;
-}
-
-/* ==========================================================================
    Footer
    ========================================================================== */
 
@@ -2207,7 +2029,7 @@ footer {
     font-size: 11pt;
   }
 
-  .bar, .pager, .crumbs, .daysearch, .bar-tools, footer, dialog#command-palette, .logrow, .logout {
+  .bar, .pager, .crumbs, .daysearch, .bar-tools, footer, .logrow, .logout {
     display: none !important;
   }
 

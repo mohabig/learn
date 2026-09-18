@@ -8,7 +8,7 @@
  * 2. Progress Persistence across simulated reloads
  * 3. Strict Import & Malformed/Oversized Payload Rejection
  * 4. Search, Multi-Month Filtering (Month 1, 2, 3), and Tag Chips
- * 5. Keyboard Navigation & Accessible <dialog> Command Palette
+ * 5. Keyboard Navigation & In-Page Search Hotkeys ('/', 'j'/'k', 't', 'c')
  * 6. Mobile Viewport Layout Integrity (375px width, zero horizontal overflow)
  * 7. Reset Engine Verification
  * 8. Semantic Accessibility Checks
@@ -407,29 +407,31 @@ async function runTests() {
     if (isNaN(matchCount) || matchCount === 0) throw new Error("Search filter for RRF failed");
     console.log(`[PASS] Search filter for 'RRF' matched ${matchCount} days`);
 
-    // 7. Command Palette
-    console.log("\n--- 7. Testing Command Palette (<dialog>) ---");
-    await evalPage(`
-      const dialog = document.getElementById("command-palette");
-      if (dialog) dialog.showModal();
-    `);
-    let isOpen = await evalPage('document.getElementById("command-palette").open');
-    if (!isOpen) throw new Error("Command palette dialog failed to open");
-    console.log("[PASS] Command Palette <dialog> opened via showModal()");
+    // 7. No Intrusive Popups & In-Page Search Focus
+    console.log("\n--- 7. Testing No Uninvited Popups & In-Page Search Hotkey ---");
+    let dialogCount = await evalPage('document.querySelectorAll("dialog").length');
+    if (dialogCount !== 0) throw new Error(`Expected 0 modal dialog popups, found ${dialogCount}`);
+    console.log("[PASS] Verified zero modal popups exist in DOM");
 
+    // Test '/' keyboard shortcut focuses #day-search
     await evalPage(`
-      const cmdSearch = document.querySelector("#command-palette .cp-input");
-      cmdSearch.value = "Prompt Injection";
-      cmdSearch.dispatchEvent(new Event("input"));
+      if (document.activeElement) document.activeElement.blur();
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "/" }));
     `);
-    let resultItems = await evalPage('document.querySelectorAll("#cp-results-list .cp-item").length');
-    if (resultItems === 0) throw new Error("Command palette search returned 0 items");
-    console.log(`[PASS] Command Palette fuzzy search returned ${resultItems} items`);
+    await new Promise((r) => setTimeout(r, 100));
+    let isSearchFocused = await evalPage('document.activeElement && document.activeElement.id === "day-search"');
+    if (!isSearchFocused) throw new Error("Pressing '/' failed to focus in-page search input");
+    console.log("[PASS] Hotkey '/' successfully focused in-page curriculum search");
 
-    await evalPage('document.getElementById("command-palette").close();');
-    let isClosed = await evalPage('!document.getElementById("command-palette").open');
-    if (!isClosed) throw new Error("Command palette failed to close");
-    console.log("[PASS] Command Palette closed cleanly");
+    // Clear search filter
+    await evalPage(`
+      const ds = document.getElementById("day-search");
+      if (ds) {
+        ds.value = "";
+        ds.dispatchEvent(new Event("input"));
+      }
+    `);
+    console.log("[PASS] In-page search filter cleared cleanly");
 
     // 8. Keyboard Shortcuts
     console.log("\n--- 8. Testing Keyboard Shortcuts (j/k/t/c) ---");

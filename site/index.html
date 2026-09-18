@@ -47,11 +47,6 @@
         <span class="progress-text" id="progress-text">0 / 353 (0%)</span>
       </div>
 
-      <button class="search-trigger" id="search-trigger-btn" type="button" aria-label="Search curriculum">
-        <span>Search</span>
-        <kbd>⌘K</kbd>
-      </button>
-
       <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme (Light / Dark / OLED)">☀️</button>
 
       <div class="bar-tools">
@@ -460,30 +455,11 @@
 
   <div class="footer-hotkeys">
     <span><kbd>j</kbd>/<kbd>k</kbd> Next/Prev Day</span>
-    <span><kbd>⌘K</kbd> Search</span>
+    <span><kbd>/</kbd> Filter Days</span>
     <span><kbd>t</kbd> Toggle Theme</span>
     <span><kbd>c</kbd> Copy Log</span>
-    <span><kbd>Esc</kbd> Close Dialog</span>
   </div>
 </footer>
-
-<!-- ============ COMMAND PALETTE DIALOG MODAL ============ -->
-<dialog id="command-palette" aria-label="Command Palette">
-  <div class="cp-header">
-    <span class="cp-search-icon" aria-hidden="true">🔍</span>
-    <input class="cp-input" type="text" placeholder="Search 90 days, 353 tasks, topics, or quick actions..." aria-label="Search curriculum">
-    <kbd>Esc</kbd>
-  </div>
-  <ul class="cp-results" id="cp-results-list" role="listbox"></ul>
-  <div class="cp-footer">
-    <div class="cp-hints">
-      <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
-      <span><kbd>↵</kbd> Select</span>
-      <span><kbd>Esc</kbd> Close</span>
-    </div>
-    <span class="cp-stats" id="cp-stats-badge">90 Days · 353 Tasks</span>
-  </div>
-</dialog>
 
 <!-- Authored lesson articles are modularized in site/content/ and bundled via scripts/build_site.py -->
 
