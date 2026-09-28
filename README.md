@@ -34,11 +34,9 @@ make labs          # run all 4 adversarial bug hunt production labs
 
 ## Deployment architecture (maintainers)
 
-The application has two distinct deployment tiers:
+The site is plain static files in `site/`; there is no build server and no GitHub Pages deployment.
 
-1. **Staging / GitHub Pages Preview:**
-   `.github/workflows/pages.yml` automatically bundles and deploys the `site/` folder to GitHub Pages on every push to `main`.
-2. **Production Release (`/opt/openship/static/learn`):**
+**Production Release (`/opt/openship/static/learn`):**
    Production deployments are managed via `scripts/release.py`:
    ```bash
    python3 scripts/release.py --target /opt/openship/static/learn
@@ -73,5 +71,5 @@ site/reference-data.js       25 senior interview gauntlet & portfolio rubrics
 site/style.css               modern glassmorphic design system
 site/widgets.js              interactive visualizer widgets (Vector Compass, SSE Streamer)
 starters/                    FastAPI SSE streaming starter & BudgetGuard safety module
-.github/workflows/           ci.yml (CI quality gate) and pages.yml (deploy)
+.github/workflows/           ci.yml (CI quality gate)
 ```
