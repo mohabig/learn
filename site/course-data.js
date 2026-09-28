@@ -60,46 +60,54 @@ window.COURSE_WEEKS =
       {
         "d": "0.2",
         "t": "Python, the parts you'll use",
+        "rounds": 3,
         "tasks": [
-          "Functions, modules and imports, classes where they earn their place, comprehensions",
-          "Type hints — and why they pay off the moment Pydantic arrives in Week 1",
-          "Isolated environments with <code>uv</code>: create, install, freeze, delete",
-          "<b>Build:</b> a small typed CLI that reads any text file and reports words, lines, and the ten most common tokens"
+          "<b>Round 1 — functions and modules:</b> two functions in one file, import and use them in another",
+          "<b>Round 2 — containers and loops:</b> a function using <code>Counter</code> and a comprehension to find the top words",
+          "<b>Round 3 — types and environment:</b> full type hints on all functions, mypy passes, rebuild from scratch",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "Fresh environment, one install command, and the CLI runs on the first try."
+        "done": "Fresh environment, one install command, and the CLI runs on the first try.",
+        "week": 0
       },
       {
         "d": "0.3",
         "t": "Errors, async, and tests",
+        "rounds": 3,
         "tasks": [
-          "Exceptions raised and caught narrowly; context managers for cleanup",
-          "<code>async</code>/<code>await</code>: what the event loop does, why it helps I/O and not math",
-          "<code>pytest</code> basics: test functions, asserts, running one file",
-          "<b>Build:</b> a downloader fetching ten URLs concurrently, with tests for the success and failure paths"
+          "<b>Round 1 — errors and cleanup:</b> a function that fetches URLs, catches errors narrowly, and returns them as data",
+          "<b>Round 2 — async and concurrency:</b> rewrite the fetcher as async, time both versions, watch sync vs. async",
+          "<b>Round 3 — tests that work:</b> write tests for success and failure, mark them async, and run pytest",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "You can explain why the async version is faster, and both tests pass."
+        "done": "You can explain why the async version is faster, and both tests pass.",
+        "week": 0
       },
       {
         "d": "0.4",
         "t": "HTTP, JSON, and secrets",
+        "rounds": 3,
         "tasks": [
-          "Request anatomy: method, path, headers, body; the status-code families",
-          "JSON in and out of Python; where auth lives — bearer tokens and API keys",
-          "Secret hygiene: env vars, <code>.env</code>, <code>.gitignore</code> — why keys never go in code",
-          "<b>Build:</b> call a real public API with the key from an env var, handling 404 and 429 explicitly"
+          "<b>Round 1 — HTTP basics:</b> an HTTP request and response as plain text, with method, headers, blank line, and body",
+          "<b>Round 2 — status codes and JSON:</b> a script that branches on status code and parses <code>r.json()</code> from the response",
+          "<b>Round 3 — secrets safe:</b> a script that reads the API key from <code>.env</code>, not committed, and passes it in a header",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can open a provider's API reference and know where the auth goes."
+        "done": "You can open a provider's API reference and know where the auth goes.",
+        "week": 0
       },
       {
         "d": "0.5",
         "t": "Git, GitHub, and reading docs",
+        "rounds": 3,
         "tasks": [
-          "Commits as snapshots; branch, push, pull, and what a PR actually is",
-          "Create a merge conflict on purpose and resolve it",
-          "Documentation as a skill: reference vs guide; finding the answer faster than a video could",
-          "<b>Build:</b> a practice repo with a branch, a PR, and one resolved conflict"
+          "<b>Round 1 — commits and branches:</b> a practice repo with three commits on main and one branch with its own commits",
+          "<b>Round 2 — merging and conflicts:</b> cause a merge conflict on purpose, resolve it by hand, and use <code>git merge --abort</code>",
+          "<b>Round 3 — reading docs:</b> read a reference page, then a tutorial, then check the changelog and answer a question",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "The word \"conflict\" no longer raises your pulse."
+        "done": "The word \"conflict\" no longer raises your pulse.",
+        "week": 0
       }
     ]
   },
@@ -125,11 +133,13 @@ window.COURSE_WEEKS =
       {
         "d": "2",
         "t": "Prompting that survives contact with users",
+        "rounds": 4,
         "tasks": [
-          "Few-shot examples, task decomposition, explicit output contracts, negative instructions",
-          "When step-by-step reasoning helps, and when it just burns tokens",
-          "Prompts live in versioned files, not f-strings scattered through the code",
-          "<b>Build:</b> a prompt module plus a 20-case input file you can run any prompt across"
+          "<b>Round 1 — contracts:</b> a prompt with a tight output contract and three carefully chosen examples that return consistent structure across five test inputs",
+          "<b>Round 2 — examples:</b> one failing case fixed either by decomposing into two calls or by turning off reasoning; measured comparison",
+          "<b>Round 3 — versioning:</b> prompt module with loader, 20-case test file, and runner that produces result files with version strings",
+          "<b>Round 4 — measurement:</b> three result files (v1, v2, split), a table showing accuracy and tokens, and a commit with evidence",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "You can change a prompt and immediately see which of the 20 cases moved."
       },
@@ -151,13 +161,16 @@ window.COURSE_WEEKS =
       {
         "d": "4",
         "t": "Long context and multimodal",
+        "rounds": 4,
         "tasks": [
-          "Images and PDFs as input; document understanding with no retrieval pipeline at all",
-          "Context-window budgeting; prompt caching and what it does to cost",
-          "When stuffing the whole document into the prompt beats RAG — more often than people admit",
-          "<b>Build:</b> PDF in, structured cited summary out"
+          "<b>Round 1 — input:</b> extract text from a PDF per page, print character counts, identify scanned pages",
+          "<b>Round 2 — budgeting:</b> count document tokens, plan the window (output reserve, document size, spare room), verify cache hits",
+          "<b>Round 3 — citations:</b> summarizer with findings (claim, page, quote), verify every quote with string search, report pass rate",
+          "<b>Round 4 — measurement:</b> results table (tokens, cost, pass rate for 20 documents), cache performance table, commit evidence",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can say which documents belong in the prompt and which need retrieval."
+        "done": "You can say which documents belong in the prompt and which need retrieval.",
+        "ship": false
       },
       {
         "d": "5",
@@ -175,12 +188,15 @@ window.COURSE_WEEKS =
       {
         "d": "6",
         "t": "Failure modes",
+        "rounds": 4,
         "tasks": [
-          "Hallucination, truncation, refusal, rate limits, timeouts, provider outages",
-          "Retries with exponential backoff and jitter, idempotency, circuit breaking, degraded responses",
-          "<b>Build:</b> harden yesterday's service, then break it on purpose — bad keys, huge inputs, cut network"
+          "<b>Round 1 — name the failure:</b> a classifier function that takes an exception or status code and returns retryable, not_retryable, or not_an_error, used everywhere a call might fail",
+          "<b>Round 2 — retry smart:</b> exponential backoff (1, 2, 4, 8 seconds) with jitter, honoring <code>retry-after</code>, capped by latency budget not attempt count",
+          "<b>Round 3 — stay idempotent:</b> accept an idempotency key, check if it exists before running work, store and return cached results for known keys",
+          "<b>Round 4 — degrade gracefully:</b> a five-rung ladder from fresh answer to cached to small model to partial to error message, with request id logged for each",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "Every failure path returns something useful instead of a stack trace."
+        "done": "Every failure path returns something useful. The user gets an answer or a request id, never a stack trace."
       },
       {
         "d": "7",
@@ -205,20 +221,26 @@ window.COURSE_WEEKS =
       {
         "d": "8",
         "t": "Embeddings from scratch, no database",
+        "rounds": 4,
         "tasks": [
-          "Embeddings, cosine similarity, dimensionality, exact vs approximate nearest neighbour",
-          "<b>Build:</b> a complete RAG system in ~200 lines with numpy and a list. No vector database."
+          "<b>Round 1 — embeddings:</b> embed three texts with the same model and save to a numpy array",
+          "<b>Round 2 — similarity:</b> normalize all embeddings, compute dot products, and measure your model's scale",
+          "<b>Round 3 — dimensions:</b> truncate embeddings to 256 and 64 dimensions and see how similarity scores change",
+          "<b>Round 4 — search types:</b> a complete RAG system in ~200 lines with numpy and a list, using exact search",
+          "<b>Teach it back:</b> explain embeddings and retrieval out loud in your own words, with no \"basically\""
         ],
-        "done": "You can explain, without hand-waving, exactly what a vector DB is doing for you."
+        "done": "You can explain, without hand-waving, exactly what a vector database is doing for you."
       },
       {
         "d": "9",
         "t": "Ingestion and chunking",
+        "rounds": 4,
         "tasks": [
-          "Parsing PDF, HTML, Markdown, code — the parsing is usually the hard part, not the AI",
-          "Chunk size and overlap; structural vs semantic chunking; keeping headings with their content",
-          "Metadata, stable document IDs, dedupe, incremental re-indexing",
-          "<b>Build:</b> an ingestion pipeline over a corpus you genuinely care about"
+          "<b>Round 1 — parsing:</b> one parser for your corpus format and read 20 outputs to find the two worst problems",
+          "<b>Round 2 — chunking:</b> chunk by token count with overlap and print the token distribution",
+          "<b>Round 3 — structure:</b> chunk structurally on heading boundaries, prepend breadcrumbs, store metadata",
+          "<b>Round 4 — deduplication:</b> stable IDs, content deduplication, incremental re-indexing",
+          "<b>Teach it back:</b> explain ingestion and chunking out loud in your own words, with no \"basically\""
         ],
         "done": "Re-running ingestion on a changed corpus updates only what changed."
       },
@@ -253,34 +275,43 @@ window.COURSE_WEEKS =
       {
         "d": "12",
         "t": "Generation over retrieved context",
+        "rounds": 4,
         "tasks": [
-          "Inline citations, grounding, refusing to answer outside the corpus",
-          "Conflicting sources, stale sources, context ordering and lost-in-the-middle",
-          "<b>Build:</b> answers where every claim links back to its source chunk"
+          "<b>Round 1 — grounding:</b> chunks tagged S1 to S5, model answers with tags, every tag checked against the pack and retried on failure",
+          "<b>Round 2 — refusing:</b> a gate that refuses on low reranker scores, calibrated on your golden set, and a refusal prompt the model can produce",
+          "<b>Round 3 — dates:</b> chunk headers with source, section, and date, a tie-break rule in the prompt, tested on conflicting sources",
+          "<b>Round 4 — ordering:</b> chunks ordered by reranker score best-first, question repeated at the end, tested in both orders",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can click any sentence in an answer through to the text it came from."
+        "done": "You can click any sentence in an answer through to the text it came from.",
+        "week": 2
       },
       {
         "d": "13",
         "t": "RAG in production",
+        "rounds": 4,
         "tasks": [
-          "Freshness and re-index strategy; permissions and multi-tenancy — whose documents can this user see?",
-          "Index versioning and rollback; cost per query",
-          "Latency budget across embed → search → rerank → generate",
-          "<b>Build:</b> add auth and per-user document scoping"
+          "<b>Round 1 — permissions:</b> two users with different access ask the same question and get different answers; the access filter is derived from the session, never from the request body",
+          "<b>Round 2 — freshness:</b> a reconciliation job lists source documents, lists indexed documents, and deletes the difference",
+          "<b>Round 3 — versions:</b> build a second index with a different configuration, test both against the golden set, and flip the alias to point at the winner, then flip back",
+          "<b>Round 4 — the budget:</b> measure each stage: embed, search, rerank, generate; calculate P50 and P95 latency over 20+ queries; record cost per query",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "Two users with different permissions get different answers to the same question."
+        "done": "Two users with different permissions get different answers to the same question.",
+        "week": 2
       },
       {
         "d": "14",
         "t": "Ship #2",
-        "ship": true,
+        "rounds": 2,
         "tasks": [
-          "Deploy the RAG app",
-          "README carries the Day 11 eval table",
-          "Treat this one carefully — it's usually the strongest portfolio piece of the month"
+          "<b>Round 1 — the numbers:</b> a README with six sections: what it does, the eval table from Day 11, architecture, cost and latency measured on the deployed service, known failure modes, and a live link",
+          "<b>Round 2 — ship it:</b> the service deployed with the index in a managed store; keys read from environment; demo corpus public and working; ingestion command documented",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "The README leads with measured retrieval quality, not a feature list."
+        "done": "The README leads with measured retrieval quality, not a feature list.",
+        "ship": true,
+        "week": 2
       }
     ]
   },
@@ -293,32 +324,42 @@ window.COURSE_WEEKS =
       {
         "d": "15",
         "t": "Tool use",
+        "rounds": 4,
         "tasks": [
-          "Tool definitions, JSON schemas, tool choice, parallel tool calls",
-          "Feeding results — and errors — back into the conversation",
-          "<b>Build:</b> a four-tool assistant (search, calculator, SQL query, file write) with no framework"
+          "<b>Round 1 — a tool is text:</b> four tool definitions by hand, each with a name, description, and JSON Schema",
+          "<b>Round 2 — the round trip:</b> a simple loop that does the four steps once, sending a tool request and getting a result back",
+          "<b>Round 3 — parallel calls:</b> detect two independent tool calls, run them at the same time, return both results in one message",
+          "<b>Round 4 — error handling:</b> a SQL tool that validates arguments, catches errors, returns them as results, and truncates long output",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no 'basically'"
         ],
         "done": "A tool that throws produces a recovery, not a crash."
       },
       {
         "d": "16",
         "t": "The agent loop",
+        "rounds": 4,
         "tasks": [
-          "Plan → act → observe → repeat; termination conditions, step limits, budget limits",
-          "Memory: short-term conversation vs long-term store; context compaction",
-          "<b>When an agent is the wrong answer:</b> if you can draw the flowchart, write the flowchart — a deterministic pipeline with three LLM calls is cheaper, faster and testable",
-          "<b>Build:</b> a bounded agent that completes a genuinely multi-step task"
+          "<b>Round 1 — the loop:</b> a simple <code>while</code> loop that sends, parses, runs a tool if needed, and appends",
+          "<b>Round 2 — termination:</b> the loop now with four ceilings: steps, budget, wall-clock time, and no-progress rule",
+          "<b>Round 3 — memory:</b> the loop with compaction: when the message list gets long, summarize and keep only the last two steps",
+          "<b>Round 4 — pipelines:</b> write the same task as both an agent loop and a three-call pipeline; compare time, cost, and reliability",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no 'basically'"
         ],
         "done": "The agent can't loop forever, and you can say what it costs at worst."
       },
       {
         "d": "17",
         "t": "MCP and integrations",
+        "rounds": 4,
         "tasks": [
-          "Model Context Protocol: servers, tools, resources, transports — and why a standard tool interface matters",
-          "<b>Build:</b> an MCP server exposing your week-2 RAG as a tool, connected to a real client"
+          "<b>Round 1 — the problem:</b> explain why connecting N applications to M tools requires multiplication, and how MCP changes it to addition",
+          "<b>Round 2 — three things:</b> design a server for your corpus: name the tools, resources, and prompts it will expose",
+          "<b>Round 3 — the risks:</b> audit your server design for security: what files does it read, what secrets does it need, what harm could it do?",
+          "<b>Round 4 — build one:</b> an MCP server exposing your Week-2 search as a tool and your document list as a resource, registered in a real client",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no basically"
         ],
-        "done": "You can query your own corpus from inside a coding agent or desktop client."
+        "done": "You can query your own corpus from inside a coding agent or desktop client.",
+        "week": 3
       },
       {
         "d": "18",
@@ -335,34 +376,42 @@ window.COURSE_WEEKS =
       {
         "d": "19",
         "t": "Evals II — build the harness",
-        "lever": true,
+        "rounds": 4,
         "tasks": [
-          "Dataset → runner → judge → metrics → regression gate, wired into CI",
-          "Per-commit scores; a regression fails the build",
-          "<b>Build:</b> <code>make eval</code> that runs against your agent and your RAG app"
+          "<b>Round 1 — five parts:</b> 40-case dataset, runner that records everything per case, one results file",
+          "<b>Round 2 — measure the noise:</b> run three times unchanged, measure the wobble, set the threshold outside it, commit baseline.json",
+          "<b>Round 3 — make it fast:</b> smoke set on 15 cases with assertions only, full set on 40 with the judge, cache by prompt hash, concurrent runs",
+          "<b>Round 4 — test the test:</b> break the system on purpose, watch the eval fail and the gate block it, revert, confirm it passes",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "Deliberately worsening a prompt turns your CI red."
+        "done": "You have a harness that catches when you break something, because you broke it on purpose and watched it fail.",
+        "lever": true
       },
       {
         "d": "20",
         "t": "Guardrails and security",
+        "rounds": 4,
         "tasks": [
-          "<b>Prompt injection</b>, especially through retrieved documents and tool output — the number-one real-world AI security issue",
-          "Data exfiltration paths, PII handling, output validation, allow-listed actions",
-          "Sandboxed tool execution, human-in-the-loop for irreversible actions, rate limiting",
-          "<b>Do:</b> spend two hours red-teaming your own Day 16 agent, and write down what worked"
+          "<b>Round 1 — how it works:</b> list your tools, mark which ones read private data, accept untrusted input, and send data outward",
+          "<b>Round 2 — three legs:</b> identify dangerous tools, see which legs you can remove",
+          "<b>Round 3 — what holds:</b> for each dangerous tool, add an allow-list, sandbox, user scoping, and output validation",
+          "<b>Round 4 — attack it:</b> spend two hours red-teaming, log every attack, convert each success into an eval case",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You have a document listing the attacks that worked and what you changed."
+        "done": "You have a document listing the attacks that worked and eval cases that stop them."
       },
       {
         "d": "21",
         "t": "Ship #3",
-        "ship": true,
+        "rounds": 2,
         "tasks": [
-          "Public repo: agent, tools, eval suite, CI",
-          "README includes a \"How I evaluate this\" section"
+          "<b>Round 1 — what readers believe:</b> public repo with clean structure, eval suite working, CI gate blocking bad changes, README with evaluation section",
+          "<b>Round 2 — proof with numbers:</b> README includes five numbers with denominators and dates, failure cluster analysis, spend ceiling set, fresh clone works in one command",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \\\"basically\\\""
         ],
-        "done": "Someone can read your README and reproduce your eval scores."
+        "done": "Someone can read your README and reproduce your eval scores.",
+        "ship": true,
+        "week": 3
       }
     ]
   },
@@ -375,77 +424,95 @@ window.COURSE_WEEKS =
       {
         "d": "22",
         "t": "Observability",
+        "rounds": 4,
         "tasks": [
-          "Trace every model call: inputs, outputs, tokens, cost, latency, tool calls, retries",
-          "Dashboards for cost per day and p95 latency; capture user feedback signals",
-          "Log safely — no secrets, no unredacted PII",
-          "<b>Build:</b> instrument all three shipped projects with one tracing tool"
+          "<b>Round 1 — traces:</b> every request has a trace id; every step is a span with model name, tokens, cost, latency, and stop reason",
+          "<b>Round 2 — dashboards:</b> cost per day with alarm at 3x normal, and p50/p95 latency per endpoint",
+          "<b>Round 3 — feedback:</b> thumbs up and thumbs down buttons keyed by trace id, so a score is also a diagnosis",
+          "<b>Round 4 — safety:</b> a redaction function catches emails, card numbers, keys, and environment values before they leave your code",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can open a trace for any single request from the last week."
+        "done": "You can open a trace for any single request from the last week, and you know what the last one cost."
       },
       {
         "d": "23",
         "t": "Fine-tuning, in exactly one day",
+        "rounds": 3,
         "tasks": [
-          "When it genuinely wins: fixed style or format, latency and cost at high volume, a narrow repeated task",
-          "When it loses: knowledge injection (that's RAG), fast-changing data, small datasets, anything you haven't first tried to solve with a good prompt",
-          "<b>Do:</b> run one small SFT/LoRA job on a hosted service and compare it head-to-head against your best prompt"
+          "<b>Round 1 — what changes:</b> LoRA trains small matrices, not the whole model; tuning shapes behavior, not knowledge",
+          "<b>Round 2 — when to use:</b> tuning wins at fixed format and high volume; it loses at knowledge, changing data, and small datasets",
+          "<b>Round 3 — the verdict:</b> a table comparing your best prompt, prompt plus retrieval, and a tuned model; three numbers per column; your judgment in writing",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can defend the choice with data — and the honest answer is usually \"prompt + RAG won\", which is itself a senior signal."
+        "done": "You can defend the choice with data — and the honest answer is usually \"prompt + retrieval won\", which is itself a senior signal."
       },
       {
         "d": "24",
         "t": "Open models and serving",
+        "rounds": 3,
         "tasks": [
-          "Run a model locally (Ollama or llama.cpp); quantisation tradeoffs",
-          "vLLM, batching, KV cache — conceptually, not as an ops project",
-          "When self-hosting is right: privacy and compliance, extreme volume, latency floors",
-          "Timebox this hard. It's the biggest rabbit hole in the plan."
+          "<b>Round 1 &mdash; weights on your machine:</b> a local model running, with memory and tokens-per-second measured",
+          "<b>Round 2 &mdash; quantization trade-off:</b> scores from your golden set on hosted, 8-bit local, and 4-bit local",
+          "<b>Round 3 &mdash; self-hosting decision:</b> your break-even calculation and four-sentence judgment on when you would choose it",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "You can say, in two sentences, when you'd self-host and when you wouldn't."
+        "done": "You can say in two sentences when you would self-host and when you would not."
       },
       {
         "d": "25–27",
         "t": "Capstone",
-        "ship": true,
+        "rounds": 8,
         "tasks": [
-          "One product using everything: retrieval + tools/agent + evals + tracing + auth + deploy",
-          "Scope rule: something <b>you would personally use every week</b>",
-          "Shapes that work: an assistant over your own domain's documents with actions attached; a workflow replacing a recurring manual task; an internal tool for a niche you know well",
-          "Ship at the end of Day 27. No extensions."
+          "<b>Round 1 — Scope and design:</b> a one-sentence product description, the domain you know, and three things you are explicitly <i>not</i> building",
+          "<b>Round 2 — The spine:</b> a README with the problem, the six pieces of the architecture, and why you chose this shape",
+          "<b>Round 3 — Agent or pipeline:</b> README updated with whether you are building a pipeline or an agent loop, the steps in order, and your reason",
+          "<b>Round 4 — Deploy on Day 25:</b> a deployed skeleton with retrieval, tracing wired before the first model call, questions answered with cited sources, and a public URL",
+          "<b>Round 5 — Retrieval:</b> hybrid search plus reranking working end-to-end, the top result with metadata passed to the model, answers that cite their sources, tested on ten real questions",
+          "<b>Round 6 — Tools:</b> one tool that does something real, with a dry-run mode and a confirmation step, tested on five commands",
+          "<b>Round 7 — Evals:</b> a golden set of twenty to thirty real cases from your own use, a harness that runs them all, a judge that scores each one, and failures grouped by cause",
+          "<b>Round 8 — Auth and ship:</b> login and per-user scoping, every failure path with a clear error message, README with real metrics (cost, latency, eval score), deployed and used for a task you actually needed",
+          "<b>Teach it back:</b> explain your capstone to a smart friend, from login to question to answer, five to seven sentences, with no gaps"
         ],
-        "done": "It's deployed and you've used it yourself for something real."
+        "done": "It's deployed and you've used it yourself for something real.",
+        "ship": true
       },
       {
         "d": "28",
         "t": "Harden and measure",
+        "rounds": 4,
         "tasks": [
-          "Load test it; record cost per user, p95 latency, eval scores on the golden set, error rate",
-          "Write a failure playbook: what breaks, how you'd know, what you'd do",
-          "Fix the top two failure modes your evals surface"
+          "<b>Round 1 &mdash; load testing:</b> a ramp showing p50, p95, p99 and error rate at 1, 5, 10, 25 and 50 concurrent users, with the knee marked",
+          "<b>Round 2 &mdash; the four numbers:</b> cost per user, p95 latency broken down by span, eval score on deployed, error rate split by cause",
+          "<b>Round 3 &mdash; failure playbook:</b> at least six rows showing what breaks, how you would know, what you would do, with alarms for gaps",
+          "<b>Round 4 &mdash; fix the top two:</b> before-and-after scores from the error analysis loop, top two fixes described, cases promoted to permanent evals",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "Every number in the README came from a measurement, not an estimate."
+        "done": "Every number in the README came from a measurement, with the date and conditions beside it."
       },
       {
         "d": "29",
         "t": "Write it up",
-        "lever": true,
+        "rounds": 3,
         "tasks": [
-          "Problem → architecture diagram → key tradeoffs → what failed and why → eval results → cost and latency",
-          "<b>The highest-leverage day of the month.</b> Hiring managers cannot see your skill; they can see whether you reason about tradeoffs. Most candidates ship code with no story — ship the story."
+          "<b>Round 1 — build your case:</b> read <code>LOG.md</code> and sort every number and surprise into six piles under the six section headings",
+          "<b>Round 2 — measure claims:</b> draw the architecture diagram, list three to five tradeoffs with the cost of each, and list three failures or approaches you tried and rejected",
+          "<b>Round 3 — ship it:</b> assemble the six sections, publish on a stable link, link from your four READMEs and resume, send to two readers, and commit",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "A stranger reads it and understands both what you built and why you built it that way."
+        "done": "A stranger reads it and understands both what you built and why you built it that way.",
+        "lever": true
       },
       {
         "d": "30",
         "t": "Position yourself",
+        "rounds": 2,
         "tasks": [
-          "Rewrite résumé and LinkedIn around shipped systems with numbers, not tools listed",
-          "Drill the 15 questions until you can answer them cold",
-          "Choose the next 30 days: depth (evals, retrieval quality, inference optimisation) or a domain (legal, health, devtools, finance)",
-          "Start talking to people: one public write-up, one open-source PR to AI tooling, five targeted applications"
+          "<b>Round 1 — what you shipped:</b> resume rewritten as four bullets with systems instead of tools, each with one number and a link, LinkedIn profile updated the same way, fifteen question answers recorded",
+          "<b>Round 2 — your next move:</b> next 30 days written in <code>LOG.md</code> with depth or breadth choice, deliverable, and date, three public actions taken (write-up published, PR opened, messages sent)",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "Someone who has never met you can tell, in 60 seconds, that you ship AI systems."
+        "done": "Someone who has never met you can tell, in 60 seconds, that you ship AI systems.",
+        "week": 4
       }
     ]
   }
