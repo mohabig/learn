@@ -1,13 +1,12 @@
-<p class="day-lede">Three days, one product, no extensions. This is the piece that ties the other three together, and the one you will actually talk about in interviews. The hard part is not the code. It is deciding what not to build.</p>
+<p class="day-lede">Three flexible project sessions. Bring together the ideas you have explored and make a small helper for a topic you care about. Keep it private and simple unless a trusted adult helps you decide otherwise.</p>
 
   <div class="concept">
     <h4>The scope rule is the design</h4>
-    <p>"Something you would personally use every week" sounds like motivation. It is not. It is an engineering constraint, and it quietly solves three problems at once.</p>
-    <p>First, you know the domain. That means you can tell a good answer from a plausible one in half a second, without a rubric and without borrowing a second expert. Second, you have real inputs, so your golden set is made of things people actually ask rather than things you imagined they would ask. Third, you will keep using it after Day 30 — which means it keeps producing failures, and failures are the only reliable supply of improvement you will ever have.</p>
+    <p>Choose a topic you genuinely enjoy. You will find it easier to tell when an answer sounds odd if you already know something about the subject. Write a few questions and note which pages or facts might help answer them.</p>
     <p>The corollary is ruthless. One user, and that user is you. One job. One week of use. If you cannot describe it in a single sentence with a real verb in it — "turns my week of meeting notes into tracked action items I can search later" — it is too vague to finish in three days.</p>
     <p>Now the trap, and it catches nearly everybody: building a platform. Every capstone wants to grow into a general assistant, because general feels ambitious.</p>
     <p>But look at what general costs you. No golden set, because you cannot write cases for "anything". No clear failure, because nothing was promised. Nothing to measure, and so nothing to write up on Day 29. General is untestable, and untestable means unprovable.</p>
-    <p>So: narrow is what gets shipped, and narrow is what gets you hired.</p>
+    <p>Try a few normal examples and one surprising one. Record what happened without using private information. A small project you understand is a wonderful result.</p>
     <figure class="diagram">
       <svg viewBox="0 0 640 210" role="img" aria-label="A general assistant has no golden set and no nameable failure, while a one-sentence product has thirty real cases and a clear pass or fail">
         <text x="20" y="26" font-size="14" fill="var(--dg-ink)">a general assistant</text>
@@ -29,13 +28,13 @@
   </div>
 
   <div class="concept">
-    <h4>The spine: one of each, all small</h4>
-    <p>The capstone has to contain retrieval, an action, evals, tracing, auth and a deployment. Not an impressive version of each — one small honest version of each. The point you are proving is that you can wire a whole system together, not that any single part of it is remarkable.</p>
+    <h4>A simple project can have a few useful parts</h4>
+    <p>Your project might collect notes, search for a useful passage, ask a model to explain it, and show where the information came from. You do not need accounts, deployment, or a tool that changes anything in the real world.</p>
     <p><strong>Retrieval:</strong> your corpus, chunked with its structure preserved, hybrid search plus a reranker, and answers that cite the source chunks. <strong>An action:</strong> at least one tool that changes something in the world — writes a file, opens an issue, drafts a message, updates a row. That single tool is the entire difference between a chatbot and a product. <strong>Evals:</strong> twenty to thirty golden cases drawn from your own real use, a runner, a judge, and a gate in CI. <strong>Tracing:</strong> wired before your first model call, not bolted on after. <strong>Auth:</strong> a login and per-user document scoping even with one user, because it forces you to answer whose data is whose. <strong>Deploy:</strong> a public URL.</p>
     <p>One honest version of each is also what keeps three days survivable. A beautiful retriever with no evals attached proves nothing you can state in a sentence. Six small parts, wired together and measured, prove the one thing the job is actually about.</p>
-    <p>And here is the rule that saves capstones: <strong>deploy on Day 25, not Day 27.</strong></p>
+    <p>If something needs an account, download, payment, or public link, stop and ask a trusted adult first. A local demonstration is enough for the course.</p>
     <p>Why so early? Because deployment is where the surprises live — environment variables, cold starts, request timeouts, memory limits, and the vector store that only ever existed on your laptop. You are going to meet all of those. The only question is whether you meet them with two days of slack or two hours.</p>
-    <p>So: six small pieces, wired end to end, with the riskiest one done first.</p>
+    <p>So: build one small useful path from question to answer, and make sure you understand each step.</p>
     <figure class="diagram">
       <svg viewBox="0 0 640 300" role="img" aria-label="Capstone architecture: user through auth and API into a pipeline of retrieval, model call and a tool, returning a cited answer, with every span traced and a golden set gating CI">
         <rect x="12" y="120" width="64" height="48" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>

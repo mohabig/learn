@@ -1,4 +1,4 @@
-# Incident 04: The 4-Hour Zombie Memory & Socket Descriptor Leak
+# Challenge 4: What Happens When Someone Leaves Mid-Stream?
 
 > **Severity:** P0 Infrastructure Outage / Resource Exhaustion  
 > **Component:** Token Streaming Engine & Async Generator Lifecycle (`streamer.py`)  
@@ -7,9 +7,13 @@
 
 ---
 
-## The Incident Report
+> **For learners:** Optional pretend debugging challenge using toy code. A trusted adult can help with any software setup.
 
-At 02:40 AM on Sunday, Kubernetes triggers a node-wide alert:
+## The mystery
+
+Imagine a pretend program sending a long answer one piece at a time. A reader stops halfway through. What should the program do with the connection it opened?
+
+In a large web service, a similar bug might show up in a system alert:
 ```
 Cluster Alert: Pod `stream-inference-worker-7f9a` terminated. Exit code 137 (OOMKilled).
 Kernel log: Out of Memory: Kill process 1892 (uvicorn) score 942 or sacrifice child.
@@ -30,7 +34,7 @@ Here's the catch: in modern user interfaces, **generators almost never finish yi
 
 ---
 
-## The Forensic Crime Scene: The Ghost Disconnect
+## Follow one connection
 
 Consider real human user behavior with streaming LLMs:
 1. A user submits a query: *"Write a 2000-word essay on distributed consensus."*
@@ -57,7 +61,7 @@ async def broken_stream_generator(tokens: List[str]) -> AsyncGenerator[str, None
     ResourceTracker.cleaned_up = True
 ```
 
-### The Anatomy of the Leak
+### Where the leftover connection hides
 When `CancelledError` fires at `await asyncio.sleep(0.01)`:
 1. Python immediately halts execution of the coroutine and bubbles the exception up the stack.
 2. The code positioned *after* the `for` loop is completely bypassed.
@@ -68,7 +72,7 @@ When `CancelledError` fires at `await asyncio.sleep(0.01)`:
 
 ---
 
-## The Physical Mechanism & Exploit
+## Find the missing cleanup
 
 To prevent resource leakage in asynchronous streaming pipelines, you must enforce **Generator Lifecycle Fencing**.
 
@@ -90,14 +94,14 @@ async def fixed_stream_generator(tokens: List[str]) -> AsyncGenerator[str, None]
         ResourceTracker.cleaned_up = True
 ```
 
-### Critical Rules for Production Streaming Systems
+### A useful rule
 1. **Never Place Teardown After a Yield Loop:** Any code written below a `yield` loop is untrusted optimistic code. Treat client disconnection as the default, expected lifecycle event, not an edge case.
 2. **Always Use `try ... finally`:** Bind upstream HTTP clients (e.g. `httpx.AsyncClient`), file descriptors, and Redis locks inside `finally` blocks or async context managers (`async with`).
 3. **Handle `GeneratorExit` & `asyncio.CancelledError`:** Allow cancellation exceptions to propagate cleanly to avoid holding ASGI worker processes in deadlock.
 
 ---
 
-## Lab Verification
+## Check your idea
 
 Run the test suite to observe the leak and its surgical neutralization:
 
@@ -105,6 +109,8 @@ Run the test suite to observe the leak and its surgical neutralization:
 python3 labs/lab_04_stream_leak/test_lab04.py
 ```
 
-### What the Test Suite Asserts:
+Before running the optional tests, predict what should happen if the reader stops early. Afterward, explain why cleanup should still run when a stream ends unexpectedly.
+
+### What the optional tests check:
 1. `test_broken_stream_leaks_on_cancellation`: Simulates a client disconnecting after consuming only 2 tokens. Asserts that `broken_stream_generator` leaves the resource pinned (`active_connections == 1`, `cleaned_up == False`).
 2. `test_fixed_stream_cleans_up_on_cancellation`: Simulates the same sudden client abort against `fixed_stream_generator`. Asserts that the `finally:` block triggers immediately, restoring `active_connections == 0` and setting `cleaned_up == True`.

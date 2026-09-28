@@ -400,12 +400,12 @@ async function runTests() {
     // Text search
     await evalPage(`
       const input = document.getElementById("day-search");
-      input.value = "RRF";
+      input.value = "tokens";
       input.dispatchEvent(new Event("input"));
     `);
     let matchCount = await evalPage('parseInt(document.getElementById("day-search-count").textContent)');
-    if (isNaN(matchCount) || matchCount === 0) throw new Error("Search filter for RRF failed");
-    console.log(`[PASS] Search filter for 'RRF' matched ${matchCount} days`);
+    if (isNaN(matchCount) || matchCount === 0) throw new Error("Search filter for 'tokens' failed");
+    console.log(`[PASS] Search filter for 'tokens' matched ${matchCount} days`);
 
     // 7. No Intrusive Popups & In-Page Search Focus
     console.log("\n--- 7. Testing No Uninvited Popups & In-Page Search Hotkey ---");

@@ -1,6 +1,7 @@
-# The 80/20 AI Engineer — a 30-Day Plan
+# The 80/20 AI Engineer — a 30-Day Professional Sprint
 
-> Start date: 2026-08-29 · Target: employable AI engineer in 30 days
+> **Audience:** Experienced adult software developers. This is a compressed professional sprint, not the recommended course for young learners. It includes online services, credentials, deployment, and production systems: a young learner should skip it unless a trusted adult is selecting and supervising a specific section. For the guided path, see [The Curious AI Builder](ai-engineer-90-day-plan.md).
+> Start date: 2026-08-29 · Target: focused professional practice for experienced developers
 > Method: find the ~20% of the field that produces ~80% of real-world results, and build in it every single day.
 
 ---

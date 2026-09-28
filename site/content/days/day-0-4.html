@@ -1,8 +1,8 @@
-<p class="day-lede">Every model call you make for the next four weeks is one HTTP request with a secret in a header. That's the whole thing. Today you look at that request as literal text, learn what the server's three-digit answer obliges you to do, and put your key where it cannot leak.</p>
+<p class="day-lede">Optional adult-supported extension about web requests. The main course uses pretend examples or paper cards; never connect to a service, use an account, or share information without a trusted adult's help.</p>
 
   <div class="concept">
-    <h4>What a request actually looks like</h4>
-    <p>Strip away the library and an API call is text sent down a wire. Your program opens a connection to a host and writes characters into it.</p>
+    <h4>A request is a question; a response is its reply</h4>
+    <p>When one program asks another for information, it sends a request. The other program sends back a response. Think of it like passing a note with a question and getting a note back.</p>
     <p>First a request line: the method, the path, and the protocol version. Then headers, one per line. Then a blank line — and that blank line is load-bearing, because it is how the server knows the headers have ended. Then, optionally, a body. The server replies in the same shape: a status line, its own headers, a blank line, a body.</p>
     <figure class="diagram">
       <svg viewBox="0 0 640 300" role="img" aria-label="The text of one HTTP request and the response beneath it, split into start line, headers, blank line, and body">
@@ -25,20 +25,19 @@
       </svg>
       <figcaption>There is no magic in an API call: a line, some headers, a blank line, a body — in both directions.</figcaption>
     </figure>
-    <p>The method is a verb the server has agreed to honor. <code>GET</code> fetches and carries no body, and repeating it is expected to be harmless. <code>POST</code> sends a body and may change something; <code>PUT</code> and <code>PATCH</code> update, <code>DELETE</code> removes.</p>
+    <p>Different requests can ask to look something up or to make a change. For this lesson, use only pretend examples and never send a request that changes real information.</p>
     <p>The path and query string name what you want. The headers are metadata about the message itself: <code>content-type</code> says how to read the body, <code>authorization</code> says who you are.</p>
-    <p>Look at one before you write any code. <code>curl -i</code> prints the response headers along with the body, and <code>curl -v</code> shows your own request too. Do it once, and when the Python version misbehaves later you'll know which side of that blank line to suspect.</p>
+    <p>You can act out the request and response with paper cards or inspect an offline example. Ask an adult before connecting to a service online.</p>
     <p>So: a line, some headers, a blank line, a body — every time, in both directions.</p>
   </div>
 
   <div class="concept">
-    <h4>The three digits</h4>
+    <h4>A status clue can explain what happened</h4>
     <p>The first digit is the family, and the family is the whole story. The other two digits are detail.</p>
-    <p><code>2xx</code> worked. 200 returned something, 201 created something, 204 succeeded with nothing to return.</p>
+    <p>A success number means the request worked. Other numbers may mean the question was unclear, the service was busy, or something went wrong.</p>
     <p><code>3xx</code> means go elsewhere. Clients follow redirects silently by default, which is occasionally why your POST arrives as a GET.</p>
-    <p><code>4xx</code> means your request is wrong, and this is the family people waste the most time on. Sending it again unchanged gets the same answer, forever. 400 is malformed. 401 means the credentials are missing or bad. 403 means they're valid but not allowed here. 404 means no such path — often a typo in the base URL, not a missing record. 422 means well-formed but wrong fields.</p>
-    <p>And 429 means too many requests: the one member of the family worth retrying, after the delay <code>retry-after</code> names.</p>
-    <p><code>5xx</code> means the server broke, not you. 500 internal, 502 and 504 from a proxy that couldn't reach or wait for the real server, 503 overloaded. Retry these with a growing delay.</p>
+    <p>If the request was unclear, sending exactly the same thing again may not help. If the service is busy, it can be kinder to wait before trying again.</p>
+    <p>You do not need to memorize status numbers. Use them as clues and ask what the program should do next.</p>
     <figure class="diagram">
       <svg viewBox="0 0 640 220" role="img" aria-label="A status code sorts into three actions: use the body, fix the request, or wait and retry">
         <rect x="250" y="20" width="140" height="44" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
@@ -92,7 +91,7 @@
     </figure>
     <p>With <code>httpx</code> you rarely call <code>json.dumps</code> or <code>json.loads</code> yourself. Passing <code>json=payload</code> serializes it and sets the content type, and <code>r.json()</code> parses what came back.</p>
     <p>The format is strict, and the strictness is the part to remember: double quotes only, no trailing commas, no comments.</p>
-    <p>That strictness is why "the model returned invalid JSON" is a real production problem — a parser will refuse an entire response over one stray comma — and why Day 3 of Week 1 exists.</p>
+    <p>That strictness is useful in a small project too: if your program expects a name and a habitat, it can notice when one is missing.</p>
     <p>Two smaller traps. JSON has no date type, so dates are strings in a format the two sides agreed on. And money in floating-point numbers picks up rounding errors.</p>
     <p>So: six value kinds, a direct mapping into Python, and a parser with no tolerance at all.</p>
   </div>
@@ -140,7 +139,7 @@
       </svg>
       <figcaption>One safe route in, three well-worn routes out — and every one of them ends in a log file.</figcaption>
     </figure>
-    <p>If a key ever reaches a public repository, understand what does and doesn't fix it. Deleting the line does not: git history keeps every version, and scanners find keys within minutes. Rotate the key instead; it takes a minute.</p>
+    <p>A key is a secret that can give a program access or spend money. For this course, do not create or handle a real key by yourself. Use the pretend examples unless a trusted adult is guiding setup.</p>
     <p>Day 1 of Week 1 is this exact pattern with a provider key and real money attached, so build the habit now, while the worst case is a free tier.</p>
     <p>So: the key lives in the environment, arrives from a file git never sees, and gets rotated rather than deleted if it escapes.</p>
   </div>
@@ -148,7 +147,7 @@
   <div class="walkthrough">
     <h4>The build, step by step</h4>
     <ol>
-      <li>Pick a public API with a free tier that requires a key. In its reference, find four things: base URL, auth header, one endpoint, rate limit.</li>
+      <li>Inspect a pretend request in the lesson. If you later try a real service, ask a trusted adult to choose it and supervise the account and any costs.</li>
       <li>Call it from the terminal first: <code>curl -i</code> with no key, read the 401, then add the header and read the 200 headers before the body.</li>
       <li>Create the project with <code>uv</code>, add <code>httpx</code> and a <code>.env</code> loader. Write <code>.gitignore</code> with <code>.env</code> in it <em>before</em> the first commit.</li>
       <li>Read the key from the environment at startup and raise a named error if it's missing. Never print it, even while debugging.</li>

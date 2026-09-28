@@ -1,21 +1,23 @@
-# The 80/20 AI Engineer
+# The Curious AI Builder
 
-- **[The 90-Day AI Engineer Plan](ai-engineer-90-day-plan.md)** — the flagship 90-day (13-week) journey to build production-ready engineering foundations and a portfolio of 3 shipped milestone AI systems, culminating in the Days 85–90 Capstone Hardening & Hiring Sprint.
-- **[The 80/20 AI Engineer: 30-Day Accelerated Sprint](ai-engineer-30-day-plan.md)** — the compressed 4-week fast track for experienced software engineers.
-- **[site/index.html](site/index.html)** — the modern, self-contained interactive web platform: selectable track switcher (Flagship 90-Day vs 30-Day Sprint), daily step-by-step builds, live 1,536-D Vector Compass, SSE Streaming Ticker, and in-browser Spaced Retrieval Drills.
+This is a hands-on course for a curious young builder. It teaches real ideas from AI engineering without assuming the learner is already an adult software developer. The goal is not to get hired: it is to make useful, interesting things with AI, understand how they work, and notice when they get things wrong. The main course is self-paced; ask a trusted adult before installing software, creating accounts, using paid services, or sharing work online.
+
+- **[The 90-Day Curious AI Builder Course](ai-engineer-90-day-plan.md)** — the main guided journey: start with foundations, build a project around a topic you care about, and grow it into a careful, tested AI system. The optional final six days are challenges, not a deadline.
+- **[The 30-Day Professional Sprint](ai-engineer-30-day-plan.md)** — a separate, compressed track for experienced adult developers; it is not the recommended starting point for young learners.
+- **[site/index.html](site/index.html)** — the interactive course with daily lessons, visual tools, optional challenge labs, and spaced-retrieval practice.
 - **[LOG.md](LOG.md)** — daily learning log for the plan (`make log` or 1-click export from web).
-- **[starters/](starters/)** — production-grade FastAPI SSE microservice scaffolding with Pydantic v2 schemas and `starters/common/budget_guard.py` for spend caps and eval caching.
-- **[labs/](labs/)** — four adversarial bug hunt production mystery labs (thundering herd, inverted vector metric, prompt injection, and stream leak).
-- **[datasets/](datasets/)** — curated evaluation benchmarks for structured extraction and golden RAG retrieval.
+- **[starters/](starters/)** — optional adult reference code for production-style AI services; not needed for the young learner course.
+- **[labs/](labs/)** — four optional pretend debugging mysteries. They are extensions, not required lessons.
+- **[datasets/](datasets/)** — sample data for experiments; use only fictional or public examples in the main course.
 
-## The Two Curricula
+## Two separate learning paths
 
 | Path | Duration | Who it is for | Scope |
 |---|---|---|---|
-| **Flagship Path** | 13 Weeks (90 Days) | Developers wanting ground-up production mastery | Developer foundations $\to$ Async Python $\to$ Model APIs $\to$ Hybrid RAG $\to$ Compound AI & MCP $\to$ vLLM / LoRA $\to$ Production Fortress Capstone $\to$ Days 85–90 Hardening & Hiring Sprint. |
-| **Accelerated Sprint** | 4 Weeks (30 Days) | Experienced backend / full-stack engineers | Fast-track model API fluency, vector search, evals, and production deployment. |
+| **Curious AI Builder** | 12 weeks + optional challenges | Curious learners building with supportive adult guidance where needed | Programming foundations $\to$ model experiments $\to$ search and sources $\to$ safe tools $\to$ testing, reflection, and a project showcase. |
+| **Professional Sprint** | 4 Weeks (30 Days) | Experienced adult backend / full-stack engineers | Fast-track model API fluency, vector search, evals, and production deployment. |
 
-*Note: The website features an interactive track switcher. Progress for each path is stored independently in isolated namespaces (`ai80-20-flagship-v1` and `ai80-20-sprint-v1`), preventing progress collisions.*
+*The website keeps progress for each path separate. The main course is the young learner path; the professional sprint is an adult extension.*
 
 ## Developer & Study Commands
 
@@ -30,7 +32,7 @@ make drill         # 10-minute active recall spaced retrieval challenge
 make labs          # run all 4 adversarial bug hunt production labs
 ```
 
-## Deployment Architecture
+## Deployment architecture (maintainers)
 
 The application has two distinct deployment tiers:
 

@@ -1,15 +1,14 @@
-# Incident 01: The 3:00 AM Thundering Herd & The Synchronized Retry Storm
+# Challenge 1: Why Did Everyone Try Again at Once?
 
-> **Severity:** P0 Critical Outage  
-> **Component:** Upstream Model Gateway / Async Task Workers (`client.py`)  
-> **Incident Tag:** `ERR_RATE_LIMIT_CASCADING_COLLAPSE`  
-> **Target:** Eliminate deterministic backoff resonance and restore API gateway throughput.
+> **For learners:** This is an optional pretend incident. No real service or account is involved. Try the small example first; ask a trusted adult before installing or running software.
 
 ---
 
-## The Incident Report
+## The mystery
 
-At 03:14 UTC, our upstream frontier model provider suffered a transient 400ms network hiccup. Fifty concurrent async worker instances processing our high-priority document pipeline received an unexpected response:
+Imagine 50 toy robots asking the same helper a question. The helper briefly says “too many questions!” Every robot waits exactly one second, then all ask again at once. The helper gets overwhelmed again.
+
+In a real system this kind of pattern can happen when many programs retry after a temporary limit:
 ```http
 HTTP/429 Too Many Requests
 {
@@ -20,20 +19,20 @@ HTTP/429 Too Many Requests
 }
 ```
 
-Instead of recovering automatically after the 400ms blip, our entire cluster entered a catastrophic 45-minute death spiral:
+Instead of recovering after the brief hiccup, the pretend system keeps making the problem worse:
 - PagerDuty sirens escalated to the VP of Engineering.
 - The model provider's API metrics reported our production IP range sending thousands of requests per second in violent, cyclical bursts.
 - Upstream automated abuse firewalls kicked in and permanently blacklisted our production CIDR block.
 - Queue depth backed up to 142,000 unhandled jobs.
 
-The on-call junior engineer insisted:
+One engineer says:
 > *"The provider is completely broken! Our code implements standard textbook exponential backoff ($2^{\text{attempt}}$ seconds). We wait 1s, 2s, 4s, 8s! It's mathematically impossible for us to be overloading them!"*
 
-They were wrong. The textbook backoff algorithm wasn't mitigating the outage—**it was manufacturing it.**
+What do you think is missing? The wait gets longer, but the robots still wake up together.
 
 ---
 
-## The Forensic Crime Scene: Synchronized Resonance
+## Watch the pattern
 
 Look at what happens when 50 concurrent workers fail at time $T_0$:
 
@@ -44,12 +43,12 @@ Worker 02: Fails at T_0  ───(Sleep 2^0 = 1.0s)───> Fires at T_0 + 1.
 Worker 50: Fails at T_0  ───(Sleep 2^0 = 1.0s)───> Fires at T_0 + 1.0s ───[COLLISION]
 ```
 
-1. **The Phase-Locked Shockwave:** Because standard exponential backoff is deterministic (`sleep = base * 2 ** attempt`), every single worker sleeps for the exact same duration ($1.000\text{s}$).
-2. **The Resonant Strike:** At exactly $T_0 + 1.000\text{s}$, all 50 workers wake up simultaneously and fire a synchronized 50-request barrage into the provider within the same 5-millisecond operating window.
-3. **The Self-Reinforcing Lock:** The provider's token-bucket rate limiter immediately exhausts its burst capacity and drops all 50 requests with another `HTTP 429`.
-4. **The Cascading Explosion:** Now on attempt 2, all 50 workers calculate $2^1 = 2.000\text{s}$. They all sleep until $T_0 + 3.000\text{s}$, and strike again in unison.
+1. All robots receive the same “try later” message.
+2. All wait for one second.
+3. All wake up together and ask again.
+4. The helper is still busy, so they all get “try later” again.
 
-The retry algorithm acted as a **destructive acoustic resonator**: it phase-aligned disparate network requests into periodic, high-amplitude tidal waves that prevented the provider's token bucket from ever refilling.
+The fix is to add a little randomness to each robot's wait. Then they are less likely to arrive as one giant crowd. The technical name for this is **jitter**.
 
 ---
 
@@ -66,7 +65,7 @@ def broken_backoff(attempt: int, base: float = 1.0) -> float:
 
 To break destructive resonance in physical systems, you must introduce **phase noise (entropy)**. 
 
-### The Mathematical Fix: Full Jitter
+### A possible fix: random waiting time
 Rather than sleeping for the exact exponential interval, sleep for a uniformly distributed random interval between $0$ and the exponential ceiling:
 
 $$\text{Delay} \sim \mathcal{U}\left(0, \min\left(\text{MaxBackoff}, \text{Base} \times 2^{\text{attempt}}\right)\right)$$
@@ -79,14 +78,13 @@ def full_jitter_backoff(attempt: int, base: float = 1.0, max_backoff: float = 30
     return random.uniform(0.0, ceiling)
 ```
 
-### Why Full Jitter Dominates "Equal Jitter" and "Decorrelated Jitter"
-- **Zero Phase Coherence:** The probability that two independent workers wake up in the same 1ms slice drops to near zero.
-- **Immediate Low-Latency Recovery:** Because the uniform distribution includes intervals close to zero, a worker can seize newly refilled tokens immediately if the provider's outage cleared quickly.
-- **Constant Background Pressure:** The aggregated arrival process transitions from periodic high-amplitude impulses into a flat, continuous Poisson distribution that provider token buckets can comfortably drain.
+Try changing the code so each retry chooses a random wait between zero and its limit. Draw the possible wait times as dots on a number line. What changes when there are 50 robots?
+
+This is one useful design, not the only possible design. Real systems also need a maximum wait, a maximum number of tries, and a way to give up politely.
 
 ---
 
-## Lab Verification
+## Check your idea
 
 Validate the physics yourself. Run the test suite:
 
@@ -94,7 +92,9 @@ Validate the physics yourself. Run the test suite:
 python3 labs/lab_01_retry_storm/test_lab01.py
 ```
 
-### What the Test Suite Asserts:
+If you run the optional tests, they compare the fixed wait with the random wait. Before looking at the answer, explain why identical wait times cause a crowd. Then try changing the number of robots or the maximum wait.
+
+### What the optional tests check:
 1. `test_broken_backoff_is_deterministic`: Proves that naive backoff returns identical sleep times for concurrent calls, proving the existence of the thundering herd condition.
 2. `test_full_jitter_randomizes_intervals`: Proves that `full_jitter_backoff` generates high entropy across calls while strictly respecting the exponential ceiling ($0 \le \text{delay} \le 2^{\text{attempt}}$).
 3. `test_retry_recovers_after_intermittent_failures`: Proves that a rate-limited client safely backs off, recovers state, and completes execution without dropping payloads.

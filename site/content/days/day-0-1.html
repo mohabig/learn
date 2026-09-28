@@ -1,10 +1,11 @@
-<p class="day-lede">The terminal looks like a memory test. It isn't. It is one small program following about five rules, and once you know the rules the error messages turn from noise into instructions. Today you learn the rules — then you break an install on purpose, so the first real one doesn't scare you.</p>
+<p class="day-lede">This optional setup page is for learners exploring a terminal with a trusted adult. The main course can begin at Day 1 and does not require shell commands. Never type a command you do not understand; ask first.</p>
+<div class="gotchas"><h4>Keep this safe and simple</h4><p>Only explore a practice folder. Do not install, delete, download, change system settings, use administrator commands, or copy commands from the internet without an adult checking them. The technical walkthrough below is an optional adult-supported extension.</p></div>
 
   <div class="concept">
-    <h4>A shell is a loop that runs other programs</h4>
-    <p>Here is the thing nobody says out loud: the shell is a program. It is not the computer, and it is not in charge of anything. It sits there running one loop, over and over, until you close the window.</p>
-    <p>Here is the loop. It prints a prompt. It waits for you to type a line. It splits that line into words at the spaces. It takes the first word as the name of a program, and every word after it as an argument to hand that program. It starts the program, waits for it to finish, and shows you what it printed. Then it prints the prompt again.</p>
-    <p>That is the entire cycle. Nothing you type is understood in any deeper sense — the shell is not reading your intent, it is chopping a line into words and launching the first one.</p>
+    <h4>A terminal is a conversation with your computer</h4>
+    <p>The terminal lets you type a short instruction and see what your computer does. It can help you find a folder or run a program. You can learn the basics without changing or deleting anything.</p>
+    <p>Think of it like a tiny robot: it waits for an instruction, follows it literally, and shows what happened. It does not know what you meant if you make a typo.</p>
+    <p>Start with a harmless instruction that lists files or shows which folder you are in. Ask an adult before trying anything that installs, deletes, downloads, or changes files.</p>
     <figure class="diagram">
       <svg viewBox="0 0 640 220" role="img" aria-label="The shell repeats one loop: print a prompt, read a line, split it at spaces, run the first word as a program, then start over">
         <text x="401" y="40" text-anchor="middle" font-size="13" fill="var(--dg-muted)">ls -l my notes.txt → four words</text>

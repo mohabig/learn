@@ -1,15 +1,14 @@
-# Incident 02: The Bizarro World Retrieval & Inverted Metric Space
+# Challenge 2: Why Did Search Find Penguins?
 
 > **Severity:** P1 High Escalation / VIP Customer Outage  
-> **Component:** Vector Retrieval Engine & Ranking Pipeline (`search.py`)  
-> **Incident Tag:** `ERR_VECTOR_METRIC_SPACE_INVERSION`  
+> **For learners:** Optional pretend mystery. The examples use fictional or public information; no account or private data is needed.
 > **Target:** Eliminate sign-order inversion between distance and similarity to restore RAG precision.
 
 ---
 
-## The Incident Report
+## The mystery
 
-It's 14:22 EST on launch day. Our flagship enterprise product—the "PostgreSQL High-Availability Copilot"—just went live to hundreds of paying database administrators and the VP of Infrastructure.
+Imagine asking a library robot about PostgreSQL and getting an answer about penguins. The model did not choose the penguin page at random: the search program handed it that page first.
 
 The VP tests the copilot with a critical production question:
 > *"How do we tune autovacuum freeze max age and diagnose high transaction ID wraparound bloat in PostgreSQL 16?"*
@@ -67,7 +66,7 @@ def broken_search(query_vector, corpus, top_k=3):
 ```
 
 ### The Metric Geometry Crash Course
-Beginners conflate **Distance** with **Similarity**. This is fatal in metric spaces:
+Here is the key idea: some scores get better as they get bigger (**similarity**); other scores get better as they get smaller (**distance**). Mixing up which direction to sort can put the least related result first.
 
 | Metric | Formula | Value Range | Best Match | Sort Direction |
 | :--- | :--- | :--- | :--- | :--- |
@@ -83,7 +82,7 @@ Python's `list.sort()` sorts in ascending order by default.
 - Antarctic Penguin Chunk: $\text{Cosine Similarity} = \mathbf{-0.95}$
 
 Because `scored.sort(key=lambda x: x[0])` sorts ascending, $-0.95$ comes before $+0.95$. 
-The retrieval engine literally inverted the vector space, serving the **geometric opposite** of the user's intent.
+Try the tiny list of pretend documents. Change the sort direction and see which document appears first. Explain why the result changed.
 
 ### The Surgical Fix
 
@@ -103,7 +102,7 @@ Alternatively, if an algorithm operates on **Distance**, sort ascending (`1.0 - 
 
 ---
 
-## Lab Verification
+## Check your idea
 
 Run the test suite to verify vector space invariants:
 
@@ -111,6 +110,8 @@ Run the test suite to verify vector space invariants:
 python3 labs/lab_02_inverted_retrieval/test_lab02.py
 ```
 
-### What the Test Suite Asserts:
+If you run the optional test suite, it checks whether the most similar result comes first. Then make your own three-document example and see if you can predict the order.
+
+### What the optional tests check:
 1. `test_broken_search_returns_least_relevant_first`: Proves that `broken_search` systematically isolates the most distant chunk (`doc3`, Antarctic penguins) and returns it at Rank 1.
 2. `test_fixed_search_ranks_highest_similarity_first`: Proves that `fixed_search` correctly restores Rank 1 to `doc1` (PostgreSQL indexing), followed by `doc2` (neutral), and demotes `doc3` (opposite) to the bottom.

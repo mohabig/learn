@@ -1,29 +1,27 @@
-<p class="day-lede">Today you build the smallest thing that talks to a model, and then you learn to describe it in numbers. By tonight you should be able to point at one run and say: two cents, 0.4 seconds to the first word, 2.1 seconds to the last. That one sentence is the point of the whole day.</p>
+<p class="day-lede">Today you make a small program you can change yourself. A coding workspace is a place to keep and run your instructions. Ask a trusted adult to help open it or install anything; you do not need an account, an API key, or a paid service for this lesson.</p>
 
   <div class="concept">
-    <h4>Your workbench: one folder, one environment, one secret</h4>
-    <p>Three things before you write a line of code. A folder under git. An isolated Python environment made with <code>uv</code>. Exactly one package installed in it: your provider's SDK.</p>
-    <p>Isolated is the word worth slowing down on. It means the packages live in this folder and nowhere else. Today's install cannot reach back and break the project you finished last month, because the two never share a shelf.</p>
-    <p>Now the secret. Your API key goes into an environment variable that your code reads at startup. Never a string in a source file — not for five minutes, not in a branch you plan to delete.</p>
-    <p>The reason is mechanical, not moral. Bots scan public repositories around the clock for anything shaped like a key, and one found that way gets used within minutes. Someone else does the spending. You get the bill.</p>
-    <p>Put the key in a <code>.env</code> file and tell git to ignore that file. Don't pass keys as command-line arguments either — those land in your shell history, which is one more file you will forget about.</p>
-    <p>So: one folder, one environment, and one secret that never touches anything git can see.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 640 210" role="img" aria-label="A key travelling safely from a dotenv file through an environment variable into your process, compared with a key committed to code that ends up in a public repository">
-        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">the safe path</text>
+    <h4>Your workbench: one folder, one small program</h4>
+    <p>With an adult's help, open a folder for your project and find the place where you can write Python instructions. You do not need a model account, an API key, or an online connection today.</p>
+    <p>A folder is like a project box. It keeps the files for one idea together, so you can find them again.</p>
+    <p>For this lesson, use only the built-in Python examples. If setup asks for an account, payment, or a secret key, stop and ask your trusted adult.</p>
+    <p>So: one folder, one small program, and an adult nearby for setup.</p>
+    <figure class="diagram" aria-label="A private project folder keeping related files together">
+      <svg viewBox="0 0 640 210" role="img" aria-label="A private project folder keeping related files together">
+        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">a little project box</text>
         <rect x="20" y="40" width="150" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-        <text x="95" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">.env file</text>
+        <text x="95" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your files</text>
         <line x1="170" y1="63" x2="194" y2="63" stroke="var(--dg-line)" stroke-width="2"/>
         <polygon points="194,57 206,63 194,69" fill="var(--dg-line)"/>
         <rect x="210" y="40" width="180" height="46" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-        <text x="300" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">environment variable</text>
+        <text x="300" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Python instructions</text>
         <line x1="390" y1="63" x2="414" y2="63" stroke="var(--dg-line)" stroke-width="2"/>
         <polygon points="414,57 426,63 414,69" fill="var(--dg-line)"/>
         <rect x="430" y="40" width="170" height="46" rx="8" fill="none" stroke="var(--dg-good)"/>
-        <text x="515" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">your process</text>
-        <text x="20" y="122" font-size="13" fill="var(--dg-muted)">the path that costs you money</text>
+        <text x="515" y="68" text-anchor="middle" font-size="13" fill="var(--dg-ink)">computer runs them</text>
+        <text x="20" y="122" font-size="13" fill="var(--dg-muted)">keep private information out</text>
         <rect x="20" y="134" width="150" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
-        <text x="95" y="162" text-anchor="middle" font-size="13" fill="var(--dg-ink)">key in a source file</text>
+        <text x="95" y="162" text-anchor="middle" font-size="13" fill="var(--dg-ink)">no passwords or keys</text>
         <line x1="170" y1="157" x2="194" y2="157" stroke="var(--dg-line)" stroke-width="2"/>
         <polygon points="194,151 206,157 194,163" fill="var(--dg-line)"/>
         <rect x="210" y="134" width="180" height="46" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
@@ -39,14 +37,14 @@
   </div>
 
   <div class="concept">
-    <h4>Tokens: the unit you pay in</h4>
-    <p>A language model doesn't see words. It sees tokens — chunks of text, each one mapped to a number. The word "strawberry" might arrive as two tokens: <code>straw</code> + <code>berry</code>.</p>
+    <h4>Optional peek: text pieces called tokens</h4>
+    <p>A language model does not always handle text one letter at a time. It uses pieces called tokens; a word may be one piece or several. This optional idea helps explain why counting letters can be tricky for a model.</p>
     <p>Where do the chunks come from? A tokenizer splits your text using a fixed vocabulary that was built when the model was trained. Think of it as a phrasebook with a set number of entries. Common words earned an entry of their own, so they cost one token. Rare words, names, code, and anything that isn't English weren't worth an entry each, so they get spelled out of smaller pieces.</p>
     <p>For ordinary English there's a rough rule: about four characters per token, or about 0.75 words per token. "Rough" is doing real work in that sentence — don't build a budget on it.</p>
-    <p>Here's why any of this matters. The model reads every input token, then produces output tokens one at a time. You're billed for both, at two different prices, and output usually costs four to five times more. The context window is the ceiling on input and output added together, for one call.</p>
+    <p>Tokens are one way computers divide text into pieces. For this first lesson, the important thing is simply that a model can miss small details—and that you can check its answer.</p>
     <p>Now the trap, and it catches everybody once. Tokenizers differ between model families, so a count from a generic library can be off by 10 to 30 percent for the model you're actually calling. Off by 30 percent is the difference between a budget and a wish.</p>
     <p>You never have to estimate. Every provider hands you the real number twice: a counting endpoint you can call before the request, and exact usage in the response after it. See <a href="https://docs.claude.com/en/docs/build-with-claude/token-counting">the token counting docs</a>.</p>
-    <p>So: tokens are the unit of both the bill and the clock, and you should never be guessing at them.</p>
+    <p>So: a model uses numbered pieces of text, and its confident answer still needs checking.</p>
     <figure class="diagram">
       <svg viewBox="0 0 640 200" role="img" aria-label="Input tokens and output tokens are billed at different rates and add up to the cost of one call">
         <rect x="20" y="50" width="180" height="70" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>

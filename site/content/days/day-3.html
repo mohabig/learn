@@ -1,9 +1,9 @@
-<p class="day-lede">This is the day the model stops being a chat toy and becomes a component. Prose you have to read is not a system; typed objects are. Nail this one and everything in the next 27 days gets easier.</p>
+<p class="day-lede">A predictable answer shape helps a program use information. Today, try a made-up example and check the shape yourself. No online model, account, or paid service is needed.</p>
 
   <div class="concept">
-    <h4>Why a model produces invalid JSON</h4>
-    <p>Generation is one token at a time, sampled from probabilities. In a plain call, nothing in that loop knows what JSON is.</p>
-    <p>The model has seen enormous amounts of JSON and imitates it beautifully. That's exactly the problem: the failures are rare enough to slip past your testing and land in production.</p>
+    <h4>Why a model might miss a part of the answer</h4>
+    <p>A model may leave out a requested detail or add something extra. A checklist of the parts you wanted makes it easier to notice.</p>
+    <p>A model can often imitate JSON, a way to write structured data, but it may leave out a field or add an extra word. A small practice example lets you see why checking the shape is useful.</p>
     <p>The shapes repeat, and it helps to know them by sight. A fenced code block, or a friendly "Here's the JSON:" wrapped around the object. A trailing comma. An unescaped quote inside a string. A number written as <code>"about 40"</code>. A field you never defined. A value outside your list of allowed options.</p>
     <p>And the most common one by far: the object simply stops mid-way, because output hit <code>max_tokens</code>.</p>
     <p>That last one deserves its own shelf. It isn't a model failure at all — it's a configuration failure, and from the outside it looks identical to one.</p>
@@ -13,7 +13,7 @@
   <div class="concept">
     <h4>Constrained decoding beats a better prompt</h4>
     <p>Providers offer a mode where you hand over a JSON Schema and the output is forced to match it. No pleading required.</p>
-    <p>The mechanism is worth knowing, because it tells you exactly what the guarantee covers. At each generation step the provider works out which tokens could still lead to a document valid under your schema, and sets the probability of every other token to zero.</p>
+    <p>Some tools can limit which answer shapes are allowed. This can help produce tidy data, but it does not guarantee that the values inside are true. Check important facts against a source.</p>
     <p>Read that again with tired eyes, because it's the whole idea: invalid syntax becomes unreachable, not merely unlikely. It's the difference between asking a river not to flood and building the bank.</p>
     <p>There are two ways to ask for it. A response-format parameter carrying your schema, or a tool definition whose input schema is your object, with strict validation switched on. Both end in the same place — the model's output validates.</p>
     <p>Now the honest limit. Enforcement does not buy you correct values. A schema-valid object can still say the invoice total is 4,000 when it's 40.00.</p>

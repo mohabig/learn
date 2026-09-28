@@ -1,11 +1,11 @@
-<p class="day-lede">Every model call you have made so far ran on someone else's hardware. Today you run one on your own machine, find out what shrinking a model costs, and build a working picture of how serving works. Timebox it hard — this is the biggest rabbit hole in the plan, and the payoff is two sentences of judgment, not a deployment.</p>
+<p class="day-lede">Optional deep dive: with a trusted adult's help, explore a model that runs on your own computer. You do not need to download a model or own special hardware to finish the main course.</p>
 
   <div class="concept">
     <h4>Weights on your own machine</h4>
-    <p>An open-weights model is a file. That is the whole mystery: a few billion numbers, plus a description of how they are arranged. A runner like Ollama or llama.cpp loads the file and does the arithmetic. Type <code>ollama run llama3.1:8b</code> and you get a download and then a prompt. No key, no per-token price, no network.</p>
+    <p>An open-weights model is a file containing many numbers that a program can use. A tool called a runner loads the file and asks the model to produce text. Model files can be large, so ask an adult before downloading anything and check that your computer has enough space.</p>
     <p>Three things you will notice in the first ten minutes. It is yours — nothing leaves the machine, which in some industries is the only argument that matters. It is slower than you expected, and for a reason worth knowing: the bottleneck is moving weights out of memory, not multiplying them. And an eight-billion-parameter model is visibly weaker than the frontier model you have been calling all month — fine for classifying, shaky on long reasoning.</p>
     <p>One piece of vocabulary before you go further. "Open weights" is not "open source". You get the numbers. You rarely get the training data, and the license may restrict what you are allowed to do with the model.</p>
-    <p>So: a local model is a file plus a runner, and running one for ten minutes teaches you more about the tradeoff than a week of reading benchmarks.</p>
+    <p>So: a local model is a file plus a program that runs it. If trying one is not suitable for your computer, the diagrams and made-up examples are enough to learn the idea.</p>
     <figure class="diagram">
       <svg viewBox="0 0 640 200" role="img" aria-label="A weights file and a runner on your own laptop produce tokens without a key, a bill, or a network hop">
         <text x="20" y="28" font-size="13" fill="var(--dg-muted)">everything below happens on your laptop</text>

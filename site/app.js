@@ -268,7 +268,7 @@
      6. Dynamic Curriculum & Day Content Renderer
      ========================================================================== */
 
-  // Helper for Feynman explanations on physical mechanisms
+  // Plain-language explanations for curious learners
   function getFeynmanExplanation(day, week) {
     const dNum = parseInt(day.d, 10) || 1;
     let focus = "";
@@ -276,25 +276,25 @@
     let pitfall = "";
 
     if (dNum <= 7) {
-      focus = "The Machine Room & The Terminal Wire";
-      mechanism = "A shell process creates pipes using file descriptor integers in OS kernel memory. Standard input (0), standard output (1), and standard error (2) transfer raw byte streams without touching disk. Fast package managers like uv utilize hardlink sharing to map compiled wheels into isolated virtual environment prefixes in milliseconds.";
-      pitfall = "Do not confuse string flags with language syntax; flags are just argv string arrays passed to main().";
+      focus = "Your project folder and the terminal";
+      mechanism = "A terminal lets you give your computer short text instructions. A folder keeps your project together. A Python environment is a separate shelf for the tools this project uses, so another project can have different tools.";
+      pitfall = "If a command does not work, pause and read the message. You have not broken the computer; ask an adult for help before changing system settings or installing unfamiliar software.";
     } else if (dNum <= 14) {
-      focus = "Async Event Loops & Network Wire Packets";
-      mechanism = "Python asyncio is a single-threaded event loop driven by OS multiplexing (epoll on Linux, kqueue on macOS). Non-blocking socket I/O yields execution control while waiting for TCP packet transit, allowing hundreds of concurrent model requests to progress simultaneously without CPU thread overhead.";
-      pitfall = "A synchronous time.sleep() or CPU-bound loop inside a coroutine freezes the entire event loop for all concurrent requests.";
+      focus = "How programs send requests and wait for replies";
+      mechanism = "A web request is a message one program sends to another. The reply includes data or an explanation of what went wrong. A program can wait without freezing everything else; this is called asynchronous programming.";
+      pitfall = "Use made-up information in practice. Never paste passwords, account keys, school details, or private family information into a request.";
     } else if (dNum <= 28) {
-      focus = "Provider SDKs, Token Streams & Constrained Schemas";
-      mechanism = "Byte-Pair Encoding (BPE) turns UTF-8 byte sequences into integer tokens. Next-token generation samples logits across a 100,000-word vocabulary. Constrained decoding masks invalid grammar token logits to -inf prior to softmax, mathematically guaranteeing 100% Pydantic schema conformance on first-pass generation.";
-      pitfall = "Never use subjective prompt pleading ('please return valid JSON'); always enforce JSON Schema logit masking or structured Pydantic models.";
+      focus = "Instructions, text pieces, and answer shapes";
+      mechanism = "A tokenizer splits text into small numbered pieces called tokens. A model uses patterns to guess one piece at a time. A schema is a checklist for an answer's shape, such as requiring a title and three facts.";
+      pitfall = "A neat shape does not prove the answer is true. Check important facts against a source, and ask an adult before using an account that can cost money.";
     } else if (dNum <= 56) {
-      focus = "Spatial Vector Geometry, Hybrid Search & MCP";
-      mechanism = "Embedding models project text chunks into 1,536-dimensional hyper-spherical coordinates. Bi-encoder cosine distance provides fast ANN index traversal, while BM25 inverted indexes score exact term frequency. Reciprocal Rank Fusion (RRF, k=60) sums rank reciprocals to combine semantic and keyword relevance before cross-encoder reranking.";
-      pitfall = "Cosine similarity requires descending sort; cosine distance requires ascending sort. Inverting sort order returns diametrically opposite chunks.";
+      focus = "Search clues and tools that can take small actions";
+      mechanism = "One search can look for exact words; another can look for similar meaning. Combining their clues can help find a useful passage. A tool is a small action a program is allowed to perform, such as searching your approved notes.";
+      pitfall = "Search can miss the right passage, and a tool can do the wrong thing if given too much power. Keep examples private and give tools only the small abilities they need.";
     } else {
-      focus = "Production Hardening, Telemetry & Open Model Serving";
-      mechanism = "vLLM PagedAttention dynamically manages Key-Value (KV) cache memory in GPU VRAM like OS virtual memory paging, eliminating memory fragmentation and maximizing continuous batching throughput. Distributed tracing in Langfuse records span latencies, token consumption, and cost attribution per user query.";
-      pitfall = "Orphaned async generators leak file descriptors during client disconnects unless resource cleanup is enclosed in try...finally.";
+      focus = "Privacy, careful testing, and learning from mistakes";
+      mechanism = "A log is a notebook of what a program did. It can help us find a bug, but it must not collect private information. Testing a surprising or tricky input helps show where a model needs clearer limits.";
+      pitfall = "Putting instructions around untrusted text does not make an AI perfectly safe. Do not give a project real passwords, private data, or permission to take irreversible actions.";
     }
 
     return { focus, mechanism, pitfall };
@@ -312,8 +312,8 @@
 
       const rowsHtml = (w.days || []).map(day => {
         const tags = [];
-        if (day.lever) tags.push('<span class="badge badge-lever">⚡ High Leverage</span>');
-        if (day.ship) tags.push('<span class="badge badge-ship">🚀 Ship Day</span>');
+        if (day.lever) tags.push('<span class="badge badge-lever">⭐ Try this idea</span>');
+        if (day.ship) tags.push('<span class="badge badge-ship">🎉 Milestone</span>');
 
         const label = String(day.d).includes("–") ? "Days " + day.d : "Day " + day.d;
         const haystack = stripHtml([day.t, ...(day.tasks || []), day.done || ""].join(" ")).toLowerCase();
@@ -360,8 +360,8 @@
       sec.hidden = true;
 
       const tags = [];
-      if (day.lever) tags.push('<span class="badge badge-lever">⚡ High Leverage</span>');
-      if (day.ship) tags.push('<span class="badge badge-ship">🚀 Ship Day</span>');
+      if (day.lever) tags.push('<span class="badge badge-lever">⭐ Try this idea</span>');
+      if (day.ship) tags.push('<span class="badge badge-ship">🎉 Milestone</span>');
 
       const itemsHtml = (day.tasks || []).map((t, j) => `
         <li>
@@ -421,13 +421,13 @@
 
         <div class="day-content">
           ${authoredHtml ? authoredHtml : `
-            <p class="day-lede">${day.t} — master the physical mechanics and software boundaries.</p>
+            <p class="day-lede">${day.t} — take it one idea at a time. Ask what you wonder, try a small example, and explain what you noticed in your own words.</p>
             <div class="mechanism-card">
-              <h4>Physical Mechanism Under the Hood</h4>
+              <h4>The idea in plain language</h4>
               <p>${feynman.mechanism}</p>
             </div>
             <div class="gotchas-card" style="margin:16px 0; padding:16px 20px; background:var(--surface); border-left:3px solid var(--signal); border-radius:0 8px 8px 0;">
-              <h4 style="margin:0 0 6px; font-size:18px;">Senior Trap to Avoid</h4>
+              <h4 style="margin:0 0 6px; font-size:18px;">A useful thing to remember</h4>
               <p style="margin:0; font-size:14.5px; color:var(--ink-2);">${feynman.pitfall}</p>
             </div>
           `}
@@ -435,31 +435,31 @@
 
         <div class="pedagogy-blueprint" style="margin:20px 0; padding:18px 20px; background:var(--surface); border:1px solid var(--rule); border-radius:8px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--rule); padding-bottom:8px;">
-            <span style="font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent);">Pedagogical Blueprint</span>
-            <span class="badge" style="font-size:11.5px;">⏱️ Timebox: 60–90 min (45m Core Build)</span>
+            <span style="font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent);">A path through this lesson</span>
+            <span class="badge" style="font-size:11.5px;">⏱️ Take breaks; one lesson can take more than one sitting</span>
           </div>
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; font-size:13.5px;">
             <div>
-              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🎯 Required Outcome</strong>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🎯 What you could try</strong>
               <span style="color:var(--ink-2);">${day.done || "Working software verified by automated test assertions."}</span>
             </div>
             <div>
-              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🔨 45-Min Core Build</strong>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🔨 A small build</strong>
               <span style="color:var(--ink-2);">${coreBuildTask || "Hands-on implementation and test assertion."}</span>
             </div>
             <div>
-              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🔬 Depth &amp; Investigation</strong>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">🔬 A question to investigate</strong>
               <span style="color:var(--ink-2);">${depthTask || "Physical wire mechanics, memory footprint, and edge-case failure modes."}</span>
             </div>
             <div>
-              <strong style="color:var(--ink); display:block; margin-bottom:3px;">📦 Retained Artifact</strong>
-              <span style="color:var(--ink-2);">Git commit, benchmark numbers in <code>LOG.md</code>, and passing test suite.</span>
+              <strong style="color:var(--ink); display:block; margin-bottom:3px;">📦 Something to keep</strong>
+              <span style="color:var(--ink-2);">A drawing, experiment note, or a small change you understand.</span>
             </div>
           </div>
         </div>
 
         <div class="day-check">
-          <h4>Today's Actionable Checklist</h4>
+          <h4>Things to try</h4>
           <ul class="checks">${itemsHtml}</ul>
           <div class="day-done">
             <b>Done when:</b>
@@ -485,9 +485,9 @@
               <span class="pname">${next.day.t}</span>
             </a>
           ` : `
-            <a class="next" href="#/reference">
+            <a class="next" href="#/day/90">
               <span class="plabel">Finish →</span>
-              <span class="pname">Senior Interview Gauntlet & Rubrics</span>
+              <span class="pname">Celebrate, reflect & choose your next question</span>
             </a>
           `}
         </nav>
@@ -513,7 +513,7 @@
     }
 
     const currentLab = LABS.find(l => l.id === activeLabId) || LABS[0];
-    const isP0 = String(currentLab.severity || "").includes("P0");
+    const isP0 = false;
     const testCmd = currentLab.testCommand || (currentLab.directory ? `python3 ${currentLab.directory}/test_${currentLab.id.replace('-', '')}.py` : `python3 labs/${currentLab.id}/test.py`);
     const brokenSnippet = currentLab.brokenCode || (currentLab.failingTrace ? currentLab.failingTrace.split("\n\n# Execution Trace:")[0] : "");
     const fixedSnippet = currentLab.fixCode || currentLab.fixedCode || "";
@@ -523,18 +523,18 @@
     host.innerHTML = `
       <div class="labs-view">
         <div class="sec-head">
-          <div class="eyebrow">Adversarial Engineering</div>
-          <h2>Friday Adversarial Bug Hunt Labs</h2>
-          <p class="lede">You do not understand a production system until you know how to break it. Study the post-mortems of four critical outages, inspect the raw failure logs, and verify the physical fix.</p>
+          <div class="eyebrow">Optional pretend mysteries</div>
+          <h2>Four little engineering mysteries</h2>
+          <p class="lede">Predict what might happen, inspect a small example, and explain what you discovered. Ask a trusted adult before installing or running software.</p>
         </div>
 
         <div class="labs-nav" role="tablist">
           ${LABS.map((lab, idx) => {
-            const labIsP0 = String(lab.severity || "").includes("P0");
+            const labIsP0 = false;
             const labelNum = lab.num || String(idx + 1).padStart(2, "0");
             return `
               <button type="button" class="lab-tab ${lab.id === currentLab.id ? 'is-active' : ''}" data-lab="${lab.id}">
-                <span class="badge ${labIsP0 ? 'badge-p0' : 'badge-p1'}" style="font-size:10px; padding:1px 5px;">${labIsP0 ? 'P0' : 'P1'}</span>
+                <span class="badge" style="font-size:10px; padding:1px 5px;">Optional</span>
                 <span>Lab ${labelNum}: ${escapeHtml(lab.title.split('&')[0].trim())}</span>
               </button>
             `;
@@ -544,7 +544,7 @@
         <div class="lab-panel">
           <div class="lab-banner">
             <div class="lab-meta-row">
-              <span class="badge ${isP0 ? 'badge-p0' : 'badge-p1'}">${escapeHtml(currentLab.severity || "P0")}</span>
+              <span class="badge">${escapeHtml(currentLab.severity || "Optional challenge")}</span>
               ${currentLab.component ? `<span class="tag">Component: ${escapeHtml(currentLab.component)}</span>` : ''}
               ${currentLab.directory ? `<span class="tag"><code>${escapeHtml(currentLab.directory)}</code></span>` : ''}
             </div>
@@ -554,7 +554,7 @@
 
           ${currentLab.mystery ? `
             <div class="mechanism-card" style="border-left-color:var(--signal); background:var(--elevated);">
-              <h4 style="color:var(--signal-ink);">The Forensic Investigation Mystery</h4>
+              <h4 style="color:var(--signal-ink);">What do you predict?</h4>
               <p>${escapeHtml(currentLab.mystery)}</p>
             </div>
           ` : ''}
@@ -564,21 +564,21 @@
               <span class="term-dot red"></span>
               <span class="term-dot yellow"></span>
               <span class="term-dot green"></span>
-              <span>Production Incident Crime Scene & Failure Log</span>
+              <span>Pretend example and code</span>
             </div>
             <div class="terminal-body">${escapeHtml(logTrace)}</div>
           </div>
 
           <div class="mechanism-card">
-            <h4>The Forensic Physical Mechanism</h4>
+            <h4>The idea in plain language</h4>
             <p>${escapeHtml(mechanismText)}</p>
           </div>
 
           <div class="diff-grid">
             <div class="diff-col broken">
               <div class="diff-col-head">
-                <span>❌ Naive / Broken Implementation</span>
-                <span>Produces Incident</span>
+                <span>🔎 First version</span>
+                <span>What happens?</span>
               </div>
               <pre><code>${escapeHtml(brokenSnippet)}</code></pre>
             </div>
@@ -683,7 +683,7 @@
                 <div class="tier-section">
                   <div class="tier-head">
                     <span class="badge badge-bronze">Bronze</span>
-                    <span>Junior Baseline</span>
+                    <span>First try</span>
                   </div>
                   <ul class="tier-list">
                     ${bronzeList.map(c => `<li>${escapeHtml(c)}</li>`).join("")}
@@ -693,7 +693,7 @@
                 <div class="tier-section">
                   <div class="tier-head">
                     <span class="badge badge-silver">Silver</span>
-                    <span>Production-Ready</span>
+                    <span>Try next</span>
                   </div>
                   <ul class="tier-list">
                     ${silverList.map(c => `<li>${escapeHtml(c)}</li>`).join("")}
@@ -703,7 +703,7 @@
                 <div class="tier-section">
                   <div class="tier-head">
                     <span class="badge badge-gold">Gold</span>
-                    <span>Senior Signal</span>
+                    <span>Curious challenge</span>
                   </div>
                   <ul class="tier-list">
                     ${goldList.map(c => `<li>${escapeHtml(c)}</li>`).join("")}
@@ -764,7 +764,7 @@
 
     // Progress text & meter
     const pctEl = document.getElementById("progress-text");
-    if (pctEl) pctEl.textContent = `${done} / ${total} (${pct}%)`;
+    if (pctEl) pctEl.textContent = `${done} tasks complete`;
 
     // SVG Ring update (circumference = 2 * PI * r = 2 * 3.14159 * 9 ≈ 56.5)
     const circle = document.getElementById("progress-ring-circle");
@@ -1210,13 +1210,13 @@
     });
 
     const badge = document.getElementById("brand-track-badge");
-    if (badge) badge.textContent = currentTrack === "sprint" ? "30D Sprint" : "90D Flagship";
+    if (badge) badge.textContent = currentTrack === "sprint" ? "Adult Sprint" : "Curious Builder";
 
     const eyebrow = document.getElementById("curriculum-eyebrow");
-    if (eyebrow) eyebrow.textContent = currentTrack === "sprint" ? "The 30-Day Accelerated Sprint" : "The 90-Day Production Journey";
+    if (eyebrow) eyebrow.textContent = currentTrack === "sprint" ? "Adult Professional Sprint" : "The Curious AI Builder course";
 
     const heading = document.getElementById("curriculum-heading");
-    if (heading) heading.textContent = currentTrack === "sprint" ? "All 30 Days & 124 Tasks" : "All 90 Days & 353 Tasks";
+    if (heading) heading.textContent = currentTrack === "sprint" ? "Adult Professional Sprint: 30 Days" : "Guided lessons: go at your own pace";
 
     const monthRow = document.querySelector(".month-tabs");
     const mprogRow = document.querySelector(".month-progress-row");
@@ -1243,7 +1243,7 @@
     refreshProgress();
     updateStreak();
     applyFilters();
-    flashToast(`Switched to ${currentTrack === "sprint" ? "30-Day Sprint" : "90-Day Flagship"} track!`);
+    flashToast(`Switched to ${currentTrack === "sprint" ? "Adult Professional Sprint" : "Curious AI Builder"}.`);
   }
 
   /* ==========================================================================
