@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The 80/20 AI Engineer</title>
-<meta name="description" content="A 30-day course to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening — with four shipped projects by Day 30.">
+<meta name="description" content="A 3-month course, Week 0 to Week 12 at 3 hours a day, to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening, with four shipped projects.">
 <meta name="color-scheme" content="light dark">
 <meta property="og:type" content="website">
 <meta property="og:title" content="The 80/20 AI Engineer">
-<meta property="og:description" content="A 30-day course to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening — with four shipped projects by Day 30.">
+<meta property="og:description" content="A 3-month course, Week 0 to Week 12 at 3 hours a day, to become an AI engineer by cutting 80% of the curriculum: model API fluency, RAG, agents and evals, production hardening, with four shipped projects.">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%231F45C8'/><text x='32' y='45' text-anchor='middle' font-family='Georgia,serif' font-size='33' fill='%23EDF0EA'>80</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -325,11 +325,11 @@
   .day-content .warmup .a, .day-content .recall-a p{margin:8px 0 0; padding:9px 12px; background:var(--good-wash); border-radius:6px; font-size:14px; color:var(--ink-2)}
   .warmup .none{margin:0; font-size:14.5px; color:var(--ink-2)}
 
-  .day-content .words, .week-intro-slot .words{margin:16px 0 4px; padding:12px 16px 14px; background:var(--accent-wash); border-radius:8px; display:grid; grid-template-columns:max-content 1fr; gap:6px 18px; font-size:14px; max-width:68ch}
+  .day-content .words, .week-intro-slot .words, .cw-map .words{margin:16px 0 4px; padding:12px 16px 14px; background:var(--accent-wash); border-radius:8px; display:grid; grid-template-columns:max-content 1fr; gap:6px 18px; font-size:14px; max-width:68ch}
   .words::before{content:"The real words \2014  you will hear these in interviews"; grid-column:1 / -1; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-ink); margin-bottom:2px}
   .words dt{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; font-weight:500; color:var(--accent-ink); padding-top:1px}
   .words dd{margin:0; color:var(--ink-2); line-height:1.5}
-  @media (max-width:520px){.day-content .words, .week-intro-slot .words{grid-template-columns:1fr; gap:2px} .words dd{margin-bottom:8px}}
+  @media (max-width:520px){.day-content .words, .week-intro-slot .words, .cw-map .words{grid-template-columns:1fr; gap:2px} .words dd{margin-bottom:8px}}
 
   .day-content .round > .closebook{background:var(--signal-wash); border-left:3px solid var(--signal)}
   .day-content .closebook p{margin:0 0 8px; color:var(--ink)}
@@ -372,6 +372,44 @@
   .day-content .round > .rdone{background:var(--surface); padding:14px 22px}
   .rdone .check span{color:var(--ink-2)}
   .week-intro-slot h4{font-size:17px; margin:14px 0 4px}
+
+  /* ---------- the 13-week calendar ---------- */
+  .viewtabs{display:flex; gap:6px; margin:0 0 24px}
+  .viewtabs a{font-size:13px; color:var(--muted); border:1px solid var(--rule); border-radius:6px; padding:6px 13px}
+  .viewtabs a:hover{color:var(--ink); border-color:var(--muted)}
+  .viewtabs a[aria-current="true"]{color:var(--ink); background:var(--rule-soft); border-color:var(--muted); font-weight:600}
+  .cal-week{margin-top:42px}
+  .cal-week:first-child{margin-top:0}
+  .cal-week .week-head h3{font-size:23px}
+  .cw-fill{height:100%; width:0%; background:var(--good); border-radius:99px; transition:width .3s ease}
+  .cw-meta-count{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:10px 0 0; font-variant-numeric:tabular-nums}
+  .cw-maps{margin:12px 0 0}
+  .cw-map{background:var(--surface); border:1px solid var(--rule-soft); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:0 16px; max-width:72ch}
+  .cw-map summary{cursor:pointer; font-size:14px; font-weight:600; color:var(--ink-2); padding:11px 0}
+  .cw-map[open] summary{border-bottom:1px solid var(--rule-soft); margin-bottom:6px}
+  .cw-map .week-intro{padding-bottom:10px}
+  .cw-map .week-intro p{font-size:14.5px; color:var(--ink-2); line-height:1.6; margin:8px 0}
+  .cw-map .week-intro h4{font-size:17px; margin:8px 0 4px}
+  .cw-days{list-style:none; margin:16px 0 0; padding:0; display:flex; flex-direction:column; gap:8px}
+  .cw-day{display:grid; grid-template-columns:78px 1fr; gap:12px; align-items:stretch}
+  .cw-dl{display:flex; flex-direction:column; justify-content:center; padding:4px 0}
+  .cw-dl b{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink)}
+  .cw-dl span{font-size:12px; color:var(--muted)}
+  .cw-day.is-today .cw-dl{border-left:3px solid var(--accent); padding-left:9px; margin-left:-12px}
+  .cw-day.is-today .cw-dl b::after{content:" \00B7  today"; color:var(--accent-ink)}
+  .cw-rounds{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .rchip{display:block; background:var(--raised); border:1px solid var(--rule-soft); border-radius:8px; padding:9px 13px; color:var(--ink); box-shadow:var(--shadow)}
+  a.rchip:hover{border-color:var(--accent)}
+  .rchip.is-done{background:var(--surface); box-shadow:none}
+  .rchip.is-done .rc-t{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--rule)}
+  .rc-l{display:block; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+  .rc-t{display:block; font-family:"Newsreader",Georgia,"Times New Roman",serif; font-size:16.5px; margin-top:2px; line-height:1.3}
+  .rc-x{display:block; font-size:13px; color:var(--muted); margin-top:3px; line-height:1.45}
+  .rchip.review{background:var(--surface); border-style:dashed; box-shadow:none}
+  .cw-note{font-size:14.5px; color:var(--ink-2); max-width:66ch; margin:12px 0 0}
+  @media (max-width:640px){.cw-day{grid-template-columns:1fr; gap:4px} .cw-dl{flex-direction:row; gap:8px; align-items:baseline} .cw-rounds{grid-template-columns:1fr} .cw-day.is-today .cw-dl{margin-left:0}}
+  .skiplab{display:inline-flex; align-items:center; gap:8px; font-size:13.5px; color:var(--ink-2); font-family:"Public Sans",sans-serif; text-transform:none; letter-spacing:0}
+  .startnote{font-size:13px; color:var(--muted); margin:8px 0 0}
 
   /* ---------- error log view ---------- */
   .elog{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px}
@@ -574,19 +612,20 @@
       <div class="eyebrow" data-start="2026-09-28">3-month course &middot; 3 hours a day</div>
       <h1>Become an AI engineer by skipping <em>80%</em> of the usual curriculum.</h1>
       <p class="sub">Find the small part of the field that does most of the real work. Learn that part properly. Then build something in it every day. In about three months you have four projects online and a clear story about each one.</p>
-      <a class="cta" href="#/day/1">Start Day 1 &rarr;</a>
+      <a class="cta" href="#/course">See the 13 weeks &rarr;</a>
       <a class="cta ghost" href="#/method">How you will learn</a>
       <div class="facts">
         <div class="fact"><b>3 h</b><span>a day, as two 90-minute rounds</span></div>
-        <div class="fact"><b><i id="f-weeks" style="font-style:normal">12</i> wks</b><span>at 5 study days a week</span></div>
+        <div class="fact"><b><i id="f-weeks" style="font-style:normal">13</i> weeks</b><span>Week 0 to Week <i id="f-last-week" style="font-style:normal">12</i>, five study days each</span></div>
         <div class="fact"><b>4</b><span>shipped, public projects</span></div>
         <div class="fact"><b>~$75</b><span>in API credits, in total</span></div>
       </div>
       <div class="startrow">
-        <label for="startdate">Your start date</label>
+        <label for="startdate">Week 0 starts on</label>
         <input id="startdate" type="date">
-        <span>The &ldquo;Today&rdquo; label at the top follows it. Skipping Week 0? Start a week later.</span>
+        <label class="skiplab"><input id="skipbase" type="checkbox"> I already have the basics (leave out Lessons 0.1 to 0.5)</label>
       </div>
+      <p class="startnote">The calendar and the &ldquo;Today&rdquo; label at the top follow these two settings. Leaving out the basics moves every week up.</p>
       <div class="thesis">
         <p>An AI engineer builds products on top of AI models they did not build themselves.</p>
         <p class="why">That one sentence lets you skip most of what people think they must learn. You are not becoming a researcher. You are becoming the person who takes a model that already exists and turns it into something that works: reliable, fast, cheap, safe and, most important, <em>measurably</em> good.</p>
@@ -603,7 +642,7 @@
         <div class="vcard"><h4>Pull it out of your head</h4><p>Every round starts with questions from earlier days and asks you to close the page and rebuild what you just read. That is what makes it stick.</p></div>
         <div class="vcard"><h4>Try it hard, then study the mistakes</h4><p>You build before you read the steps. When something breaks, you write down why, in four short lines, and you get better at spotting it.</p></div>
       </div>
-      <p class="lede" style="margin-top:20px">The whole method is on one page: <a href="#/method">How to learn</a>. Read it once before Day 1. It takes about ten minutes.</p>
+      <p class="lede" style="margin-top:20px">The whole method is on one page: <a href="#/method">How to learn</a>. Read it once before Lesson 1. It takes about ten minutes.</p>
     </div>
 
     <div class="chunk">
@@ -641,9 +680,9 @@
 
     <div class="chunk">
       <div class="sec-head">
-        <div class="eyebrow">Day 0</div>
+        <div class="eyebrow">Before you start</div>
         <h2>The check before you start</h2>
-        <p class="lede">Do this <em>before</em> Day 1, and be honest. Everything on the list is taught in <a href="#/day/0-1">Week 0</a>, so you only take the days you are missing. Starting without Python is the most common way this course fails.</p>
+        <p class="lede">Do this <em>before</em> Lesson 1, and be honest. Everything on the list is taught in the base layer (<a href="#/day/0-1">Lessons 0.1 to 0.5</a>), so you only take the lessons you are missing. Starting without Python is the most common way this course fails.</p>
       </div>
       <ul class="checks" data-group="gate">
         <li><label class="check"><input type="checkbox"><span><b>Python</b> &mdash; functions, classes, type hints, the basics of <code>async</code>/<code>await</code>, virtual environments, <code>pytest</code></span></label></li>
@@ -662,12 +701,12 @@
       <ul class="rules">
         <li><b>01</b><span><strong>Mostly building.</strong> Learn a little, then spend the rest of the round trying, breaking and fixing.</span></li>
         <li><b>02</b><span><strong>Close the page before you build.</strong> Say the idea out loud from memory first. If you cannot, read it once more, then close the page again.</span></li>
-        <li><b>03</b><span><strong>Every day ends with a commit.</strong> No exceptions, even when the day went badly.</span></li>
+        <li><b>03</b><span><strong>Every study day ends with a commit.</strong> No exceptions, even when the day went badly.</span></li>
         <li><b>04</b><span><strong>Stuck for 10 minutes? Open a hint. Stuck for 45? Ship the ugly version.</strong> Write down what is missing and move on.</span></li>
         <li><b>05</b><span><strong>One public repo per weekly project.</strong> Four of them by the end.</span></li>
         <li><b>06</b><span><strong>Write down numbers.</strong> Cost per request, p95 latency, eval score. Numbers are what make you believable.</span></li>
         <li><b>07</b><span><strong>No framework until you feel the pain it solves.</strong> Use the plain SDK for a whole week, then you understand every tool you add later.</span></li>
-        <li><b>08</b><span><strong>Keep the error log.</strong> Four short lines for every mistake. It becomes your Day 29 write-up.</span></li>
+        <li><b>08</b><span><strong>Keep the error log.</strong> Four short lines for every mistake. It becomes your Lesson 29 write-up.</span></li>
       </ul>
     </div>
 
@@ -675,7 +714,7 @@
       <div class="sec-head">
         <div class="eyebrow">Decide once</div>
         <h2>The tools</h2>
-        <p class="lede">Pick these on Day 1 and stop shopping. Add extra tools only when you have personally hit the problem they solve. For most people that is around Day 16.</p>
+        <p class="lede">Pick these on Lesson 1 and stop shopping. Add extra tools only when you have personally hit the problem they solve. For most people that is around Lesson 16.</p>
       </div>
       <div class="tablewrap">
         <table>
@@ -683,10 +722,10 @@
           <tbody>
             <tr><td>Language</td><td>Python 3.11+, <code>uv</code></td><td class="note">Node/TypeScript is fine if that is what you know</td></tr>
             <tr><td>Models</td><td>One main provider, one backup</td><td class="note">The backup teaches you how to switch</td></tr>
-            <tr><td>Calling the model</td><td>The provider&rsquo;s own SDK</td><td class="note">No LangChain in week 1. Really.</td></tr>
+            <tr><td>Calling the model</td><td>The provider&rsquo;s own SDK</td><td class="note">No LangChain in Part 1. Really.</td></tr>
             <tr><td>Web service</td><td>FastAPI</td><td class="note">Handles streaming and async, easy to deploy</td></tr>
             <tr><td>Vector store</td><td>pgvector, Qdrant, or Chroma</td><td class="note">Any of them. Do not spend a day comparing.</td></tr>
-            <tr><td>Tracing &amp; evals</td><td>Langfuse, LangSmith or Braintrust</td><td class="note">Pick one on Day 22 and stay with it</td></tr>
+            <tr><td>Tracing &amp; evals</td><td>Langfuse, LangSmith or Braintrust</td><td class="note">Pick one on Lesson 22 and stay with it</td></tr>
             <tr><td>Screen</td><td>Streamlit (or Next.js if you already know it)</td><td class="note">The screen is not the point</td></tr>
             <tr><td>Hosting</td><td>Render, Fly, Railway or Vercel</td><td class="note">Whichever deploys in under 20 minutes</td></tr>
           </tbody>
@@ -698,20 +737,27 @@
   <!-- ============ COURSE ============ -->
   <section class="view" data-view="course" hidden>
     <div class="chunk">
-
       <div class="sec-head">
-        <div class="eyebrow">The work</div>
-        <h2>Every day, in order</h2>
-        <p class="lede">Each day is a few rounds. Each round is 90 minutes: warm up from memory, learn one small chunk, close the page, try something hard, then study your mistakes. Week 0 is optional. Take the check on the Overview and do only what you are missing. Your progress saves in this browser.</p>
+        <div class="eyebrow">The 13 weeks</div>
+        <h2>Week 0 to Week <span id="c-last-week">12</span></h2>
+        <p class="lede">Each week is five study days of 3 hours, and each study day is two 90-minute rounds. Every round links to its lesson. The last week has no new lessons: it is for catching up, reviewing and applying. Your progress saves in this browser.</p>
       </div>
-      <div class="daysearch">
-        <input id="daysearch" type="search" autocomplete="off" spellcheck="false"
-               placeholder="Filter the days — try &quot;eval&quot;, &quot;retrieval&quot;, &quot;prompt injection&quot;"
-               aria-label="Filter the days by title or task">
-        <span class="daysearch-count" id="daysearch-count" hidden></span>
+      <nav class="viewtabs" aria-label="Two ways to see the course">
+        <a id="vt-weeks" href="#/course">By week</a>
+        <a id="vt-lessons" href="#/course/lessons">By lesson</a>
+      </nav>
+      <div id="cal"></div>
+      <div id="lessons-view" hidden>
+        <p class="lede" style="margin-bottom:18px">The same lessons, grouped into four parts plus the base layer. A lesson is one to two study days of work, and the calendar tells you which week each one lands in.</p>
+        <div class="daysearch">
+          <input id="daysearch" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Filter the lessons: try &quot;eval&quot;, &quot;retrieval&quot;, &quot;prompt injection&quot;"
+                 aria-label="Filter the lessons by title or task">
+          <span class="daysearch-count" id="daysearch-count" hidden></span>
+        </div>
+        <div id="course-weeks"></div>
+        <p class="placeholder" id="daysearch-empty" hidden>No lesson matches that.</p>
       </div>
-      <div id="course-weeks"></div>
-      <p class="placeholder" id="daysearch-empty" hidden>No day matches that.</p>
     </div>
   </section>
 
@@ -810,7 +856,7 @@
         <figcaption>Eight moves. You make the map once, then you go around the rest of the loop with every new chunk.</figcaption>
       </figure>
       <ol class="steps8">
-        <li><div><b>Draw a rough map first.</b><span>Spend 20 to 30 minutes seeing what a subject contains: the big ideas, the words, and how the pieces connect. Don&rsquo;t try to learn any of it yet. Every week starts with a map page.</span></div></li>
+        <li><div><b>Draw a rough map first.</b><span>Spend 20 to 30 minutes seeing what a subject contains: the big ideas, the words, and how the pieces connect. Don&rsquo;t try to learn any of it yet. Each part of the course starts with a map page.</span></div></li>
         <li><div><b>Learn one small chunk.</b><span>Read just enough to understand one idea. Stop before you feel completely comfortable. That is on purpose.</span></div></li>
         <li><div><b>Close it, then rebuild it from memory.</b><span>Write what you remember, say it out loud, draw the system, retype the code. This is called <em>retrieval practice</em>, and it beats re-reading by a lot.</span></div></li>
         <li><div><b>Do something hard with it, right away.</b><span>Solve a problem, build something, debug an example. If you succeed every time, the task is too easy. Make it harder.</span></div></li>
@@ -967,13 +1013,13 @@
     <div class="chunk">
       <div class="sec-head">
         <div class="eyebrow">Your calendar</div>
-        <h2>3 hours a day, 5 days a week</h2>
+        <h2>3 hours a day, 5 days a week, 13 weeks</h2>
       </div>
       <ul class="rules">
         <li><b>01</b><span><strong>Two rounds a day.</strong> That is 3 hours: 90 minutes, a break, 90 minutes. The second round is not optional. It is the one that makes the first one stick.</span></li>
-        <li><b>02</b><span><strong>The whole course is <span id="m-rounds">&hellip;</span> rounds.</strong> That is about <span id="m-days">&hellip;</span> study days, or <span id="m-weeks">&hellip;</span> weeks at five days a week. Skip Week 0 if you already have the basics, and you finish about <span id="m-core-weeks">&hellip;</span> weeks in.</span></li>
+        <li><b>02</b><span><strong>The whole course is <span id="m-rounds">&hellip;</span> rounds.</strong> That is about <span id="m-days">&hellip;</span> study days, laid out as <span id="m-weeks">&hellip;</span> weeks: Week 0 to Week <span id="m-last-week">&hellip;</span>. The last week has no new lessons. It is for catching up, reviewing and applying. Leave out the basics and the whole plan is <span id="m-core-weeks">&hellip;</span> weeks.</span></li>
         <li><b>03</b><span><strong>Skip a day, don&rsquo;t skip the warm-up.</strong> If you miss a day, start the next one with its warm-up. The questions are pulled from rounds you have finished, so they wait for you.</span></li>
-        <li><b>04</b><span><strong>Change your start date any time.</strong> It is on the <a href="#/overview">Overview</a>. The &ldquo;Today&rdquo; label at the top follows it.</span></li>
+        <li><b>04</b><span><strong>Two settings shape the calendar.</strong> They are on the <a href="#/overview">Overview</a>: the date Week 0 starts, and whether you already have the basics. The <a href="#/course">calendar</a> and the &ldquo;Today&rdquo; label at the top follow them.</span></li>
       </ul>
     </div>
   </section>
@@ -1029,7 +1075,7 @@
 
     <div class="chunk">
       <div class="sec-head">
-        <div class="eyebrow">Day 30</div>
+        <div class="eyebrow">Lesson 30</div>
         <h2>What &ldquo;done&rdquo; looks like</h2>
       </div>
       <p class="lede" style="margin-bottom:20px">Four public repos: three weekly ships plus the capstone. Every README has:</p>
@@ -1042,15 +1088,15 @@
         <li><label class="check"><input type="checkbox"><span>A live link</span></label></li>
         <li><label class="check"><input type="checkbox"><span>Plus one write-up that a stranger can read and think: this person has actually shipped</span></label></li>
       </ul>
-      <h3 style="font-size:20px; margin:34px 0 14px">Weekly checkpoints</h3>
+      <h3 style="font-size:20px; margin:34px 0 14px">Checkpoints for each part</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>End of</th><th>You can&hellip;</th><th>Warning sign if&hellip;</th></tr></thead>
           <tbody>
-            <tr><td>Week 1</td><td>State the cost and p95 for any call; get answers back in a reliable shape</td><td class="note">You are still pasting prompts into a chat window to test them</td></tr>
-            <tr><td>Week 2</td><td>Improve retrieval and <em>measure</em> the improvement</td><td class="note">You have a RAG demo but no golden set</td></tr>
-            <tr><td>Week 3</td><td>Make your own tests fail by making a prompt worse</td><td class="note">Your agent works &ldquo;usually&rdquo; and you cannot say how often</td></tr>
-            <tr><td>Week 4</td><td>Explain every design choice you made, and why</td><td class="note">Your README is <code>pip install -r requirements.txt</code></td></tr>
+            <tr><td>Part 1 (Lessons 1&ndash;7)</td><td>State the cost and p95 for any call; get answers back in a reliable shape</td><td class="note">You are still pasting prompts into a chat window to test them</td></tr>
+            <tr><td>Part 2 (Lessons 8&ndash;14)</td><td>Improve retrieval and <em>measure</em> the improvement</td><td class="note">You have a RAG demo but no golden set</td></tr>
+            <tr><td>Part 3 (Lessons 15&ndash;21)</td><td>Make your own tests fail by making a prompt worse</td><td class="note">Your agent works &ldquo;usually&rdquo; and you cannot say how often</td></tr>
+            <tr><td>Part 4 (Lessons 22&ndash;30)</td><td>Explain every design choice you made, and why</td><td class="note">Your README is <code>pip install -r requirements.txt</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -1068,7 +1114,7 @@
         <li><span class="cat">Evals</span><span class="what"><b>Hamel Husain</b> &mdash; <a href="https://hamel.dev">hamel.dev</a>. Read the posts on evals and error analysis twice.</span></li>
         <li><span class="cat">Staying current</span><span class="what"><b>Simon Willison</b> &mdash; <a href="https://simonwillison.net">simonwillison.net</a>. The best signal-to-noise on what actually changed this week.</span></li>
         <li><span class="cat">RAG testing</span><span class="what">Ragas docs &mdash; <a href="https://docs.ragas.io">docs.ragas.io</a>.</span></li>
-        <li><span class="cat">Tracing</span><span class="what">Langfuse, LangSmith or Braintrust docs &mdash; whichever you picked on Day 22.</span></li>
+        <li><span class="cat">Tracing</span><span class="what">Langfuse, LangSmith or Braintrust docs &mdash; whichever you picked on Lesson 22.</span></li>
         <li><span class="cat">Protocol</span><span class="what">The MCP spec &mdash; <a href="https://modelcontextprotocol.io">modelcontextprotocol.io</a>.</span></li>
         <li><span class="cat">Patterns</span><span class="what">Your provider&rsquo;s official cookbook repo, for patterns you can copy directly.</span></li>
       </ul>
@@ -1082,28 +1128,28 @@
       <div class="cards">
         <div class="vcard">
           <h4>1&ndash;2 hours a day</h4>
-          <p><b>One round a day.</b> Same order, same rounds, about twice as many weeks. Keep the warm-ups and protect the ship days (7, 14, 21, 25&ndash;27); that is where the learning locks in.</p>
+          <p><b>One round a day.</b> Same order, same rounds, about twice as many weeks. Keep the warm-ups and protect the ship lessons (7, 14, 21, 25&ndash;27); that is where the learning locks in.</p>
         </div>
         <div class="vcard">
           <h4>5&ndash;6 hours a day</h4>
           <p><b>Three or four rounds a day.</b> The whole course fits in about seven weeks. Do not skip the sleep between rounds. Put the second half of the day after a real break.</p>
         </div>
         <div class="vcard">
-          <h4>Only ten days</h4>
-          <p>Days 1, 2, 3, 5 &rarr; 8, 9, 10, 11 &rarr; 15, and 18&ndash;19 merged. You get structured output, a measured RAG system, tool use and a test harness. Ship one project instead of four.</p>
+          <h4>Only ten study days</h4>
+          <p>Lessons 1, 2, 3, 5 &rarr; 8, 9, 10, 11 &rarr; 15, and 18&ndash;19 merged. You get structured output, a measured RAG system, tool use and a test harness. Ship one project instead of four.</p>
         </div>
       </div>
       <div class="cards" style="margin-top:14px">
         <div class="vcard">
           <h4>Already a backend developer</h4>
-          <p>Squeeze week 1 into days 2, 3 and 5, and spend the time you saved on days 11, 18 and 19. Testing and retrieval quality are where experienced engineers still have the biggest gap.</p>
+          <p>Squeeze Part 1 into Lessons 2, 3 and 5, and spend the time you saved on Lessons 11, 18 and 19. Testing and retrieval quality are where experienced engineers still have the biggest gap.</p>
         </div>
       </div>
       <div class="close">
         <p class="kicker">Honest expectations</p>
         <p>Three focused months gets you to <b>junior-to-mid AI engineer, employable, with proof</b>: someone who can own an LLM feature from start to finish. It does not make you senior. That comes from real incidents, real users and real scale, which take time you cannot squeeze. Anyone selling the second outcome in three months is selling something.</p>
         <p>What the course really gives you is the part that compounds: four systems shipped, measured, and broken on purpose. After that, every new model release is a small change on top of a foundation you own, instead of one more thing you feel behind on.</p>
-        <p style="font-family:'Newsreader',Georgia,'Times New Roman',serif; font-size:19px; color:var(--ink); margin-top:18px">Start today. Day 1 is a small tool that summarizes a file. Go.</p>
+        <p style="font-family:'Newsreader',Georgia,'Times New Roman',serif; font-size:19px; color:var(--ink); margin-top:18px">Start today. Lesson 1 is a small tool that summarizes a file. Go.</p>
       </div>
     </div>
   </section>
@@ -1113,31 +1159,31 @@
 
 <div id="content-src" hidden>
 <div class="week-intro" data-week="0">
-  <h4>The map for this week</h4>
-  <p>This week is optional. You test yourself first. Run the Day 0 gate on terminal, Python, HTTP and JSON, git, and reading docs. If you pass all five, skip this week and start Day 1 tomorrow. If you miss two or more, this week saves your month, because every engineer who started without Python fluency had to come back and do it anyway.</p>
-  <p>Each day builds one tool you will use for the next four weeks. Day 0.1 puts you in a shell and turns error messages into instructions instead of noise. Day 0.2 teaches you the Python you will actually type, and how to keep each project's packages in their own folder. Day 0.3 is exceptions, the event loop, and how to test. Day 0.4 is one HTTP request seen as real bytes, and where your key has to live. Day 0.5 is commits, a pull request, and a merge conflict you cause on purpose.</p>
+  <h4>The map for Part 0: the base layer</h4>
+  <p>This part is optional. You test yourself first. Run the check on the Overview first: terminal, Python, HTTP and JSON, git, and reading docs. If you pass all five, skip this part and start Lesson 1. If you miss two or more, this part saves the rest of the course, because every engineer who started without Python fluency had to come back and do it anyway.</p>
+  <p>Each lesson builds one tool you will use for the rest of the course. Lesson 0.1 puts you in a shell and turns error messages into instructions instead of noise. Lesson 0.2 teaches you the Python you will actually type, and how to keep each project's packages in their own folder. Lesson 0.3 is exceptions, the event loop, and how to test. Lesson 0.4 is one HTTP request seen as real bytes, and where your key has to live. Lesson 0.5 is commits, a pull request, and a merge conflict you cause on purpose.</p>
   <figure class="illus weekmap">
     <svg viewBox="0 0 640 256" role="img" aria-label="Five days of foundations: terminal, Python, errors, HTTP, and git, joined by arrows">
       <use href="#i-terminal" x="62" y="20" width="56" height="56"/>
-      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 0.1</text>
+      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 0.1</text>
       <text x="90" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">terminal</text>
       <use href="#i-file" x="212" y="20" width="56" height="56"/>
-      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 0.2</text>
+      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 0.2</text>
       <text x="240" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">Python</text>
       <use href="#i-bug" x="362" y="20" width="56" height="56"/>
-      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 0.3</text>
+      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 0.3</text>
       <text x="390" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">errors</text>
       <use href="#i-key" x="512" y="20" width="56" height="56"/>
-      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 0.4</text>
+      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 0.4</text>
       <text x="540" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">HTTP</text>
       <use href="#i-book" x="292" y="140" width="56" height="56"/>
-      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 0.5</text>
+      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 0.5</text>
       <text x="320" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">git</text>
       <line x1="132" y1="48" x2="198" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="282" y1="48" x2="348" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="432" y1="48" x2="498" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
     </svg>
-    <figcaption>Five foundations. Each day teaches one tool you will use constantly. Take only the days you need.</figcaption>
+    <figcaption>Five foundations. Each lesson teaches one tool you will use constantly. Take only the lessons you need.</figcaption>
   </figure>
   <dl class="words">
     <dt>terminal</dt><dd>a window where you type commands and see text output</dd>
@@ -1146,14 +1192,14 @@
     <dt>HTTP request</dt><dd>a message your code sends to a web server, in a format the server understands</dd>
     <dt>repository</dt><dd>a folder that git tracks so you can save versions of your code</dd>
   </dl>
-  <p><b>Before Day 0.1 (25 minutes):</b> read this map once. Then close it and draw the week on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
+  <p><b>Before Lesson 0.1 (25 minutes):</b> read this map once. Then close it and draw this part on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
 </div>
 
 <article data-day="0-1">
-  <p class="day-lede">The terminal looks like a puzzle, but it is one small machine following five rules. Once you know the rules, error messages turn from noise into instructions. Today you learn the rules — and you break an install on purpose so the first real failure doesn't scare you.</p>
+  <p class="day-lede">The terminal looks like a puzzle, but it is one small machine following five rules. Once you know the rules, error messages turn from noise into instructions. In this lesson you learn the rules — and you break an install on purpose so the first real failure doesn't scare you.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 0-1: how the shell works, streams and pipes, and reading errors, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 0.1: how the shell works, streams and pipes, and reading errors, joined by arrows">
       <use href="#i-terminal" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the shell loop</text>
@@ -1601,10 +1647,10 @@
 </article>
 
 <article data-day="0-2">
-  <p class="day-lede">Today you learn the third of Python this course actually types. You learn how code is organized into pieces you can test, what to keep in a container and what to throw out, and why one simple annotation saves hours later. By tonight, one command should rebuild your project environment from nothing, and your own program should run on the first try.</p>
+  <p class="day-lede">In this lesson you learn the third of Python this course actually types. You learn how code is organized into pieces you can test, what to keep in a container and what to throw out, and why one simple annotation saves hours later. By the end of this lesson, one command should rebuild your project environment from nothing, and your own program should run on the first try.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 0.2: functions and modules, containers and loops, and types with environments, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 0.2: functions and modules, containers and loops, and types with environments, joined by arrows">
       <use href="#i-folder" x="68" y="22" width="64" height="64"/>
       <text x="100" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="100" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">functions &amp; modules</text>
@@ -1941,7 +1987,7 @@
 
   <div class="teachback">
     <h4>Teach it back</h4>
-    <p>Explain today to a smart friend who has never written Python. What are functions for, what's a dict versus a list, and why would you write type hints if Python ignores them? Start from a real example: reading a text file and counting words. Use three to four sentences.</p>
+    <p>Explain this lesson to a smart friend who has never written Python. What are functions for, what's a dict versus a list, and why would you write type hints if Python ignores them? Start from a real example: reading a text file and counting words. Use three to four sentences.</p>
     <p class="watch">Watch for the words "basically", "something happens here" and "you just". Each one marks a gap. Go back to that spot in the page, fill the gap, and explain again.</p>
   </div>
 
@@ -1958,10 +2004,10 @@
 </article>
 
 <article data-day="0-3">
-  <p class="day-lede">Three things separate code that talks to the internet from code that doesn't: what happens when a call fails, how one thread does ten things at once, and how you prove that it all still works. Today you build a downloader that does all three, and you time it — because the timing is the whole lesson.</p>
+  <p class="day-lede">Three things separate code that talks to the internet from code that doesn't: what happens when a call fails, how one thread does ten things at once, and how you prove that it all still works. In this lesson you build a downloader that does all three, and you time it — because the timing is the whole lesson.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 0.3: handling errors, async downloads, and tests, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 0.3: handling errors, async downloads, and tests, joined by arrows">
       <use href="#i-warning" x="68" y="22" width="64" height="64"/>
       <text x="100" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="100" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">errors &amp; cleanup</text>
@@ -2302,7 +2348,7 @@
 
   <div class="teachback">
     <h4>Teach it back</h4>
-    <p>Explain today to a smart friend who has never written code that talks to the network. What do you do when a request fails, how does async make ten downloads fast, and why would you write a test for something you expect to fail? Use three to four sentences, starting from a real example.</p>
+    <p>Explain this lesson to a smart friend who has never written code that talks to the network. What do you do when a request fails, how does async make ten downloads fast, and why would you write a test for something you expect to fail? Use three to four sentences, starting from a real example.</p>
     <p class="watch">Watch for the words "basically", "something happens here" and "you just". Each one marks a gap. Go back to that spot in the page, fill the gap, and explain again.</p>
   </div>
 
@@ -2319,10 +2365,10 @@
 </article>
 
 <article data-day="0-4">
-  <p class="day-lede">Every call to a model is one HTTP request with a secret in a header. Today you see what that request looks like as actual text, learn what each status code means, and put your key where it cannot leak.</p>
+  <p class="day-lede">Every call to a model is one HTTP request with a secret in a header. In this lesson you see what that request looks like as actual text, learn what each status code means, and put your key where it cannot leak.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 0.4: HTTP and the request, status codes and JSON, and secret hygiene, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 0.4: HTTP and the request, status codes and JSON, and secret hygiene, joined by arrows">
       <use href="#i-terminal" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">HTTP basics</text>
@@ -2721,7 +2767,7 @@
   <p class="day-lede">Git and reading documentation look like tools for grown-ups to master. They are not. Git is how you take risks cheaply because you cannot lose work you committed. Reading docs is how you stop needing tutorials. Both are skills with techniques.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 0.5: commits and branches, merging and conflicts, and reading docs, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 0.5: commits and branches, merging and conflicts, and reading docs, joined by arrows">
       <use href="#i-file" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">commits &amp; branches</text>
@@ -3134,37 +3180,37 @@
 </article>
 
 <div class="week-intro" data-week="1">
-  <h4>The map for this week</h4>
-  <p>Week 1 is the layer everything else sits on: one call to a model, and everything you can know about it. By Sunday you can look at any request your code makes and say four things out loud: what it cost, how long it took, where the time went, and what happens when it fails.</p>
-  <p>You start with the raw SDK, no framework, because frameworks hide the numbers you came here to learn. Each day builds on the last. Day 2 pulls prompts out of code and into files with test cases. Day 3 replaces messy text parsing with typed objects. Day 4 makes long documents cheap with caching. Day 5 shows you where the seconds go. Day 6 breaks everything on purpose. Day 7 you deploy it and write down the numbers.</p>
+  <h4>The map for Part 1: Model fluency</h4>
+  <p>Part 1 is the layer everything else sits on: one call to a model, and everything you can know about it. By the end of this part you can look at any request your code makes and say four things out loud: what it cost, how long it took, where the time went, and what happens when it fails.</p>
+  <p>You start with the raw SDK, no framework, because frameworks hide the numbers you came here to learn. Each lesson builds on the last. Lesson 2 pulls prompts out of code and into files with test cases. Lesson 3 replaces messy text parsing with typed objects. Lesson 4 makes long documents cheap with caching. Lesson 5 shows you where the seconds go. Lesson 6 breaks everything on purpose. In Lesson 7 you deploy it and write down the numbers.</p>
   <figure class="illus weekmap">
     <svg viewBox="0 0 640 256" role="img" aria-label="Seven days of model fluency: calls, prompts, structured output, long context, cost, failures, and shipping">
       <use href="#i-chat" x="62" y="20" width="56" height="56"/>
-      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 1</text>
+      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 1</text>
       <text x="90" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">first call</text>
       <use href="#i-notebook" x="212" y="20" width="56" height="56"/>
-      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 2</text>
+      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 2</text>
       <text x="240" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">prompts</text>
       <use href="#i-blocks" x="362" y="20" width="56" height="56"/>
-      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 3</text>
+      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 3</text>
       <text x="390" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">structure</text>
       <use href="#i-book" x="512" y="20" width="56" height="56"/>
-      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 4</text>
+      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 4</text>
       <text x="540" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">long context</text>
       <use href="#i-clock" x="87" y="140" width="56" height="56"/>
-      <text x="115" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 5</text>
+      <text x="115" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 5</text>
       <text x="115" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">cost &amp; time</text>
       <use href="#i-warning" x="292" y="140" width="56" height="56"/>
-      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 6</text>
+      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 6</text>
       <text x="320" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">failures</text>
       <use href="#i-rocket" x="497" y="140" width="56" height="56"/>
-      <text x="525" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 7</text>
+      <text x="525" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 7</text>
       <text x="525" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">ship</text>
       <line x1="132" y1="48" x2="198" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="282" y1="48" x2="348" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="432" y1="48" x2="498" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
     </svg>
-    <figcaption>Seven rounds. Start with one call. Build up prompts, structure, context, then measure and ship.</figcaption>
+    <figcaption>Seven lessons. Start with one call. Build up prompts, structure, context, then measure and ship.</figcaption>
   </figure>
   <dl class="words">
     <dt>token</dt><dd>a chunk of text the model reads or writes; you pay by the token</dd>
@@ -3174,14 +3220,14 @@
     <dt>streaming</dt><dd>getting the answer one word at a time as the model writes it</dd>
     <dt>latency</dt><dd>how long it takes for an answer to arrive, measured in seconds</dd>
   </dl>
-  <p><b>Before Day 1 (25 minutes):</b> read this map once. Then close it and draw the week on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
+  <p><b>Before Lesson 1 (25 minutes):</b> read this map once. Then close it and draw this part on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
 </div>
 
 <article data-day="1">
-  <p class="day-lede">Today you build the smallest program that talks to an AI model. Then you learn to describe that program in numbers. By tonight you should be able to point at one run and say: &ldquo;That cost two cents. The first word showed up after 0.4 seconds. The last word after 2.1 seconds.&rdquo; Being able to say that one sentence is the whole point of the day.</p>
+  <p class="day-lede">In this lesson you build the smallest program that talks to an AI model. Then you learn to describe that program in numbers. By the end of this lesson you should be able to point at one run and say: &ldquo;That cost two cents. The first word showed up after 0.4 seconds. The last word after 2.1 seconds.&rdquo; Being able to say that one sentence is the whole point of the day.</p>
 
   <figure class="illus daymap">
-      <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 1: a workbench, tokens and the call, the bill, and the clocks, joined by arrows">
+      <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 1: a workbench, tokens and the call, the bill, and the clocks, joined by arrows">
         <use href="#i-folder" x="58" y="22" width="64" height="64"/>
         <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
         <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the workbench</text>
@@ -3595,7 +3641,7 @@
       <figcaption>Two numbers, two causes: input length moves the first, output length moves the second.</figcaption>
     </figure>
         <p>So the split tells you what to fix. A long prompt with a short answer? Shrink the input. A short prompt with a long answer? Shrink the output, or stream it.</p>
-        <p>One more fact, about people. They feel the first clock as speed. That is the whole reason <em>streaming</em> exists: the words appear as they are written instead of all at once at the end. You build it on Day 5.</p>
+        <p>One more fact, about people. They feel the first clock as speed. That is the whole reason <em>streaming</em> exists: the words appear as they are written instead of all at once at the end. You build it on Lesson 5.</p>
         <p>So: measure both clocks separately, because they have different causes and only one of them is yours to fix today.</p>
         <dl class="words"><dt>time to first token</dt><dd>how long until the first piece of the answer arrives</dd><dt>total time</dt><dd>how long until the last piece arrives</dd><dt>streaming</dt><dd>sending the answer piece by piece as it is written</dd></dl>
       </div>
@@ -3610,7 +3656,7 @@
     </div>
 
     <div class="attempt">
-      <p class="goal"><b>Your goal:</b> your tool now reports both clocks on every run. You add those two columns to yesterday&rsquo;s table, and you have run one experiment on temperature.</p>
+      <p class="goal"><b>Your goal:</b> your tool now reports both clocks on every run. You add those two columns to the earlier table, and you have run one experiment on temperature.</p>
       <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>To catch the first token you need to <em>stream</em> the answer. Otherwise everything arrives at once and both clocks show the same time.</p></details>
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Start a monotonic timer right before the call, not at program start. Note the timer&rsquo;s value when the first chunk arrives, and again when the last one does. Print both.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
@@ -3658,10 +3704,10 @@
 </article>
 
 <article data-day="2">
-  <p class="day-lede">A prompt that works on three examples is just a coincidence. Today you turn prompting into something measurable. You learn what actually changes the model's output, which is the whole difference between tweaking and engineering.</p>
+  <p class="day-lede">A prompt that works on three examples is just a coincidence. In this lesson you turn prompting into something measurable. You learn what actually changes the model's output, which is the whole difference between tweaking and engineering.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 2: output contracts, examples, decomposition, and prompts as code">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 2: output contracts, examples, decomposition, and prompts as code">
       <use href="#i-clipboard" x="42" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">contracts</text>
@@ -4130,10 +4176,10 @@
 </article>
 
 <article data-day="3">
-  <p class="day-lede">Today the model stops being a chat toy and becomes a component. You build an extractor that turns messy text into clean typed objects. Nail this one and everything in the next 27 days gets easier.</p>
+  <p class="day-lede">In this lesson the model stops being a chat toy and becomes a component. You build an extractor that turns messy text into clean typed objects. Nail this one and everything in the next 27 days gets easier.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 3: why JSON fails, Pydantic models, validation and repair, and the full build, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 3: why JSON fails, Pydantic models, validation and repair, and the full build, joined by arrows">
       <use href="#i-cross" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">why JSON fails</text>
@@ -4588,10 +4634,10 @@
 </article>
 
 <article data-day="4">
-  <p class="day-lede">Models now read hundreds of pages in one call, and that quietly changes what you should build. For many problems, you do not need a retrieval pipeline. Instead, put documents straight into the prompt, budget the space carefully, and make the cached repeats nearly free. By tonight you should be able to say: &ldquo;I can put a 50-page PDF in a prompt, extract facts with citations, check the citations are real, and know what it cost.&rdquo;</p>
+  <p class="day-lede">Models now read hundreds of pages in one call, and that quietly changes what you should build. For many problems, you do not need a retrieval pipeline. Instead, put documents straight into the prompt, budget the space carefully, and make the cached repeats nearly free. By the end of this lesson you should be able to say: &ldquo;I can put a 50-page PDF in a prompt, extract facts with citations, check the citations are real, and know what it cost.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 4: reading documents, budgeting space, caching, and verifying citations">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 4: reading documents, budgeting space, caching, and verifying citations">
       <use href="#i-image" x="42" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">document input</text>
@@ -4924,7 +4970,7 @@
 
     <div class="attempt">
       <p class="goal"><b>Your goal:</b> a prompt that returns a summary plus a list of findings. Each finding has a claim, a page number, and an exact quote from that page. Verify every quote with a string search. Report the pass rate and any mismatches.</p>
-      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Define the output schema from Day 3: a summary, plus findings where each has a claim, page number, and quote. Make the model put the quote in the output.</p></details>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Define the output schema from Lesson 3: a summary, plus findings where each has a claim, page number, and quote. Make the model put the quote in the output.</p></details>
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Ask for: summary (two sentences), findings (list of {claim, page_number, quote}). For each finding, search the quote in that page's extracted text. Count matches and print mismatches.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
@@ -5044,10 +5090,10 @@
 </article>
 
 <article data-day="5">
-  <p class="day-lede">Today you stop buffering and start streaming. You build two types of cache. And you measure which users had the bad luck — the slow ones in twenty. By tonight you should be able to say: &ldquo;The P95 latency is 2.4 seconds. A 30 percent response cache hit rate cut the bill by a third. Eighty percent of requests went to the small model.&rdquo;</p>
+  <p class="day-lede">In this lesson you stop buffering and start streaming. You build two types of cache. And you measure which users had the bad luck — the slow ones in twenty. By the end of this lesson you should be able to say: &ldquo;The P95 latency is 2.4 seconds. A 30 percent response cache hit rate cut the bill by a third. Eighty percent of requests went to the small model.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 5: streaming end-to-end, two caches, routing cheap first, and measuring P50 and P95">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 5: streaming end-to-end, two caches, routing cheap first, and measuring P50 and P95">
       <use href="#i-bolt" x="40" y="22" width="64" height="64"/>
       <text x="72" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="72" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">stream end-to-end</text>
@@ -5157,7 +5203,7 @@
       <details class="hint"><summary>Hint 2 — the shape of the answer</summary><p>The endpoint yields lines of <code>data: {chunk}</code> and ends with <code>data: [DONE]</code>. The client reads the stream line by line and notes the time of the first and last line. Both times are printed with the output.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
-          <li>Keep yesterday's working endpoint. Add a second route called <code>/stream</code> that returns the same answer, but as a <code>StreamingResponse</code>.</li>
+          <li>Keep the last lesson's working endpoint. Add a second route called <code>/stream</code> that returns the same answer, but as a <code>StreamingResponse</code>.</li>
           <li>Inside the route, yield <code>f"data: {chunk}\n\n"</code> for each chunk from the model. After the loop, yield one more line: <code>data: [DONE]\n\n</code>.</li>
           <li>Write a client that makes a request to the stream endpoint and reads the response line by line.</li>
           <li>Start a monotonic timer just before the request. Note the timer when the first line arrives and when the last one does. Print both times along with the output.</li>
@@ -5166,7 +5212,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look back at Round 4 of Day 1. You measured two clocks: time to first token and total time. Does your streaming client measure the same two clocks correctly now?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look back at Round 4 of Lesson 1. You measured two clocks: time to first token and total time. Does your streaming client measure the same two clocks correctly now?</p></div>
 
     <div class="traps">
       <ul>
@@ -5277,7 +5323,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look at the cost per request for cache hits versus misses. Why are they so different? (This is review from Day 1.)</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look at the cost per request for cache hits versus misses. Why are they so different? (This is review from Lesson 1.)</p></div>
 
     <div class="traps">
       <ul>
@@ -5520,10 +5566,10 @@
 </article>
 
 <article data-day="6">
-  <p class="day-lede">The network breaks, the provider has a bad day, or one visitor runs your code all night. Everything you built works right up until it doesn't. By tonight you should be able to say: &ldquo;When that happens, the user gets a useful answer instead of a stack trace. A hard timeout stops the retries after 30 seconds. When the provider is down, we fail in 1 millisecond, not 40.&rdquo;</p>
+  <p class="day-lede">The network breaks, the provider has a bad day, or one visitor runs your code all night. Everything you built works right up until it doesn't. By the end of this lesson you should be able to say: &ldquo;When that happens, the user gets a useful answer instead of a stack trace. A hard timeout stops the retries after 30 seconds. When the provider is down, we fail in 1 millisecond, not 40.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 6: naming failures, retrying smart, staying idempotent, and degrading gracefully">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 6: naming failures, retrying smart, staying idempotent, and degrading gracefully">
       <use href="#i-warning" x="40" y="22" width="64" height="64"/>
       <text x="72" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="72" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">name the failure</text>
@@ -5947,7 +5993,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look at your degradation ladder and your <code>LOG.md</code> file from Day 5. A search endpoint and a payment endpoint have different risk tolerance. Why can search fall to a stale answer, but payment cannot?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look at your degradation ladder and your <code>LOG.md</code> file from Lesson 5. A search endpoint and a payment endpoint have different risk tolerance. Why can search fall to a stale answer, but payment cannot?</p></div>
 
     <div class="traps">
       <ul>
@@ -5983,10 +6029,10 @@
 </article>
 
 <article data-day="7">
-  <p class="day-lede">Today you put the service on the public internet and write a README that makes it legible to a stranger in 90 seconds. By tonight you should be able to say: &ldquo;A stranger can use this from a link, and they can read what one run costs.&rdquo; Then you take half a day off.</p>
+  <p class="day-lede">In this lesson you put the service on the public internet and write a README that makes it legible to a stranger in 90 seconds. By the end of this lesson you should be able to say: &ldquo;A stranger can use this from a link, and they can read what one run costs.&rdquo; Then you take half a day off.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The two rounds of Day 7: going public and telling the story, joined by an arrow">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The two rounds of Lesson 7: going public and telling the story, joined by an arrow">
       <use href="#i-cloud" x="88" y="22" width="64" height="64"/>
       <text x="120" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="120" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">four things change</text>
@@ -6204,37 +6250,37 @@
 </article>
 
 <div class="week-intro" data-week="2">
-  <h4>The map for this week</h4>
-  <p>Week 1 taught the model to do what you say. This week it answers from documents it has never seen: your notes, your code, your policies. No retraining needed. The mechanism is simple. Find the paragraphs that answer the question. Paste them into the prompt. Ask again. The whole idea lives in one word: find.</p>
-  <p>You build the finder twice. First from scratch with numpy, so no library hides the math from you. Then properly: a real store, two search methods that fail differently, and a second model that reorders results. This is where demos become systems. On Day 11 you hand-label a test set and measure. By Sunday you can say something like: "Hybrid search plus reranking moved recall from 0.62 to 0.84 on a 40-question test set." That sentence is the whole week.</p>
+  <h4>The map for Part 2: Context engineering &amp; RAG</h4>
+  <p>Part 1 taught the model to do what you say. In this part it answers from documents it has never seen: your notes, your code, your policies. No retraining needed. The mechanism is simple. Find the paragraphs that answer the question. Paste them into the prompt. Ask again. The whole idea lives in one word: find.</p>
+  <p>You build the finder twice. First from scratch with numpy, so no library hides the math from you. Then properly: a real store, two search methods that fail differently, and a second model that reorders results. This is where demos become systems. On Lesson 11 you hand-label a test set and measure. By the end of this part you can say something like: "Hybrid search plus reranking moved recall from 0.62 to 0.84 on a 40-question test set." That sentence is the whole part.</p>
   <figure class="illus weekmap">
     <svg viewBox="0 0 640 256" role="img" aria-label="Seven days of context engineering: embeddings, chunking, retrieval, evaluation, generation, production, and shipping">
       <use href="#i-chip" x="62" y="20" width="56" height="56"/>
-      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 8</text>
+      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 8</text>
       <text x="90" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">embeddings</text>
       <use href="#i-funnel" x="212" y="20" width="56" height="56"/>
-      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 9</text>
+      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 9</text>
       <text x="240" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">chunking</text>
       <use href="#i-search" x="362" y="20" width="56" height="56"/>
-      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 10</text>
+      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 10</text>
       <text x="390" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">find</text>
       <use href="#i-target" x="512" y="20" width="56" height="56"/>
-      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 11</text>
+      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 11</text>
       <text x="540" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">measure</text>
       <use href="#i-chat" x="87" y="140" width="56" height="56"/>
-      <text x="115" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 12</text>
+      <text x="115" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 12</text>
       <text x="115" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">generate</text>
       <use href="#i-server" x="292" y="140" width="56" height="56"/>
-      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 13</text>
+      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 13</text>
       <text x="320" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">production</text>
       <use href="#i-rocket" x="497" y="140" width="56" height="56"/>
-      <text x="525" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 14</text>
+      <text x="525" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 14</text>
       <text x="525" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">ship</text>
       <line x1="132" y1="48" x2="198" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="282" y1="48" x2="348" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="432" y1="48" x2="498" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
     </svg>
-    <figcaption>Seven days. Turn documents into vectors, search them, measure how well, then generate answers from the best matches.</figcaption>
+    <figcaption>Seven lessons. Turn documents into vectors, search them, measure how well, then generate answers from the best matches.</figcaption>
   </figure>
   <dl class="words">
     <dt>embedding</dt><dd>a number that represents meaning, so documents that mean the same thing have numbers close to each other</dd>
@@ -6244,14 +6290,14 @@
     <dt>reranking</dt><dd>using a second model to sort the results, usually more accurate than the first score</dd>
     <dt>RAG</dt><dd>retrieval-augmented generation: search first, then ask the model to answer from those results</dd>
   </dl>
-  <p><b>Before Day 8 (25 minutes):</b> read this map once. Then close it and draw the week on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
+  <p><b>Before Lesson 8 (25 minutes):</b> read this map once. Then close it and draw this part on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
 </div>
 
 <article data-day="8">
-  <p class="day-lede">Today you build a complete retrieval system with no database, no framework, and no import you can&rsquo;t explain. By tonight you should be able to say: &ldquo;I wrote semantic search with numpy. I know exactly what a vector database does.&rdquo;</p>
+  <p class="day-lede">In this lesson you build a complete retrieval system with no database, no framework, and no import you can&rsquo;t explain. By the end of this lesson you should be able to say: &ldquo;I wrote semantic search with numpy. I know exactly what a vector database does.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 8: embeddings, similarity search, dimensions and scale, exact versus approximate search, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 8: embeddings, similarity search, dimensions and scale, exact versus approximate search, joined by arrows">
       <use href="#i-chip" x="50" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">embeddings</text>
@@ -6423,12 +6469,12 @@
     </div>
 
     <div class="attempt">
-      <p class="goal"><b>Your goal:</b> compare three embeddings you saved yesterday. Normalize each one. Use numpy to compute cosine similarity between all pairs. Print a table of scores. Measure what your model's scale looks like: what score does a good match get, and what does a bad match get?</p>
+      <p class="goal"><b>Your goal:</b> compare three embeddings you saved in the last lesson. Normalize each one. Use numpy to compute cosine similarity between all pairs. Print a table of scores. Measure what your model's scale looks like: what score does a good match get, and what does a bad match get?</p>
       <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Normalize by dividing each embedding by its own length using <code>np.linalg.norm()</code>. Then dot products are cosine similarity. Use <code>M @ q</code> for a matrix multiply.</p></details>
-      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Load your array from yesterday. Normalize each row. Create a 3x3 table by taking <code>M @ M.T</code> (matrix times its transpose). The diagonal is all 1.0, because each vector is perfectly similar to itself.</p></details>
+      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Load your array from the last lesson. Normalize each row. Create a 3x3 table by taking <code>M @ M.T</code> (matrix times its transpose). The diagonal is all 1.0, because each vector is perfectly similar to itself.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
-          <li>Load the numpy array you saved yesterday.</li>
+          <li>Load the numpy array you saved in the last lesson.</li>
           <li>Normalize: for each row, divide it by <code>np.linalg.norm(row)</code>.</li>
           <li>Compute all pairwise scores: <code>scores = M @ M.T</code>.</li>
           <li>Print the score matrix. It should be symmetric, with 1.0 on the diagonal.</li>
@@ -6463,7 +6509,7 @@
         <p>Ten million chunks is 61 GB. That is not a bigger version of the same problem. That is a different engineering problem, with sharding and disk-backed indexes in it.</p>
         <p>What do the extra dimensions buy you? Finer distinctions — more room to keep two similar ideas apart. And they cost you in exact proportion: more memory per row, and more multiply-adds on every single search.</p>
         <p>Some models let you truncate the vector. Keep the first 256 numbers of 1536, lose a little accuracy, and save three quarters of the storage. Both dimension count and truncation are real dials you can turn.</p>
-        <p>Neither one gets turned today, though, because you have nothing to measure the result with until Day 11.</p>
+        <p>Neither one gets turned today, though, because you have nothing to measure the result with until Lesson 11.</p>
         <p>So: a vector is a fixed number of bytes, and multiplying that by your chunk count tells you which kind of system you are building before you build it.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 180" role="img" aria-label="Storage grows as you add more chunks: 10k chunks is small, 10 million is huge">
@@ -6512,7 +6558,7 @@
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Start with your normalized 3x1536 array. Slice to 3x256, normalize again, compute similarity. Then slice to 3x64 and repeat. Print the three score matrices.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
-          <li>Load your normalized array from yesterday.</li>
+          <li>Load your normalized array from the last lesson.</li>
           <li>Slice to 256 dimensions: <code>M_256 = M[:, :256]</code>. Normalize and compute similarity. Print one off-diagonal score.</li>
           <li>Slice to 64 dimensions. Repeat.</li>
           <li>Write down the three scores and notice how they go down.</li>
@@ -6544,7 +6590,7 @@
         <p>Approximate nearest neighbor search gives up that guarantee in order to skip most of the work. Watch how it does it.</p>
         <p>The usual structure is a graph. Every vector is a node, linked to its nearest neighbors, plus a few long-range links thrown across the space. Search enters at one node and hops greedily to whichever neighbor is closer to the query, then repeats, and stops when no neighbor is closer.</p>
         <p>Think of it as asking for directions in a city instead of visiting every house. You touch maybe a thousand nodes out of ten million — and in exchange, you sometimes miss a true top-5 item. Index recall is typically 0.95 to 0.99, and it is a knob you set, not an accident.</p>
-        <p>So at this week's scale, exact search is not the beginner's option. It is the correct one. Ten thousand rows and a matrix multiply is genuinely the right engineering.</p>
+        <p>So at this scale, exact search is not the beginner's option. It is the correct one. Ten thousand rows and a matrix multiply is genuinely the right engineering.</p>
         <p>Which raises the fair question: what is a vector database actually for? Four things. Durable storage that survives a restart. An approximate index that stays fast as rows grow. Metadata filters applied during the search. Safe concurrent updates. Not intelligence — those four.</p>
         <p>So: exact search is a guarantee you can afford today, and a vector database is the machinery you buy when you can no longer afford it.</p>
         <figure class="illus">
@@ -6680,10 +6726,10 @@
 </article>
 
 <article data-day="9">
-  <p class="day-lede">Yesterday's demo ran on text you had already cleaned by hand. Real corpora are not like that: two-column PDFs, web pages wrapped in navigation, Markdown holding 300-line code blocks. Today you turn that into chunks worth embedding. Most of the difficulty turns out not to be AI at all.</p>
+  <p class="day-lede">The last lesson's demo ran on text you had already cleaned by hand. Real corpora are not like that: two-column PDFs, web pages wrapped in navigation, Markdown holding 300-line code blocks. In this lesson you turn that into chunks worth embedding. Most of the difficulty turns out not to be AI at all.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 9: parsing, chunking, structural approaches, and deduplication, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 9: parsing, chunking, structural approaches, and deduplication, joined by arrows">
       <use href="#i-file" x="50" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">parsing</text>
@@ -6801,12 +6847,12 @@
       <div class="concept">
         <h4>Why chunking exists, and what a bad chunk does</h4>
         <p>Two forces push you to split documents up, and they are worth separating.</p>
-        <p>The first is yesterday's fixed-length rule. An embedding is the same size no matter how much text you feed it. Embed a 40-page manual as one vector and you get the average of forty topics: mildly near everything, strongly near nothing.</p>
+        <p>The first is the last lesson's fixed-length rule. An embedding is the same size no matter how much text you feed it. Embed a 40-page manual as one vector and you get the average of forty topics: mildly near everything, strongly near nothing.</p>
         <p>The second is money. Whatever you retrieve gets pasted into a prompt, and you pay per token, every single query.</p>
         <p>So chunks can be wrong in two directions, and the failures look nothing alike. Too big is dilution again, plus you pay for 2,000 tokens to deliver one useful sentence. Too small is worse in a sneaky way: the chunk reads <em>"It expires after 90 days"</em> and "it" was named in the chunk before. Retrieval succeeded. The answer is still not available. The model fills the gap with a guess.</p>
         <p>Where do you start? 400 to 800 tokens per chunk, with 10 to 15 percent overlap — 50 to 100 repeated tokens at each seam.</p>
         <p>Overlap exists for exactly one reason, so don't overthink it: a sentence cut in half by a boundary survives whole in one of the two copies.</p>
-        <p>Then tune these numbers against Day 11's measurements, not against how the chunks feel when you scroll past them.</p>
+        <p>Then tune these numbers against Lesson 11's measurements, not against how the chunks feel when you scroll past them.</p>
         <p>So: chunk size trades dilution against orphaned context, and you pick the default now and let the golden set argue with it later.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 180" role="img" aria-label="A chunk that is too small loses context, a chunk that is too big mixes many topics">
@@ -6875,7 +6921,7 @@
 
     <div class="traps">
       <ul>
-        <li>Tuning chunk size by feel. Without Day 11's golden set every size feels fine. Pick a default and move on.</li>
+        <li>Tuning chunk size by feel. Without Lesson 11's golden set every size feels fine. Pick a default and move on.</li>
       </ul>
     </div>
 
@@ -7088,10 +7134,10 @@
 </article>
 
 <article data-day="10">
-  <p class="day-lede">Your index answers questions phrased the way the documents are written. Today you fix the ones it gets embarrassingly wrong — the error code, the surname, the part number — and put a slower, smarter model in front of the results. By tonight you should be able to say: &ldquo;I have a hybrid search that catches what dense search misses, and a reranker that sorts the noise.&rdquo;</p>
+  <p class="day-lede">Your index answers questions phrased the way the documents are written. In this lesson you fix the ones it gets embarrassingly wrong — the error code, the surname, the part number — and put a slower, smarter model in front of the results. By the end of this lesson you should be able to say: &ldquo;I have a hybrid search that catches what dense search misses, and a reranker that sorts the noise.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 10: vector store, hybrid search, fusion and reranking, and build it, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 10: vector store, hybrid search, fusion and reranking, and build it, joined by arrows">
       <use href="#i-db" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">vector store</text>
@@ -7116,10 +7162,10 @@
     <div class="learn">
       <div class="concept">
         <h4>What a vector store adds</h4>
-        <p>Yesterday your embeddings lived in a numpy array inside one Python process. Today they move into a real database — PostgreSQL with pgvector, Qdrant, Chroma, or Weaviate. Pick one in ten minutes and move on. Comparing them is not a day's work, and any of the three will do.</p>
+        <p>In the last lesson your embeddings lived in a numpy array inside one Python process. Now they move into a real database — PostgreSQL with pgvector, Qdrant, Chroma, or Weaviate. Pick one in ten minutes and move on. Comparing them is not a day's work, and any of the three will do.</p>
         <p>Think of your array as a toolbox on your workbench. Fast to use while you are there. But the moment you close the shop, the tools vanish. A vector store is a locked cabinet at the warehouse. Slower to reach, but the tools survive the night.</p>
         <p>Underneath is the boring part, which is good news. One row per chunk holds an identifier, the vector, the text, and a JSON column of metadata. Search becomes <code>ORDER BY embedding &lt;=&gt; $1 LIMIT 20</code>, which is the cosine distance you already coded by hand — just running inside the database instead of in your Python process.</p>
-        <p>What do you actually gain? Four concrete things. The index survives a restart, so your data does not live inside one Python process. An approximate index keeps search fast as your corpus grows, which your matrix multiply eventually cannot do. Metadata filters run <em>inside</em> the search instead of after it, which turns out to matter enormously. And upsert-by-identifier makes yesterday's re-indexing a single call instead of a delete-and-rebuild dance.</p>
+        <p>What do you actually gain? Four concrete things. The index survives a restart, so your data does not live inside one Python process. An approximate index keeps search fast as your corpus grows, which your matrix multiply eventually cannot do. Metadata filters run <em>inside</em> the search instead of after it, which turns out to matter enormously. And upsert-by-identifier makes the last lesson's re-indexing a single call instead of a delete-and-rebuild dance.</p>
         <p>So: a vector store is the same arithmetic you already wrote, wrapped in durability, speed, filtering, and safe updates.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 200" role="img" aria-label="Three boxes: an array in memory that is gone after a restart, a vector store that survives, and today's choice of store">
@@ -7174,16 +7220,16 @@
     </div>
 
     <div class="attempt">
-      <p class="goal"><b>Your goal:</b> yesterday's chunks loaded into a vector store with metadata and identifiers. Re-running ingestion updates rather than duplicates. You can search and retrieve the top five results.</p>
+      <p class="goal"><b>Your goal:</b> the last lesson's chunks loaded into a vector store with metadata and identifiers. Re-running ingestion updates rather than duplicates. You can search and retrieve the top five results.</p>
       <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Pick one store: Qdrant, Chroma, or PostgreSQL with pgvector. None are wrong. Look at the quickstart and follow it for about an hour.</p></details>
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Three functions: one loads chunks with id, text, metadata, and embedding. One upserts them into the store. One queries and returns the top 5. Test each one alone before you connect them.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
           <li>Set up a vector store locally (Qdrant or Chroma work offline; PostgreSQL needs a running instance).</li>
-          <li>Write one ingestion function: given the chunks from yesterday, insert or upsert them with id, text, metadata, and embedding.</li>
+          <li>Write one ingestion function: given the chunks from the last lesson, insert or upsert them with id, text, metadata, and embedding.</li>
           <li>Test that running ingestion again does not duplicate; check that the row count stays the same.</li>
           <li>Write one search function: given a query text, embed it, search the store, and return the top 5 results with their ids and scores.</li>
-          <li>Keep your numpy search from Day 8 as a reference. When results look wrong, compare against the old one.</li>
+          <li>Keep your numpy search from Lesson 8 as a reference. When results look wrong, compare against the old one.</li>
         </ol>
       </details>
     </div>
@@ -7285,11 +7331,11 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look at Round 1's Day 8 reference search. Can your vector store beat it on your ten keyword queries? How often does dense lose to keyword?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look at Round 1's Lesson 8 reference search. Can your vector store beat it on your ten keyword queries? How often does dense lose to keyword?</p></div>
 
     <div class="traps">
       <ul>
-        <li>Comparing on one demo query and declaring hybrid superior. Two methods, one question, no measurement — that is what Day 11 ends.</li>
+        <li>Comparing on one demo query and declaring hybrid superior. Two methods, one question, no measurement — that is what Lesson 11 ends.</li>
         <li>Keyword search that does not penalize document length, so long documents win even when they are barely relevant.</li>
       </ul>
     </div>
@@ -7311,7 +7357,7 @@
         <p>Reciprocal rank fusion throws scores away and uses only positions. For each document, add up <code>1 / (60 + rank)</code> across the lanes it appears in.</p>
         <p>Watch the numbers. Rank 1 scores 1/61 = 0.0164. Rank 5 scores 1/65 = 0.0154. Nearly identical.</p>
         <p>That flattening is the entire point. When first place and fifth place are worth nearly the same, appearing in <em>both</em> lists matters more than topping one. Which is exactly the behavior you want when the two lanes disagree about a document.</p>
-        <p>There is another way. You can squeeze each lane&rsquo;s scores into a 0-to-1 range inside the result set, then take a weighted sum, for example 0.6 dense plus 0.4 keyword. It is more tunable and more fragile. Wait until Day 11 can tell you it actually helped.</p>
+        <p>There is another way. You can squeeze each lane&rsquo;s scores into a 0-to-1 range inside the result set, then take a weighted sum, for example 0.6 dense plus 0.4 keyword. It is more tunable and more fragile. Wait until Lesson 11 can tell you it actually helped.</p>
         <p>So: fuse on rank, not on score, because ranks from two lanes are comparable and their raw scores never were.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 200" role="img" aria-label="A short ruler from 0 to 1 for cosine, and a long unbounded ruler for BM25, showing that adding them lets the longer one win">
@@ -7471,11 +7517,11 @@
     <div class="learn">
       <div class="concept">
         <h4>Putting it together</h4>
-        <p>You have four pieces: a vector store, dense search, keyword search, and a reranker. Today you wire them into one pipeline and measure it.</p>
+        <p>You have four pieces: a vector store, dense search, keyword search, and a reranker. Now you wire them into one pipeline and measure it.</p>
         <p>The shape is simple. Given a query, search both lanes in parallel to save time. Fuse the results by reciprocal rank, keeping the top fifty. Rerank those fifty to sort them by cross-encoder accuracy, and keep the top five. Return their source documents, their scores, and their ranks.</p>
-        <p>That is the retrieval path that works. It catches what dense search misses because keyword search runs too. It sorts by what matters because the reranker reads both query and chunk together. From here, Day 12 puts a generator on top that reads what you found and has to cite it.</p>
+        <p>That is the retrieval path that works. It catches what dense search misses because keyword search runs too. It sorts by what matters because the reranker reads both query and chunk together. From here, Lesson 12 puts a generator on top that reads what you found and has to cite it.</p>
         <p>Where you put metadata filters matters. The filter belongs inside the search, before ranking. If you ask for twenty results and the filter removes eighteen after ranking, the user sees two. But if you filter during the search, you get twenty filtered results instead — which is what you promised.</p>
-        <p>One more detail before you ship. Keep the Day 8 reference search as a comparison. When the hybrid results look wrong, run both and decide which one is right. Bad retrieval hides until you measure it side by side.</p>
+        <p>One more detail before you ship. Keep the Lesson 8 reference search as a comparison. When the hybrid results look wrong, run both and decide which one is right. Bad retrieval hides until you measure it side by side.</p>
         <p>So: one pipeline, wired with care, measured and compared against a known good.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 220" role="img" aria-label="A question goes to dense search and BM25 in parallel, their results merge, a reranker sorts them, and five chunks come out">
@@ -7560,10 +7606,10 @@
 </article>
 
 <article data-day="11">
-  <p class="day-lede">Everything before today was a guess with a demo. Today you build the instrument that tells you whether a change helped. By tonight you should be able to say: &ldquo;hybrid plus rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set.&rdquo; That sentence is worth more in an interview than a month of tutorials.</p>
+  <p class="day-lede">Everything before this lesson was a guess with a demo. In this lesson you build the instrument that tells you whether a change helped. By the end of this lesson you should be able to say: &ldquo;hybrid plus rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set.&rdquo; That sentence is worth more in an interview than a month of tutorials.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 11: building truth, measuring retrieval, position and grounding, and the harness, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 11: building truth, measuring retrieval, position and grounding, and the harness, joined by arrows">
       <use href="#i-notebook" x="40" y="22" width="64" height="64"/>
       <text x="72" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="72" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">build truth</text>
@@ -7747,7 +7793,7 @@
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
           <li>Write a function to load <code>golden.jsonl</code> and return all questions and their labeled chunks.</li>
-          <li>Wire in your three retrievers from yesterday.</li>
+          <li>Wire in your three retrievers from the last lesson.</li>
           <li>For each question and each k in [1, 5, 10, 20], count how many labeled chunks appear in the top k results.</li>
           <li>Divide the count by total questions. That is recall@k.</li>
           <li>Print one row per configuration: configuration name, recall@1, recall@5, recall@10, recall@20.</li>
@@ -8027,7 +8073,7 @@
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
           <li>Create <code>golden.jsonl</code>: one row per question, holding the question and its correct chunk identifiers. Include five questions your corpus cannot answer, labeled with an empty list.</li>
-          <li>Write the runner: given a configuration name, return ranked chunk identifiers. Wire in yesterday's three.</li>
+          <li>Write the runner: given a configuration name, return ranked chunk identifiers. Wire in the last lesson's three.</li>
           <li>Write recall@k and MRR from the definitions; test them against the worked examples.</li>
           <li>Score all three configurations at k of 1, 5, 10 and 20 in one table.</li>
           <li>Read the ten worst failures with the chunks open. Label each cause: parsed, chunked, ranked, or mislabeled.</li>
@@ -8074,10 +8120,10 @@
 </article>
 
 <article data-day="12">
-  <p class="day-lede">Retrieval is solved and measured. Now the model has to use what you found without quietly adding things you never gave it. By tonight every sentence in an answer should get a receipt you can click, and you should know when the model refuses because the retrieval found nothing useful.</p>
+  <p class="day-lede">Retrieval is solved and measured. Now the model has to use what you found without quietly adding things you never gave it. By the end of this lesson every sentence in an answer should get a receipt you can click, and you should know when the model refuses because the retrieval found nothing useful.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 12: grounding, refusing, conflicting sources, and context ordering, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 12: grounding, refusing, conflicting sources, and context ordering, joined by arrows">
       <use href="#i-check" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">grounding</text>
@@ -8180,7 +8226,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look at your chunks from Day 10. Add character offsets to each chunk so a tag points to a highlighted span, not just a filename. How would you use this in a UI?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look at your chunks from Lesson 10. Add character offsets to each chunk so a tag points to a highlighted span, not just a filename. How would you use this in a UI?</p></div>
 
     <div class="traps">
       <ul>
@@ -8270,7 +8316,7 @@
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>One function: if top_score &lt; threshold, return refusal. Otherwise, call the generator. Prompt: "If the pack does not cover this, say exactly: [one sentence]. Then list the closest topics you did find."</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
-          <li>Run your five test queries through the full pipeline from Day 10. Record the top reranked score.</li>
+          <li>Run your five test queries through the full pipeline from Lesson 10. Record the top reranked score.</li>
           <li>Run all five golden set questions (answerable and unanswerable). Record the top score for each.</li>
           <li>Find the score that best divides the answerable from unanswerable questions.</li>
           <li>Code the gate: if top_score &lt; threshold, return a formatted refusal. Otherwise, call the generator.</li>
@@ -8279,7 +8325,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look at your refusal threshold. How many of your five test queries from Day 10 have scores above it? If all do, is your threshold too low?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look at your refusal threshold. How many of your five test queries from Lesson 10 have scores above it? If all do, is your threshold too low?</p></div>
 
     <div class="traps">
       <ul>
@@ -8505,10 +8551,10 @@
 </article>
 
 <article data-day="13">
-  <p class="day-lede">Production changes everything. Your system works on your machine over documents you control. Now add: multiple users with different permissions, data that changes, and a real cost budget. By tonight you should be able to say: &ldquo;User A and user B both asked the same question. They got different answers because user B cannot read some of the documents.&rdquo;</p>
+  <p class="day-lede">Production changes everything. Your system works on your machine over documents you control. Now add: multiple users with different permissions, data that changes, and a real cost budget. By the end of this lesson you should be able to say: &ldquo;User A and user B both asked the same question. They got different answers because user B cannot read some of the documents.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 13: who sees what, keeping data fresh, managing index changes, and measuring every stage">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 13: who sees what, keeping data fresh, managing index changes, and measuring every stage">
       <use href="#i-shield" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">permissions</text>
@@ -8936,10 +8982,10 @@
 </article>
 
 <article data-day="14">
-  <p class="day-lede">Two ideas, then hands on keyboard. This repo will be the strongest portfolio piece you build this month, for one reason: almost nobody else&rsquo;s retrieval demo has numbers attached. By tonight you should be able to say: &ldquo;I deployed a RAG system. The README leads with the eval table, cost per query, and latency measured on real traffic. A stranger can clone it, run the ingestion command, and have a working demo in five minutes.&rdquo;</p>
+  <p class="day-lede">Two ideas, then hands on keyboard. This repo will be the strongest portfolio piece you build in this course, for one reason: almost nobody else&rsquo;s retrieval demo has numbers attached. By the end of this lesson you should be able to say: &ldquo;I deployed a RAG system. The README leads with the eval table, cost per query, and latency measured on real traffic. A stranger can clone it, run the ingestion command, and have a working demo in five minutes.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The two rounds of Day 14: the README with numbers, and what ships">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The two rounds of Lesson 14: the README with numbers, and what ships">
       <use href="#i-notebook" x="88" y="22" width="64" height="64"/>
       <text x="120" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="120" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the numbers first</text>
@@ -8956,9 +9002,9 @@
     <div class="learn">
       <div class="concept">
         <h4>Lead with the eval table, not the feature list</h4>
-        <p>Most retrieval repos open with features. Yours opens with Day 11&rsquo;s eval table: each configuration, the recall score, the mean reciprocal rank, the size of the golden set, the date. Then architecture. Then cost per query and P95 latency. Then known failure modes. Then a link.</p>
+        <p>Most retrieval repos open with features. Yours opens with Lesson 11&rsquo;s eval table: each configuration, the recall score, the mean reciprocal rank, the size of the golden set, the date. Then architecture. Then cost per query and P95 latency. Then known failure modes. Then a link.</p>
         <p>This order is deliberate. Nobody can tell from your code whether your retrieval works. That impossibility is the entire reason evaluation exists. What a reader can tell instantly is whether you know that. The table proves you measured. The failure-modes section proves you looked at the failures instead of hiding them.</p>
-        <p>Write it in this order: what it does (one paragraph, plain words). The eval table from Day 11, with numbers. Architecture in one diagram. Cost per query with the arithmetic shown. P50 and P95 latency measured on the deployed service. Known failure modes and what you would fix with another week. A link to the live demo. An install-and-run command for someone else to index their own corpus.</p>
+        <p>Write it in this order: what it does (one paragraph, plain words). The eval table from Lesson 11, with numbers. Architecture in one diagram. Cost per query with the arithmetic shown. P50 and P95 latency measured on the deployed service. Known failure modes and what you would fix with another week. A link to the live demo. An install-and-run command for someone else to index their own corpus.</p>
         <p>Everything else is packaging. The table is the portfolio piece because it proves you did not guess. A hiring manager reads for 90 seconds. If they see numbers, they notice.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 180" role="img" aria-label="A hiring manager reads a README and cares about numbers, not code">
@@ -9012,11 +9058,11 @@
 
     <div class="attempt">
       <p class="goal"><b>Your goal:</b> a README with six sections and a table. The table has one row per test question or configuration: recall@5, MRR, question count, build date. All measured against the committed index.</p>
-      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Copy the eval table from Day 11&rsquo;s notebook. Write six paragraphs in this order: what it does, the eval table, architecture, cost and latency, failure modes, and a link.</p></details>
-      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Six sections: one paragraph (what it does in plain words), the table (from Day 11), one architecture diagram (simple boxes and arrows), cost arithmetic (tokens and prices), latency numbers (P50, P95, how you measured), known bugs (what broke, what would take a week to fix), and a link to the live demo.</p></details>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Copy the eval table from Lesson 11&rsquo;s notebook. Write six paragraphs in this order: what it does, the eval table, architecture, cost and latency, failure modes, and a link.</p></details>
+      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Six sections: one paragraph (what it does in plain words), the table (from Lesson 11), one architecture diagram (simple boxes and arrows), cost arithmetic (tokens and prices), latency numbers (P50, P95, how you measured), known bugs (what broke, what would take a week to fix), and a link to the live demo.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
-          <li>Paste your eval results from Day 11 into the README as a table.</li>
+          <li>Paste your eval results from Lesson 11 into the README as a table.</li>
           <li>Write one paragraph about what the system does. Assume the reader has never seen retrieval before.</li>
           <li>Draw a simple box diagram: input question, your service (with retrieval and generation inside), output answer.</li>
           <li>Write the cost formula with your real numbers: tokens in, tokens out, price per million.</li>
@@ -9162,37 +9208,37 @@
 </article>
 
 <div class="week-intro" data-week="3">
-  <h4>The map for this week</h4>
-  <p>Until now your system answered questions. This week it acts: it runs a query, writes a file, searches the web. A model still only emits text, so the shift is smaller than it sounds. But text from the web now steers what your code does, which makes it more dangerous than it sounds.</p>
-  <p>You start with tool calling: the model requests a tool, you run it, you hand the result back. Then you wrap it in an agent loop with guardrails. Days 18 and 19 are the hardest: you hand-label fifty failures and build a judge to grade yourself. Then you wire a regression gate into your CI so a worse prompt blocks your merge. Day 20 you attack your own agent on purpose, trying to trick it. By Sunday you can say what your system does, how often it works, and what happens when someone tries to break it.</p>
+  <h4>The map for Part 3: Agents, tools and evals</h4>
+  <p>Until now your system answered questions. In this part it acts: it runs a query, writes a file, searches the web. A model still only emits text, so the shift is smaller than it sounds. But text from the web now steers what your code does, which makes it more dangerous than it sounds.</p>
+  <p>You start with tool calling: the model requests a tool, you run it, you hand the result back. Then you wrap it in an agent loop with guardrails. Lessons 18 and 19 are the hardest: you hand-label fifty failures and build a judge to grade yourself. Then you wire a regression gate into your CI so a worse prompt blocks your merge. In Lesson 20 you attack your own agent on purpose, trying to trick it. By the end of this part you can say what your system does, how often it works, and what happens when someone tries to break it.</p>
   <figure class="illus weekmap">
     <svg viewBox="0 0 640 256" role="img" aria-label="Seven days of agents: tools, loops, integrations, evals, harness, guardrails, and shipping">
       <use href="#i-wrench" x="62" y="20" width="56" height="56"/>
-      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 15</text>
+      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 15</text>
       <text x="90" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">tools</text>
       <use href="#i-loop" x="212" y="20" width="56" height="56"/>
-      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 16</text>
+      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 16</text>
       <text x="240" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">agent loop</text>
       <use href="#i-plug" x="362" y="20" width="56" height="56"/>
-      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 17</text>
+      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 17</text>
       <text x="390" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">MCP</text>
       <use href="#i-clipboard" x="512" y="20" width="56" height="56"/>
-      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 18</text>
+      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 18</text>
       <text x="540" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">evals I</text>
       <use href="#i-shield" x="87" y="140" width="56" height="56"/>
-      <text x="115" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 19</text>
+      <text x="115" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 19</text>
       <text x="115" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">harness</text>
       <use href="#i-lock" x="292" y="140" width="56" height="56"/>
-      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 20</text>
+      <text x="320" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 20</text>
       <text x="320" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">guard</text>
       <use href="#i-rocket" x="497" y="140" width="56" height="56"/>
-      <text x="525" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 21</text>
+      <text x="525" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 21</text>
       <text x="525" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">ship</text>
       <line x1="132" y1="48" x2="198" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="282" y1="48" x2="348" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="432" y1="48" x2="498" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
     </svg>
-    <figcaption>Seven days. Add tools, build the loop, measure what works, guard against tricks, then ship.</figcaption>
+    <figcaption>Seven lessons. Add tools, build the loop, measure what works, guard against tricks, then ship.</figcaption>
   </figure>
   <dl class="words">
     <dt>tool</dt><dd>a function the model can request to run, like searching the web or writing a file</dd>
@@ -9202,14 +9248,14 @@
     <dt>regression</dt><dd>when a change made things worse, not better</dd>
     <dt>adversarial</dt><dd>testing by trying to trick the system, looking for ways it fails</dd>
   </dl>
-  <p><b>Before Day 15 (25 minutes):</b> read this map once. Then close it and draw the week on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
+  <p><b>Before Lesson 15 (25 minutes):</b> read this map once. Then close it and draw this part on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
 </div>
 
 <article data-day="15">
-  <p class="day-lede">Today your model stops being a text box. It can look something up, do arithmetic, query your database, and write a file. The mechanism underneath is much smaller than the hype: the model asks, and your code decides whether to say yes.</p>
+  <p class="day-lede">In this lesson your model stops being a text box. It can look something up, do arithmetic, query your database, and write a file. The mechanism underneath is much smaller than the hype: the model asks, and your code decides whether to say yes.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 200" role="img" aria-label="The four rounds of Day 15: what a tool is, the round trip, parallel calls, and error handling, joined by arrows">
+    <svg viewBox="0 0 640 200" role="img" aria-label="The four rounds of Lesson 15: what a tool is, the round trip, parallel calls, and error handling, joined by arrows">
       <use href="#i-wrench" x="58" y="22" width="64" height="64"/>
       <text x="90" y="105" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="125" text-anchor="middle" font-size="13" fill="var(--dg-ink)">a tool is text</text>
@@ -9736,10 +9782,10 @@
 </article>
 
 <article data-day="16">
-  <p class="day-lede">One tool call is a function call. Many calls, chosen by the model, where each result changes what it does next — that is an agent. Today you build one, put a fence around it, and learn when not to build one at all.</p>
+  <p class="day-lede">One tool call is a function call. Many calls, chosen by the model, where each result changes what it does next — that is an agent. In this lesson you build one, put a fence around it, and learn when not to build one at all.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 16: the loop, termination, memory, and when to avoid agents, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 16: the loop, termination, memory, and when to avoid agents, joined by arrows">
       <use href="#i-loop" x="58" y="22" width="64" height="64"/>
       <text x="90" y="105" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="125" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the loop</text>
@@ -9841,8 +9887,8 @@
     </div>
 
     <div class="attempt">
-      <p class="goal"><b>Your goal:</b> a simple loop that does three iterations. Each iteration: send messages with the tools from Day 15, parse the stop reason, run a dummy tool if needed, append the results, and loop. Print the message list before each send so you can see it grow.</p>
-      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Start with your four tools from Day 15. Write a <code>while</code> loop that increments a counter. On each loop: send, check stop reason, run a dummy tool if needed, append, print the list size.</p></details>
+      <p class="goal"><b>Your goal:</b> a simple loop that does three iterations. Each iteration: send messages with the tools from Lesson 15, parse the stop reason, run a dummy tool if needed, append the results, and loop. Print the message list before each send so you can see it grow.</p>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Start with your four tools from Lesson 15. Write a <code>while</code> loop that increments a counter. On each loop: send, check stop reason, run a dummy tool if needed, append, print the list size.</p></details>
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>The loop has five steps per iteration: send, parse, branch, run (if needed), append. Use a counter to stop after three iterations. Print "iteration N: M messages" on each loop so you can see the list grow.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
@@ -10235,10 +10281,10 @@
 </article>
 
 <article data-day="17">
-  <p class="day-lede">Yesterday's tools were wired into one program: yours. Today you make one of them speak a standard protocol, so a desktop app, a coding agent, or somebody else's product can call it with no glue written on either side. By tonight your Week-2 corpus is something you can query from inside the editor you already use.</p>
+  <p class="day-lede">The last lesson's tools were wired into one program: yours. In this lesson you make one of them speak a standard protocol, so a desktop app, a coding agent, or somebody else's product can call it with no glue written on either side. By the end of this lesson your Week-2 corpus is something you can query from inside the editor you already use.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 17: the integration problem, what servers expose, security risks, and building one, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 17: the integration problem, what servers expose, security risks, and building one, joined by arrows">
       <use href="#i-plug" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">the problem</text>
@@ -10420,7 +10466,7 @@
       <div class="concept">
         <h4>Three kinds of thing</h4>
         <p>An MCP server is not mysterious. It exposes three kinds of thing, and they are easy to mix up.</p>
-        <p><strong>Tools</strong> are actions. They have the same name-description-schema shape you wrote on Day 15. The model calls them. Nothing new to learn here.</p>
+        <p><strong>Tools</strong> are actions. They have the same name-description-schema shape you wrote on Lesson 15. The model calls them. Nothing new to learn here.</p>
         <p><strong>Resources</strong> are readable data at a URI — a file path, a document ID, a database record. The application can pull them without asking the model. The model does not call them.</p>
         <p><strong>Prompts</strong> are named templates a person picks from a menu. They are for the human using the application, not for the model.</p>
         <figure class="illus">
@@ -10518,7 +10564,7 @@
           </svg>
           <figcaption>Same protocol either way; the transport only decides who launches what and whether a password is involved.</figcaption>
         </figure>
-        <p>Now here is the part that surprises people: underneath all of it, nothing about the model changed. The client asks your server what tools it has, hands those to the model as ordinary tool definitions, and when the model calls one, the client forwards the call to your server and puts the result back in the conversation. MCP standardizes discovery and transport. The round trip from Day 15 is untouched. The specification is at <a href="https://modelcontextprotocol.io">modelcontextprotocol.io</a>.</p>
+        <p>Now here is the part that surprises people: underneath all of it, nothing about the model changed. The client asks your server what tools it has, hands those to the model as ordinary tool definitions, and when the model calls one, the client forwards the call to your server and puts the result back in the conversation. MCP standardizes discovery and transport. The round trip from Lesson 15 is untouched. The specification is at <a href="https://modelcontextprotocol.io">modelcontextprotocol.io</a>.</p>
         <p>So: a server publishes tools, resources, and prompts over pipes or HTTP, and the model never knows the difference.</p>
         <dl class="words"><dt>stdio transport</dt><dd>the client launches a server as a subprocess and exchanges JSON over pipes</dd><dt>HTTP transport</dt><dd>the server runs elsewhere and the client makes web requests to it</dd></dl>
       </div>
@@ -10545,7 +10591,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> On Day 15 you defined a tool by hand. Look at that tool definition. How is MCP different? What stayed the same?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> On Lesson 15 you defined a tool by hand. Look at that tool definition. How is MCP different? What stayed the same?</p></div>
 
     <div class="traps">
       <ul>
@@ -10714,7 +10760,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look at the tool description you wrote. Compare it to the system prompts you wrote for Day 15. What is the same? What changed?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look at the tool description you wrote. Compare it to the system prompts you wrote for Lesson 15. What is the same? What changed?</p></div>
 
     <div class="traps">
       <ul>
@@ -10752,10 +10798,10 @@
 </article>
 
 <article data-day="18">
-  <p class="day-lede">This is the highest-leverage day of the month, and it has almost no code in it. Nearly everyone ships on vibes. The people who get hired are the ones who can say "0.62 to 0.84 on a 40-case set." Today you learn how to know whether a change actually helped. By tonight you have a taxonomy of your own failures, ranked by how often each one happens.</p>
+  <p class="day-lede">This is the highest-leverage lesson of the course, and it has almost no code in it. Nearly everyone ships on vibes. The people who get hired are the ones who can say "0.62 to 0.84 on a 40-case set." In this lesson you learn how to know whether a change actually helped. By the end of this lesson you have a taxonomy of your own failures, ranked by how often each one happens.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 18: the measurement problem, three tiers of evaluation, error analysis, and judge design, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 18: the measurement problem, three tiers of evaluation, error analysis, and judge design, joined by arrows">
       <use href="#i-scale" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">vibes fail</text>
@@ -11008,7 +11054,7 @@
           </svg>
           <figcaption>The counts, not your intuition, decide what you fix next.</figcaption>
         </figure>
-        <p>So: read the failures, name them in your own words, and let the counts pick your next week of work.</p>
+        <p>So: read the failures, name them in your own words, and let the counts pick your next stretch of work.</p>
         <p>Start by reading <a href="https://hamel.dev">Hamel Husain's writing on evals and error analysis at hamel.dev</a>, start to finish. That is today's reading block. It will show you what good error analysis looks like in practice.</p>
         <dl class="words"><dt>error analysis</dt><dd>reading failures and labeling each one, then grouping the labels and counting</dd></dl>
       </div>
@@ -11175,10 +11221,10 @@
 </article>
 
 <article data-day="19">
-  <p class="day-lede">Yesterday you learned what to measure. Today you make the measuring automatic so it runs on every commit, whether or not you want it to. By tonight, making a prompt worse on purpose should stop your merge.</p>
+  <p class="day-lede">In the last lesson you learned what to measure. In this lesson you make the measuring automatic so it runs on every commit, whether or not you want it to. By the end of this lesson, making a prompt worse on purpose should stop your merge.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 19: the five-part pipeline, measuring the noise, making it fast, and testing the test, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 19: the five-part pipeline, measuring the noise, making it fast, and testing the test, joined by arrows">
       <use href="#i-funnel" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">five parts</text>
@@ -11229,7 +11275,7 @@
           </svg>
           <figcaption>Five small stages, each doing one thing, so you can improve one without touching the others.</figcaption>
         </figure>
-        <p>Notice what the runner does not do: it does not score anything. Keeping running separate from scoring means you can use a better rubric on yesterday's run for free, without paying to call the model again.</p>
+        <p>Notice what the runner does not do: it does not score anything. Keeping running separate from scoring means you can use a better rubric on an earlier run for free, without paying to call the model again.</p>
         <figure class="diagram">
           <svg viewBox="0 0 640 220" role="img" aria-label="Five stage pipeline from dataset to runner to scorers to metrics to a gate that blocks a merge">
             <rect x="16" y="40" width="110" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
@@ -11260,7 +11306,7 @@
             <text x="510" y="170" text-anchor="middle" font-size="13" fill="var(--dg-ink)">worse than the baseline?</text>
             <text x="510" y="190" text-anchor="middle" font-size="13" fill="var(--dg-ink)">exit nonzero, block the merge</text>
           </svg>
-          <figcaption>Running and scoring stay separate, so a better rubric can re-score yesterday's run for free.</figcaption>
+          <figcaption>Running and scoring stay separate, so a better rubric can re-score an earlier run for free.</figcaption>
         </figure>
         <p>So: five small pieces in a line, and the gap between running and scoring is the one that pays.</p>
         <dl class="words"><dt>dataset</dt><dd>a file of test cases: input, setup, and the correct answer</dd><dt>runner</dt><dd>code that executes your system once per case and records all the numbers</dd><dt>scorer</dt><dd>a function that takes a result and returns a number from 0 to 1</dd><dt>metrics</dt><dd>the sum: overall score, cost, latency, and score per error type</dd><dt>gate</dt><dd>code that fails the build if metrics got worse than the baseline</dd></dl>
@@ -11270,7 +11316,7 @@
         <h4>What the gate measures, and what it blocks</h4>
         <p>A gate does not measure everything that matters. It measures what you told it to measure, and nothing else.</p>
         <p>Here is why that is the trap: an overall score can stay steady while one error type gets worse. Imagine a system that is 95 percent correct and then you break one piece that was 100 percent correct. The overall score drops one percent. But that one piece is now 0 percent correct, and you probably did not see it.</p>
-        <p>So gate on both: the overall score, and every error cluster from your Day 18 labels. Set a threshold for each one. If the overall score drops more than 0.02, fail the merge. If any single cluster drops more than 0.05, fail the merge. One regressions rule catches the average falling. The other catches you breaking one thing worse while the average holds up.</p>
+        <p>So gate on both: the overall score, and every error cluster from your Lesson 18 labels. Set a threshold for each one. If the overall score drops more than 0.02, fail the merge. If any single cluster drops more than 0.05, fail the merge. One regressions rule catches the average falling. The other catches you breaking one thing worse while the average holds up.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 180" role="img" aria-label="Two meters: the headline and one cluster">
             <rect x="40" y="40" width="200" height="70" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
@@ -11674,10 +11720,10 @@
 </article>
 
 <article data-day="20">
-  <p class="day-lede">Your agent reads text written by strangers — web pages, PDFs, tool output, anything. To the model, all of it looks like your instructions. Today you attack your own system for two hours and learn what that means.</p>
+  <p class="day-lede">Your agent reads text written by strangers — web pages, PDFs, tool output, anything. To the model, all of it looks like your instructions. In this lesson you attack your own system for two hours and learn what that means.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 20: injection, breach ingredients, defenses, and red-teaming, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 20: injection, breach ingredients, defenses, and red-teaming, joined by arrows">
       <use href="#i-person" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">how it works</text>
@@ -12068,7 +12114,7 @@
           </svg>
           <figcaption>Every successful attack becomes a permanent test.</figcaption>
         </figure>
-        <p>Security holes that are not in the eval set come back, usually on the day you refactor something unrelated. So write them down. Then do the part that pays: convert each success into a case in your eval dataset from Day 19, with an assertion that fails if that attack ever works again.</p>
+        <p>Security holes that are not in the eval set come back, usually on the day you refactor something unrelated. So write them down. Then do the part that pays: convert each success into a case in your eval dataset from Lesson 19, with an assertion that fails if that attack ever works again.</p>
         <figure class="diagram">
           <svg viewBox="0 0 640 175" role="img" aria-label="Each successful attack becomes a case in the eval dataset plus an assertion that fails if the attack ever works again">
             <text x="320" y="34" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Two hours of attacking, then the part that pays</text>
@@ -12157,10 +12203,10 @@
 </article>
 
 <article data-day="21">
-  <p class="day-lede">Today you ship an agent with tools, evaluation, and a gate that blocks bad changes. Most repos show what they do. Yours shows how you know it works. By tonight you should be able to say: &ldquo;Someone can read my README, see my eval scores, and reproduce them.&rdquo;</p>
+  <p class="day-lede">In this lesson you ship an agent with tools, evaluation, and a gate that blocks bad changes. Most repos show what they do. Yours shows how you know it works. By the end of this lesson you should be able to say: &ldquo;Someone can read my README, see my eval scores, and reproduce them.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="Two rounds of Day 21: the evaluation section and numbers with proof, joined by an arrow">
+    <svg viewBox="0 0 640 170" role="img" aria-label="Two rounds of Lesson 21: the evaluation section and numbers with proof, joined by an arrow">
       <use href="#i-clipboard" x="118" y="22" width="64" height="64"/>
       <text x="150" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="150" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">what readers believe</text>
@@ -12421,28 +12467,28 @@
 </article>
 
 <div class="week-intro" data-week="4">
-  <h4>The map for this week</h4>
-  <p>You have built three projects and learned to measure them. Week 4 turns that habit into proof a stranger can check in six minutes. You start by turning the lights on: every model call gets recorded with inputs, outputs, tokens, cost, latency, tool calls, retries. Everything.</p>
-  <p>Day 23 you fine-tune something for real, so you can say from data where it wins and where it loses. Day 24 you run a model on your own machine and learn what shrinking costs. Days 25 to 27 are the capstone: one product you would use weekly, built from everything you learned. Day 28 you break it on purpose and write down what you would fix. Day 29 is the write-up: the highest-leverage day of the month. Day 30 aims all of it at a job. Build it, measure it, hand someone the receipts.</p>
+  <h4>The map for Part 4: Production and proof</h4>
+  <p>You have built three projects and learned to measure them. Part 4 turns that habit into proof a stranger can check in six minutes. You start by turning the lights on: every model call gets recorded with inputs, outputs, tokens, cost, latency, tool calls, retries. Everything.</p>
+  <p>Lesson 23 you fine-tune something for real, so you can say from data where it wins and where it loses. In Lesson 24 you run a model on your own machine and learn what shrinking costs. Lessons 25 to 27 are the capstone: one product you would use weekly, built from everything you learned. In Lesson 28 you break it on purpose and write down what you would fix. Lesson 29 is the write-up: the highest-leverage lesson of the course. Lesson 30 aims all of it at a job. Build it, measure it, hand someone the receipts.</p>
   <figure class="illus weekmap">
     <svg viewBox="0 0 640 256" role="img" aria-label="Six phases of production: observability, fine-tuning, models, capstone, hardening, writing, and positioning">
       <use href="#i-eye" x="62" y="20" width="56" height="56"/>
-      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 22</text>
+      <text x="90" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 22</text>
       <text x="90" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">observe</text>
       <use href="#i-chip" x="212" y="20" width="56" height="56"/>
-      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 23</text>
+      <text x="240" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 23</text>
       <text x="240" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">fine-tune</text>
       <use href="#i-server" x="362" y="20" width="56" height="56"/>
-      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 24</text>
+      <text x="390" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 24</text>
       <text x="390" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">local model</text>
       <use href="#i-star" x="512" y="20" width="56" height="56"/>
-      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Days 25-27</text>
+      <text x="540" y="100" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lessons 25-27</text>
       <text x="540" y="118" text-anchor="middle" font-size="12" fill="var(--dg-muted)">capstone</text>
       <use href="#i-shield" x="137" y="140" width="56" height="56"/>
-      <text x="165" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 28</text>
+      <text x="165" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 28</text>
       <text x="165" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">harden</text>
       <use href="#i-notebook" x="362" y="140" width="56" height="56"/>
-      <text x="390" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Day 29-30</text>
+      <text x="390" y="220" text-anchor="middle" font-size="13" fill="var(--dg-ink)">Lesson 29-30</text>
       <text x="390" y="238" text-anchor="middle" font-size="12" fill="var(--dg-muted)">write &amp; ship</text>
       <line x1="132" y1="48" x2="198" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
       <line x1="282" y1="48" x2="348" y2="48" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
@@ -12458,14 +12504,14 @@
     <dt>throughput</dt><dd>how many requests you can handle in a fixed time</dd>
     <dt>tracing</dt><dd>recording each step of a request so you can see where time and money went</dd>
   </dl>
-  <p><b>Before Day 22 (25 minutes):</b> read this map once. Then close it and draw the week on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
+  <p><b>Before Lesson 22 (25 minutes):</b> read this map once. Then close it and draw this part on paper from memory: the big ideas, the words, and arrows for how they connect. Open it again and fix what you missed. Do not try to learn anything yet.</p>
 </div>
 
 <article data-day="22">
-  <p class="day-lede">Your three projects are running but you have almost no idea what they are doing inside. Today you turn the lights on. Every request gets recorded so that by tonight, "it gave a weird answer on Tuesday" is something you can open and read like a film.</p>
+  <p class="day-lede">Your three projects are running but you have almost no idea what they are doing inside. In this lesson you turn the lights on. Every request gets recorded so that by by the end of this lesson, "it gave a weird answer on Tuesday" is something you can open and read like a film.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 22: traces, dashboards, feedback, and safety, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 22: traces, dashboards, feedback, and safety, joined by arrows">
       <use href="#i-eye" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">traces</text>
@@ -12987,7 +13033,7 @@
 
   <div class="teachback">
     <h4>Teach it back</h4>
-    <p>Explain this to a smart friend who has never shipped a service. You have three projects running but you just realized you cannot see what they are doing. What changes by tonight? Start from the moment you pick a tracing tool and use four to six sentences.</p>
+    <p>Explain this to a smart friend who has never shipped a service. You have three projects running but you just realized you cannot see what they are doing. What changes by the end of this lesson? Start from the moment you pick a tracing tool and use four to six sentences.</p>
     <p class="watch">Watch for the words "basically", "something happens here" and "you just". Each one marks a gap. Go back to that spot in the page, fill the gap, and explain again.</p>
   </div>
 
@@ -13004,10 +13050,10 @@
 </article>
 
 <article data-day="23">
-  <p class="day-lede">Fine-tuning is what everyone assumes AI engineers do all day. You get exactly one day for it, on purpose — enough to run a real job end to end and find out where it wins, which is a narrower place than it looks from outside. By tonight you will have a number-backed answer to: should I tune this, or would a better prompt do the job?</p>
+  <p class="day-lede">Fine-tuning is what everyone assumes AI engineers do all day. You get exactly one lesson for it, on purpose — enough to run a real job end to end and find out where it wins, which is a narrower place than it looks from outside. By the end of this lesson you will have a number-backed answer to: should I tune this, or would a better prompt do the job?</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 23: what it changes, when to use it, and the verdict, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 23: what it changes, when to use it, and the verdict, joined by arrows">
       <use href="#i-chip" x="98" y="22" width="64" height="64"/>
       <text x="130" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="130" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">what changes</text>
@@ -13149,7 +13195,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> In Day 19 you built an evaluator on a golden set. Could you use that evaluator on tuned vs prompted versions of your model? Yes or no, and why?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> In Lesson 19 you built an evaluator on a golden set. Could you use that evaluator on tuned vs prompted versions of your model? Yes or no, and why?</p></div>
 
     <div class="traps">
       <ul>
@@ -13251,7 +13297,7 @@
 
     <div class="attempt">
       <p class="goal"><b>Your goal:</b> identify the narrowest task in your three projects — a classifier, formatter or extractor. Write the judgment: can tuning win here? If yes, what would you tune for? If no, why would tuning lose? Back it up with numbers from your project.</p>
-      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Pick the most bounded job you have. Look at your golden set from Day 19. Count the examples. Estimate the volume. Does it check the tuning boxes?</p></details>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Pick the most bounded job you have. Look at your golden set from Lesson 19. Count the examples. Estimate the volume. Does it check the tuning boxes?</p></details>
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Write two paragraphs. Paragraph 1: describe the task and why you picked it. Paragraph 2: would tuning help? Give three reasons: what it would fix, whether the volume justifies ownership, and what a better prompt might do instead.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
@@ -13263,7 +13309,7 @@
       </details>
     </div>
 
-    <div class="mixin"><p><b>Mix it in.</b> Look at your golden set from Day 19. If you were to tune on this task, what would happen to your eval when you test on the golden set? Would it improve? Why?</p></div>
+    <div class="mixin"><p><b>Mix it in.</b> Look at your golden set from Lesson 19. If you were to tune on this task, what would happen to your eval when you test on the golden set? Would it improve? Why?</p></div>
 
     <div class="traps">
       <ul>
@@ -13346,11 +13392,11 @@
 
     <div class="attempt">
       <p class="goal"><b>Your goal:</b> a table with three columns and real numbers. Baseline: your best prompt. Middle: prompt plus retrieval if you use it. Right: the tuned model. Rows: eval score, cost per request, p95 latency, training cost (if applicable), retraining frequency. Your judgment, in writing, about what won and whether tuning is worth it at your volume.</p>
-      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>You built an evaluator on Day 19. Use it. Do not start fresh. Run your best prompt through the evaluator, then run the tuned model, then put the scores side by side.</p></details>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>You built an evaluator on Lesson 19. Use it. Do not start fresh. Run your best prompt through the evaluator, then run the tuned model, then put the scores side by side.</p></details>
       <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Build a table in your README: baseline | tuned. Rows: eval score, cost per request, p95 latency, training cost, retraining cadence. Below it, write your verdict in three sentences: what won, why, and what would have to change for you to revisit it.</p></details>
       <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
         <ol>
-          <li>Run your best prompt over your golden set using your evaluator from Day 19. Record the score, average cost, and p95 latency in <code>LOG.md</code>.</li>
+          <li>Run your best prompt over your golden set using your evaluator from Lesson 19. Record the score, average cost, and p95 latency in <code>LOG.md</code>.</li>
           <li>Prepare your training dataset: 200 to 800 pairs, split into train and test sets with no overlap. Keep the golden set completely separate.</li>
           <li>Run one LoRA tuning job on a hosted service (Replicate, Together, or your provider). Use default settings. Do not tune the tuner.</li>
           <li>Evaluate the tuned model on the same golden set. Record score, cost, and p95.</li>
@@ -13397,10 +13443,10 @@
 </article>
 
 <article data-day="24">
-  <p class="day-lede">Every model you have called so far ran on someone else's machine. Today you run one on your own machine. You discover what shrinking a model costs. And you build a working picture of how serving works. By tonight you should be able to say in two sentences when you would self-host and when you would not. Timebox this hard — it is the biggest rabbit hole in the plan, and the payoff is judgment, not a deployment.</p>
+  <p class="day-lede">Every model you have called so far ran on someone else's machine. In this lesson you run one on your own machine. You discover what shrinking a model costs. And you build a working picture of how serving works. By the end of this lesson you should be able to say in two sentences when you would self-host and when you would not. Timebox this hard — it is the biggest rabbit hole in the plan, and the payoff is judgment, not a deployment.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 24: weights on your machine, shrinking with quantization, and the serving problem, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 24: weights on your machine, shrinking with quantization, and the serving problem, joined by arrows">
       <use href="#i-folder" x="80" y="22" width="64" height="64"/>
       <text x="112" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="112" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">weights on your machine</text>
@@ -13726,7 +13772,7 @@
 
   <div class="teachback">
     <h4>Teach it back</h4>
-    <p>Explain today to a smart friend who has never used an AI model. What can you run on your laptop? What does it cost to run something that many people use? When would you do each one? Start from the idea of downloading a file and run through to the decision. Use four to six sentences.</p>
+    <p>Explain this lesson to a smart friend who has never used an AI model. What can you run on your laptop? What does it cost to run something that many people use? When would you do each one? Start from the idea of downloading a file and run through to the decision. Use four to six sentences.</p>
     <p class="watch">Watch for the words "basically", "something happens here" and "you just". Each one marks a gap. Go back to that spot in the page, fill the gap, and explain again.</p>
   </div>
 
@@ -13746,7 +13792,7 @@
   <p class="day-lede">Three days, one product using everything you have learned. You build a retrieval system with tools, evals that gate CI, tracing wired from the start, auth for your own use, and a public URL. The hard part is not the code — it is deciding what not to build.</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 150" role="img" aria-label="Eight rounds of the capstone across three days: scope, spine, pipeline, deploy on Day 25; retrieval and tools on Day 26; evals and ship on Day 27">
+    <svg viewBox="0 0 640 150" role="img" aria-label="Eight rounds of the capstone across three days: scope, spine, pipeline, deploy on capstone day 1; retrieval and tools on capstone day 2; evals and ship on capstone day 3">
       <use href="#i-target" x="20" y="12" width="48" height="48"/>
       <text x="44" y="74" text-anchor="middle" font-size="11" fill="var(--dg-muted)">Round 1</text>
       <text x="44" y="87" text-anchor="middle" font-size="11" fill="var(--dg-ink)">scope</text>
@@ -13779,7 +13825,7 @@
       <text x="576" y="74" text-anchor="middle" font-size="11" fill="var(--dg-muted)">Round 8</text>
       <text x="576" y="87" text-anchor="middle" font-size="11" fill="var(--dg-ink)">ship</text>
     </svg>
-    <figcaption>Eight rounds spread across three days: scope and design on Day 25, then the skeleton, retrieval and tools, evals and metrics, finally auth and ship.</figcaption>
+    <figcaption>Eight rounds spread across three days: scope and design on capstone day 1, then the skeleton, retrieval and tools, evals and metrics, finally auth and ship.</figcaption>
   </figure>
 
   <section class="round" data-title="Scope and design">
@@ -13858,7 +13904,7 @@
     <div class="traps">
       <ul>
         <li>Picking a corpus you do not actually have. If it needs scraping, negotiation, or a day of cleaning, choose a different capstone. Data access is the silent capstone killer.</li>
-        <li>Restarting on Day 26 because you saw a better architecture. You are two days from a deadline. Write the idea in <code>LOG.md</code>, finish what you started, and mention it in the write-up.</li>
+        <li>Restarting on capstone day 2 because you saw a better architecture. You are two days from a deadline. Write the idea in <code>LOG.md</code>, finish what you started, and mention it in the write-up.</li>
       </ul>
     </div>
 
@@ -13969,7 +14015,7 @@
 
     <div class="traps">
       <ul>
-        <li>Building all six pieces at once. Start with the skeleton on Day 25 and add one piece at a time.</li>
+        <li>Building all six pieces at once. Start with the skeleton on capstone day 1 and add one piece at a time.</li>
       </ul>
     </div>
 
@@ -13988,7 +14034,7 @@
         <p>You have a choice: a pipeline or an agent loop. The difference matters, and you should decide before you code. If you can draw the flowchart, write the flowchart.</p>
         <p>A <em>pipeline</em> is a fixed sequence. You retrieve, pass to the model, call the tool. Three steps, every time. It is cheap, fast, testable one step at a time, and structurally incapable of looping forever. You know what every call will cost and how long it will take because the path is fixed.</p>
         <p>An <em>agent loop</em> is a cycle. The model decides what to do, you do it, and feed the result back to the model. Decide, act, read, repeat. It earns its cost in exactly one situation: when the next step genuinely depends on what the last step found. Unknown number of searches. A repair loop. A branch only the data can choose. If you can name the steps in advance, you do not have that situation.</p>
-        <p>Most good capstones are a pipeline with one small, bounded agent living inside one step. That is usually right. Write it down in your README on Day 25, when you remember why. Reconstructing it later is far harder. A decision made under deadline pressure is often rushed. A decision made on paper before you code has a better chance of being right.</p>
+        <p>Most good capstones are a pipeline with one small, bounded agent living inside one step. That is usually right. Write it down in your README on capstone day 1, when you remember why. Reconstructing it later is far harder. A decision made under deadline pressure is often rushed. A decision made on paper before you code has a better chance of being right.</p>
         <p>So: if the honest answer is always &ldquo;retrieve, then answer, then check&rdquo;, build a pipeline. Do not add a loop because it sounds more ambitious.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 140" role="img" aria-label="Pipeline is a fixed sequence. Agent loop is a repeating cycle.">
@@ -14076,25 +14122,25 @@
     <p class="tomorrow"><b>By tomorrow you can reproduce:</b> whether your product is a pipeline or an agent loop, and the steps in order.</p>
   </section>
 
-  <section class="round" data-title="Deploy on Day 25">
+  <section class="round" data-title="Deploy on capstone day 1">
     <div class="learn">
       <div class="concept">
         <h4>Deploy early, not on deadline day</h4>
-        <p>The rule is unforgiving: <strong>deploy on Day 25, not Day 27</strong>. Why so early? Because deployment is where the surprises live. Environment variables, cold starts, request timeouts, memory limits, and the vector store that only existed on your laptop. You will meet all of them. The only question is whether you meet them with two days of slack or two hours before your deadline.</p>
-        <p>On Day 25, you deploy the ugliest end-to-end path that works. Twenty documents, hard-coded. No styling. One question in, one cited answer out. Deployed and traced. That one afternoon saves you a day of firefighting on Day 27.</p>
-        <p>Three days, three clear modes. <strong>Day 25 — skeleton.</strong> Ugly, deployed, traced. <strong>Day 26 — quality.</strong> Use it for real, ten times. Every failure becomes a golden-set case. Fix by cluster. Feature freeze at sundown. <strong>Day 27 — ship.</strong> Auth, failure paths, README with metrics, deploy again.</p>
-        <p>The deadline itself is a design tool. It decides what the product is, faster than you can. Before Day 25 morning, write a &ldquo;not doing&rdquo; list: no multi-user, no billing, no second data source, no mobile layout. You will fall behind on Day 27 &mdash; everyone does &mdash; and the list decides what gives way. You cut features. You do not cut evals, tracing, or the README. The feature is the demo. Evals and tracing are the proof, and the deadline forces you to choose.</p>
+        <p>The rule is unforgiving: <strong>deploy on capstone day 1, not capstone day 3</strong>. Why so early? Because deployment is where the surprises live. Environment variables, cold starts, request timeouts, memory limits, and the vector store that only existed on your laptop. You will meet all of them. The only question is whether you meet them with two days of slack or two hours before your deadline.</p>
+        <p>On capstone day 1, you deploy the ugliest end-to-end path that works. Twenty documents, hard-coded. No styling. One question in, one cited answer out. Deployed and traced. That one afternoon saves you a day of firefighting on capstone day 3.</p>
+        <p>Three days, three clear modes. <strong>Capstone day 1 — skeleton.</strong> Ugly, deployed, traced. <strong>Capstone day 2 — quality.</strong> Use it for real, ten times. Every failure becomes a golden-set case. Fix by cluster. Feature freeze at sundown. <strong>Capstone day 3 — ship.</strong> Auth, failure paths, README with metrics, deploy again.</p>
+        <p>The deadline itself is a design tool. It decides what the product is, faster than you can. Before capstone day 1 morning, write a &ldquo;not doing&rdquo; list: no multi-user, no billing, no second data source, no mobile layout. You will fall behind on capstone day 3 &mdash; everyone does &mdash; and the list decides what gives way. You cut features. You do not cut evals, tracing, or the README. The feature is the demo. Evals and tracing are the proof, and the deadline forces you to choose.</p>
         <p>So: deploy early to own the surprises, not to let them own you.</p>
         <figure class="illus">
-          <svg viewBox="0 0 640 210" role="img" aria-label="Deploy Day 25 with two days of slack; versus deploy Day 27 with two hours left. The early deployment finds problems you can fix.">
+          <svg viewBox="0 0 640 210" role="img" aria-label="Deploy capstone day 1 with two days of slack; versus deploy capstone day 3 with two hours left. The early deployment finds problems you can fix.">
             <text x="20" y="24" font-size="13" fill="var(--dg-ink)">deploy early</text>
             <rect x="20" y="36" width="90" height="40" rx="6" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-            <text x="65" y="62" text-anchor="middle" font-size="11" fill="var(--dg-ink)">Day 25 deploy</text>
+            <text x="65" y="62" text-anchor="middle" font-size="11" fill="var(--dg-ink)">Day 1 deploy</text>
             <text x="120" y="62" font-size="11" fill="var(--dg-muted)">find bugs, fix them</text>
             <text x="265" y="62" font-size="11" fill="var(--dg-good)">ship on time</text>
             <text x="20" y="124" font-size="13" fill="var(--dg-ink)">deploy late</text>
             <rect x="20" y="136" width="90" height="40" rx="6" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
-            <text x="65" y="162" text-anchor="middle" font-size="11" fill="var(--dg-ink)">Day 27 deploy</text>
+            <text x="65" y="162" text-anchor="middle" font-size="11" fill="var(--dg-ink)">Day 3 deploy</text>
             <text x="120" y="162" font-size="11" fill="var(--dg-accent2)">find bugs, panic</text>
             <text x="265" y="162" font-size="11" fill="var(--dg-accent2)">ship broken</text>
             <line x1="115" y1="56" x2="175" y2="56" stroke="var(--dg-line)" stroke-width="2"/>
@@ -14112,7 +14158,7 @@
     <div class="closebook">
       <p><b>Close the page.</b> Answer each one in one sentence.</p>
       <ol>
-        <li>Why deploy on Day 25 instead of Day 27?</li>
+        <li>Why deploy on capstone day 1 instead of capstone day 3?</li>
         <li>What goes in the &ldquo;not doing&rdquo; list, and why?</li>
       </ol>
     </div>
@@ -14144,8 +14190,8 @@
     </div>
 
     <ul class="recall-bank">
-      <li data-kind="recall"><p class="q">Why deploy on Day 25?</p><p class="a">Deployment has surprises: environment variables, cold starts, timeouts, memory limits, the vector store that only existed locally. Better to meet them early than on the deadline.</p></li>
-      <li data-kind="apply"><p class="q">You finished your skeleton on Day 25 morning and deployed. On Day 27 you discover the database is down. Which is better: having two days to fix it, or two hours?</p><p class="a">Having two days. That is exactly why you deploy early.</p></li>
+      <li data-kind="recall"><p class="q">Why deploy on capstone day 1?</p><p class="a">Deployment has surprises: environment variables, cold starts, timeouts, memory limits, the vector store that only existed locally. Better to meet them early than on the deadline.</p></li>
+      <li data-kind="apply"><p class="q">You finished your skeleton on capstone day 1 morning and deployed. On capstone day 3 you discover the database is down. Which is better: having two days to fix it, or two hours?</p><p class="a">Having two days. That is exactly why you deploy early.</p></li>
     </ul>
 
     <p class="tomorrow"><b>By tomorrow you can reproduce:</b> how tracing wires into your first model call, and the URL of your deployed skeleton.</p>
@@ -14234,7 +14280,7 @@
         <p>A chatbot answers. A product does. You add one tool that writes a file, opens a GitHub issue, drafts an email, or updates a database row. It must be a thing people actually ask for. The tool is the entire difference between a chatbot and a product that solves a real problem.</p>
         <p>The tool takes two forms: a <em>dry-run mode</em> that shows what would happen without doing it, and a <em>confirmation step</em> where the user approves before the action runs. This protects the user from mistakes and from your model making errors with real consequences. Give the user a chance to see what is about to happen and say no.</p>
         <p>The model sends a tool call with arguments. Your code validates the arguments, shows the user what is about to happen, waits for a yes, and runs it. If the user says no, nothing happens and you can refine and try again. This is what turns a prototype into something you would actually use with real data.</p>
-        <p>Wire this before Day 27 because it is where most of the complexity lives. Ask the user, in a clear prompt on your tool, what they want to happen. Let the model see the tool definition. Test it by hand: type a command, see the dry-run output, approve, watch it happen.</p>
+        <p>Wire this before capstone day 3 because it is where most of the complexity lives. Ask the user, in a clear prompt on your tool, what they want to happen. Let the model see the tool definition. Test it by hand: type a command, see the dry-run output, approve, watch it happen.</p>
         <p>So: one honest tool, with a dry-run mode and a confirmation step.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 210" role="img" aria-label="User asks, model suggests a tool, code shows dry-run output, user confirms or denies, then tool runs or stops.">
@@ -14310,9 +14356,9 @@
       <div class="concept">
         <h4>Twenty to thirty golden cases, a runner, and a judge</h4>
         <p>An <em>eval</em> is a test that measures whether your system works. A <em>golden set</em> is a collection of inputs with their correct answers. You use it to catch regressions: when a change you made broke something that used to work. It is your insurance policy against breaking things while you improve them.</p>
-        <p>On Day 26 morning, use your product ten times for real work. Write down the question, what you wanted, and what you got. If the answer was wrong, note what the right answer should have been. This is your golden set. Do not imagine cases. Use the product, fail, and learn. Real failures teach you more than imagined ones ever could. Every time you run it and get a wrong answer, you have learned something about your system.</p>
-        <p>Then you run the <em>harness</em>: a script that sends every golden-set question to your product, captures the answer, and scores it using an automated judge (another model or a hand-written rule). Cluster the failures by cause. Fix the biggest clusters. Re-run. This is where you spend most of Day 26 &mdash; not writing new features, but understanding what is broken and fixing the root cause.</p>
-        <p>On Day 27, wire <code>make eval</code> into your CI so the build fails if your score drops. Break a prompt on purpose and watch the build fail. That tells you the gate actually works and will catch real regressions.</p>
+        <p>On capstone day 2 morning, use your product ten times for real work. Write down the question, what you wanted, and what you got. If the answer was wrong, note what the right answer should have been. This is your golden set. Do not imagine cases. Use the product, fail, and learn. Real failures teach you more than imagined ones ever could. Every time you run it and get a wrong answer, you have learned something about your system.</p>
+        <p>Then you run the <em>harness</em>: a script that sends every golden-set question to your product, captures the answer, and scores it using an automated judge (another model or a hand-written rule). Cluster the failures by cause. Fix the biggest clusters. Re-run. This is where you spend most of capstone day 2 &mdash; not writing new features, but understanding what is broken and fixing the root cause.</p>
+        <p>On capstone day 3, wire <code>make eval</code> into your CI so the build fails if your score drops. Break a prompt on purpose and watch the build fail. That tells you the gate actually works and will catch real regressions.</p>
         <p>So: twenty to thirty real cases, a runner, a judge, and a gate that stops regressions.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 200" role="img" aria-label="Use the product, save cases, run harness, score, cluster failures, fix the biggest cluster, re-run.">
@@ -14370,7 +14416,7 @@
 
     <div class="traps">
       <ul>
-        <li>Leaving the golden set until Day 28. Then every change you made on Day 26 was made blind, and you cannot say whether the system got better or only different.</li>
+        <li>Leaving the golden set until Lesson 28. Then every change you made on capstone day 2 was made blind, and you cannot say whether the system got better or only different.</li>
         <li>Imagining test cases instead of using the product. Imagined cases miss the real failures.</li>
       </ul>
     </div>
@@ -14386,8 +14432,8 @@
   <section class="round" data-title="Auth, failures, and ship">
     <div class="learn">
       <div class="concept">
-        <h4>On Day 27, auth and failure paths</h4>
-        <p>On Day 27 morning, you add auth. Even with one user, auth forces you to answer whose data is whose. Every document, every trace, every call belongs to a user account. This is not optional if you ever want to go from prototype to product. It is also the easiest part to add now, before your system has real data.</p>
+        <h4>On capstone day 3, auth and failure paths</h4>
+        <p>On capstone day 3 morning, you add auth. Even with one user, auth forces you to answer whose data is whose. Every document, every trace, every call belongs to a user account. This is not optional if you ever want to go from prototype to product. It is also the easiest part to add now, before your system has real data.</p>
         <p>Then you walk every failure path: provider is down (your API call fails), empty retrieval (no documents match the question), tool error (the tool fails or the user denies it), oversized input (the question is too long for the context window), and injected instruction (a document contains text designed to override your prompt). Each one must return something useful. A clear error message is better than a crash. When something goes wrong, tell the user what went wrong and what they can try next.</p>
         <p>Write the README with real numbers from your traces: cost per request, p95 latency, eval score. These numbers are your proof that the system works and is predictable. Commit at end of day. Finished or not, you ship. No extensions. No more features. The system is what it is. You have measured it. You have fixed the biggest problems. Now you deploy.</p>
         <p>So: auth, error handling for every failure mode, metrics in the README, and done.</p>
@@ -14412,15 +14458,15 @@
           <figcaption>Auth first, pipeline next, clear error messages for every failure.</figcaption>
         </figure>
         <figure class="diagram">
-          <svg viewBox="0 0 640 180" role="img" aria-label="Day 25: skeleton deployed traced. Day 26: golden set, fix by cluster. Day 27: auth, README, ship. Then a hard stop.">
+          <svg viewBox="0 0 640 180" role="img" aria-label="capstone day 1: skeleton deployed traced. Capstone day 2: golden set, fix by cluster. Capstone day 3: auth, README, ship. Then a hard stop.">
             <rect x="20" y="50" width="190" height="56" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-            <text x="115" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Day 25</text>
+            <text x="115" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Capstone day 1</text>
             <text x="115" y="94" text-anchor="middle" font-size="13" fill="var(--dg-muted)">skeleton, deployed, traced</text>
             <rect x="225" y="50" width="190" height="56" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-            <text x="320" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Day 26</text>
+            <text x="320" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Capstone day 2</text>
             <text x="320" y="94" text-anchor="middle" font-size="13" fill="var(--dg-muted)">golden set, fix by cluster</text>
             <rect x="430" y="50" width="190" height="56" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
-            <text x="525" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Day 27</text>
+            <text x="525" y="74" text-anchor="middle" font-size="14" fill="var(--dg-ink)">Capstone day 3</text>
             <text x="525" y="94" text-anchor="middle" font-size="13" fill="var(--dg-muted)">auth, README, ship</text>
             <line x1="425" y1="30" x2="425" y2="50" stroke="var(--dg-accent2)" stroke-width="2"/>
             <text x="418" y="26" text-anchor="end" font-size="13" fill="var(--dg-ink)">feature freeze</text>
@@ -14495,10 +14541,10 @@
 </article>
 
 <article data-day="28">
-  <p class="day-lede">Your system works when people use it gently, one request at a time. Today you find out what happens when they do not. You turn every claim in your README into a real measurement. You write down what you would do about each way it breaks. By tonight you should be able to say: "Every number in the README came from a measurement, with the date and conditions beside it."</p>
+  <p class="day-lede">Your system works when people use it gently, one request at a time. In this lesson you find out what happens when they do not. You turn every claim in your README into a real measurement. You write down what you would do about each way it breaks. By the end of this lesson you should be able to say: "Every number in the README came from a measurement, with the date and conditions beside it."</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 28: load testing, measuring the four numbers, the failure playbook, and fixing the top failures, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Lesson 28: load testing, measuring the four numbers, the failure playbook, and fixing the top failures, joined by arrows">
       <use href="#i-target" x="40" y="22" width="64" height="64"/>
       <text x="72" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="72" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">load testing</text>
@@ -14845,7 +14891,7 @@
         <p>Now count the causes. This is the step people skip, and it is the only step that matters. The counts tell you what to fix. Your intuition will always nominate the most interesting failure, not the most common one.</p>
         <p>Fix in order of count times harm. And two is a real number — pick the top two clusters, fix them, then re-run the identical golden set so before and after are actually comparable. Change the set and you have thrown away your own evidence.</p>
         <p>Last, promote those cases into the permanent eval set, so the bug cannot come back quietly six weeks from now.</p>
-        <p>Here is the sentence you are trying to earn: "Raising chunk overlap from 0 to 80 tokens moved faithfulness from 0.71 to 0.86 on the 30-question set; the remaining failures are all questions that need two documents at once, which is next week's work."</p>
+        <p>Here is the sentence you are trying to earn: "Raising chunk overlap from 0 to 80 tokens moved faithfulness from 0.71 to 0.86 on the 30-question set; the remaining failures are all questions that need two documents at once, which is later work."</p>
         <p>So: read, label, count, fix two, re-run, promote. That loop, with real numbers behind it, is the thing you will be hired for.</p>
         <figure class="diagram">
           <svg viewBox="0 0 640 220" role="img" aria-label="The error analysis loop: read failures, label them, count the causes, fix the top two, re-run the same set">
@@ -14948,7 +14994,7 @@
 
   <div class="teachback">
     <h4>Teach it back</h4>
-    <p>Explain today to a smart friend who has never hardened a system. What does it mean to measure a system under stress? What numbers do you care about? When something breaks, how do you decide what to do? Start from "my system works when people use it nicely" and run through to "now I know what it does when they do not". Use four to six sentences.</p>
+    <p>Explain this lesson to a smart friend who has never hardened a system. What does it mean to measure a system under stress? What numbers do you care about? When something breaks, how do you decide what to do? Start from "my system works when people use it nicely" and run through to "now I know what it does when they do not". Use four to six sentences.</p>
     <p class="watch">Watch for the words "basically", "something happens here" and "you just". Each one marks a gap. Go back to that spot in the page, fill the gap, and explain again.</p>
   </div>
 
@@ -14965,10 +15011,10 @@
 </article>
 
 <article data-day="29">
-  <p class="day-lede">Today you write the story about your project, not the code. A reviewer cannot run your code or know which parts were yours. They can only see whether you understand your own choices. By tonight you should be able to say: &ldquo;A stranger reads my write-up and understands what I built, why I built it that way, and what failed.&rdquo;</p>
+  <p class="day-lede">In this lesson you write the story about your project, not the code. A reviewer cannot run your code or know which parts were yours. They can only see whether you understand your own choices. By the end of this lesson you should be able to say: &ldquo;A stranger reads my write-up and understands what I built, why I built it that way, and what failed.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Day 29: building your case, measuring your claims, and shipping the story, joined by arrows">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The three rounds of Lesson 29: building your case, measuring your claims, and shipping the story, joined by arrows">
       <use href="#i-notebook" x="58" y="22" width="64" height="64"/>
       <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">build your case</text>
@@ -15383,10 +15429,10 @@
 </article>
 
 <article data-day="30">
-  <p class="day-lede">Everything is built, measured, and written. Today is packaging: making it possible for a stranger to see in about 60 seconds that you ship AI systems and can defend how they work. By tonight you should be able to say: &ldquo;A stranger can tell from my resume and profile what I built and what it cost.&rdquo;</p>
+  <p class="day-lede">Everything is built, measured, and written. This lesson is packaging: making it possible for a stranger to see in about 60 seconds that you ship AI systems and can defend how they work. By the end of this lesson you should be able to say: &ldquo;A stranger can tell from my resume and profile what I built and what it cost.&rdquo;</p>
 
   <figure class="illus daymap">
-    <svg viewBox="0 0 640 170" role="img" aria-label="Two rounds of Day 30: your resume and profile, then choosing depth or breadth, joined by an arrow">
+    <svg viewBox="0 0 640 170" role="img" aria-label="Two rounds of Lesson 30: your resume and profile, then choosing depth or breadth, joined by an arrow">
       <use href="#i-notebook" x="88" y="22" width="64" height="64"/>
       <text x="120" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
       <text x="120" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">what you shipped</text>
@@ -15510,9 +15556,9 @@
         <p>Both paths work. What does not work is neither. Reading release notes for a month, peeking at three things, starting nothing — that feels like progress and ships nothing. So you write the choice down today with a deliverable and a date. One month from now, something is done.</p>
         <p>The choice also tells you what to learn next. If you choose depth in retrieval, the next papers you read are about dense retrieval, sparse retrieval, and hybrid search. If you choose a domain, you read three systems papers in that domain. The first week you study; the second week you build; weeks three and four you measure and fix.</p>
         <figure class="diagram">
-          <svg viewBox="0 0 640 200" role="img" aria-label="From day 30 the next month branches into depth or breadth, both ending in a deliverable with a date">
+          <svg viewBox="0 0 640 200" role="img" aria-label="From lesson 30 the next month branches into depth or breadth, both ending in a deliverable with a date">
             <rect x="20" y="44" width="140" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-            <text x="90" y="74" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you, Day 30</text>
+            <text x="90" y="74" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you, Lesson 30</text>
             <polyline points="160,69 200,69 200,54 244,54" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
             <polygon points="244,48 256,54 244,60" fill="var(--dg-line)"/>
             <polyline points="160,69 200,69 200,128 244,128" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
@@ -15531,9 +15577,9 @@
         </figure>
         <p>So: choose depth or breadth, pick one deliverable, set one date, and write it down.</p>
         <figure class="illus">
-          <svg viewBox="0 0 640 200" role="img" aria-label="From day 30 the next month branches into depth or breadth, both ending in a deliverable with a date">
+          <svg viewBox="0 0 640 200" role="img" aria-label="From lesson 30 the next month branches into depth or breadth, both ending in a deliverable with a date">
             <rect x="20" y="44" width="140" height="50" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-            <text x="90" y="74" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you, Day 30</text>
+            <text x="90" y="74" text-anchor="middle" font-size="13" fill="var(--dg-ink)">you, Lesson 30</text>
             <polyline points="160,69 200,69 200,54 244,54" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
             <polygon points="244,48 256,54 244,60" fill="var(--dg-line)"/>
             <polyline points="160,69 200,69 200,128 244,128" fill="none" stroke="var(--dg-line)" stroke-width="2"/>
@@ -15570,7 +15616,7 @@
           </svg>
           <figcaption>Written down means accountable. A choice with a date is a commitment.</figcaption>
         </figure>
-        <p>And: today you take one public action. Write and publish the Day 29 write-up. Open one pull request to an AI tool you actually used. Message three people doing this work — one specific question each, not asking for a job. That is the month. Those are the three anchors.</p>
+        <p>And: today you take one public action. Write and publish the Lesson 29 write-up. Open one pull request to an AI tool you actually used. Message three people doing this work — one specific question each, not asking for a job. That is the month. Those are the three anchors.</p>
         <p>So: the choice, the deliverable, the date, and the three actions, all in writing.</p>
         <dl class="words"><dt>pull request</dt><dd>a proposal to change code in someone else's project, usually a documentation fix</dd><dt>anchor</dt><dd>a visible action that keeps you accountable</dd></dl>
       </div>
@@ -15594,7 +15640,7 @@
           <li>Pick one. Write the deliverable: what will exist in 30 days? Be specific. "Improved search results" is not specific. "Hybrid search that reduces top-1 misses from 22 percent to 8 percent" is.</li>
           <li>Set the date: 30 days from today.</li>
           <li>Write one paragraph in <code>LOG.md</code> with all four of those.</li>
-          <li>Do the three public actions: publish your Day 29 write-up to your blog or LinkedIn, open a documentation PR to an open-source AI tool, message three people asking one real question each.</li>
+          <li>Do the three public actions: publish your Lesson 29 write-up to your blog or LinkedIn, open a documentation PR to an open-source AI tool, message three people asking one real question each.</li>
           <li>Commit everything and push.</li>
         </ol>
       </details>
@@ -15659,7 +15705,7 @@ const slugOf = d => d.replace("–","-").replace(".","-");
 const DAYS = [];
 WEEKS.forEach(w => w.days.forEach(day => DAYS.push({ w, day, slug: slugOf(day.d) })));
 
-const dayLabel = d => (d.includes("–") ? "Days " : "Day ") + d;
+const dayLabel = d => (d.includes("–") ? "Lessons " : "Lesson ") + d;
 
 /* Task text carries the inline HTML the page renders. plain() strips it for
    search and for the clipboard; markdownish() keeps <b>/<code> as markdown for
@@ -15685,19 +15731,18 @@ WEEKS.forEach(w => {
     const tags = [];
     if (day.lever) tags.push('<span class="tag lever">high leverage</span>');
     if (day.ship) tags.push('<span class="tag ship">ship it</span>');
-    const label = day.d.includes("–") ? "Days " + day.d : "Day " + day.d;
+    const label = dayLabel(day.d);
     const haystack = plain([day.t, ...day.tasks, day.done || ""].join(" ")).toLowerCase();
     return `<li><a class="dayrow" data-slug="${slugOf(day.d)}" data-search="${esc(haystack)}" href="#/day/${slugOf(day.d)}">
       <span class="dn">${label}</span><span class="dt">${day.t}</span>${tags.join("")}
       <span class="day-prog"></span></a></li>`;
   }).join("");
   block.innerHTML = `<div class="week-head">
-      <h3>Week ${w.n} · ${w.title}</h3>
+      <h3>Part ${w.n} · ${w.title}</h3>
       <span class="wmeta">${w.range}</span>
     </div>
     <div class="minitrack"><div class="minifill" data-week="${w.n}"></div></div>
     <p class="outcome">“${w.outcome}”</p>
-    <div class="week-intro-slot" data-week="${w.n}"></div>
     <ul class="daylist">${rows}</ul>`;
   courseHost.appendChild(block);
 });
@@ -15712,14 +15757,14 @@ DAYS.forEach(({ w, day, slug }, i) => {
   const tags = [];
   if (day.lever) tags.push('<span class="tag lever">high leverage</span>');
   if (day.ship) tags.push('<span class="tag ship">ship it</span>');
-  const label = day.d.includes("–") ? "Days " + day.d : "Day " + day.d;
+  const label = dayLabel(day.d);
   const items = day.tasks.map((t, j) =>
     `<li><label class="check"><input type="checkbox" data-k="d${day.d}:${j}"><span>${t}</span></label></li>`
   ).join("");
   const prev = DAYS[i-1], next = DAYS[i+1];
   sec.innerHTML = `
     <div class="crumbs"><a href="#/course">← The course</a></div>
-    <div class="eyebrow">Week ${w.n} · ${w.title} · ${label}</div>
+    <div class="eyebrow">Part ${w.n} · ${w.title} · ${label}</div>
     <div class="day-title-row"><h2 class="day-title">${day.t}</h2>${tags.join("")}</div>
     <div class="day-meta"></div>
     <div class="day-content"></div>
@@ -15746,10 +15791,6 @@ document.querySelectorAll(".day-page").forEach(sec => {
   const slot = sec.querySelector(".day-content");
   if (art) slot.appendChild(art);
   else slot.innerHTML = '<p class="placeholder">Course content for this day is still being written.</p>';
-});
-document.querySelectorAll(".week-intro-slot").forEach(slot => {
-  const intro = src.querySelector(`.week-intro[data-week="${slot.dataset.week}"]`);
-  if (intro) slot.appendChild(intro);
 });
 
 /* ---------- study rounds ---------- */
@@ -15890,6 +15931,7 @@ boxes.forEach(cb => {
 
 function refresh(){
   boxes.forEach(b => { b.checked = !!state[b.dataset.k]; });
+  if (typeof refreshCalendar === "function") refreshCalendar();
   const keys = Array.from(new Set(boxes.map(b => b.dataset.k)));
   const total = keys.length;
   const done = keys.filter(k => state[k]).length;
@@ -15934,6 +15976,14 @@ function route(){
   else if (h.startsWith("#/method")) view = "method";
   else if (h.startsWith("#/errors")) view = "errors";
   views.forEach(v => { v.hidden = v.dataset.view !== view; });
+  if (view === "course") {
+    const byLesson = h.startsWith("#/course/lessons");
+    document.getElementById("cal").hidden = byLesson;
+    document.getElementById("lessons-view").hidden = !byLesson;
+    document.getElementById("vt-weeks").setAttribute("aria-current", byLesson ? "false" : "true");
+    document.getElementById("vt-lessons").setAttribute("aria-current", byLesson ? "true" : "false");
+  }
+  let jump = null;
   if (view === "day") {
     const slug = m[1];
     let found = false;
@@ -15944,10 +15994,15 @@ function route(){
     });
     if (!found) { location.hash = "#/course"; return; }
     renderWarmups(slug);
+    const rm = h.match(/^#\/day\/[\w-]+\/r(\d+)/);
+    if (rm) {
+      const sec = document.querySelector(`.day-page[data-slug="${slug}"]`);
+      jump = sec && sec.querySelectorAll(".round")[Number(rm[1]) - 1];
+    }
   }
   const tabFor = view === "day" ? "course" : view;
   tabs.forEach(t => t.setAttribute("aria-current", t.dataset.tab === tabFor ? "true" : "false"));
-  window.scrollTo(0, 0);
+  if (jump) jump.scrollIntoView(); else window.scrollTo(0, 0);
 }
 window.addEventListener("hashchange", route);
 
@@ -16010,23 +16065,149 @@ function studyDaysSoFar(iso){
   }
   return n;
 }
+/* ---------- the 13-week calendar ---------- */
+/* The rounds, in course order, are dealt out ten to a week: five study days of two rounds.
+   One last week with no new lessons is kept for catching up and reviewing. The base layer
+   (Part 0) can be left out, and every week after it moves up. */
+const SKIP_KEY = "ai80-20-skipbase";
+const PER_WEEK = (window.COURSE_PACE && window.COURSE_PACE.roundsPerWeek) || 10;   // shared with scripts/build_plan.py
+function skipBase(){ try { return localStorage.getItem(SKIP_KEY) === "1"; } catch (e) { return false; } }
+function calendarRounds(){ return ROUNDS.filter(r => !(skipBase() && r.entry.w.n === 0)); }
+function buildWeeks(){
+  const pool = calendarRounds(), weeks = [];
+  for (let i = 0; i < pool.length; i += PER_WEEK) weeks.push({ rounds: pool.slice(i, i + PER_WEEK), review: false });
+  weeks.push({ rounds: [], review: true });
+  return weeks;
+}
+const WEEKDAY = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+function studyDates(iso, count){
+  const p = (iso || "").split("-").map(Number);
+  if (p.length !== 3 || p.some(isNaN)) return [];
+  const out = [], d = new Date(p[0], p[1] - 1, p[2]);
+  while (out.length < count) { const wd = d.getDay(); if (wd !== 0 && wd !== 6) out.push(new Date(d)); d.setDate(d.getDate() + 1); }
+  return out;
+}
+const fmtDate = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+const lessonName = entry => entry.day.short || plain(entry.day.t);
+function weekTitle(rounds){
+  const n = new Map();
+  rounds.forEach(r => n.set(r.entry, (n.get(r.entry) || 0) + 1));
+  let list = Array.from(n).filter(([, c]) => c >= 2).map(([e]) => e);
+  if (!list.length) list = Array.from(n.keys());
+  return list.map(lessonName).join(" \u00B7 ");
+}
+const REVIEW_PLAN = window.COURSE_REVIEW || [];                        // the review week, also in course-data.js
+
+function renderCalendar(){
+  const host = document.getElementById("cal");
+  document.querySelectorAll("#cal .week-intro").forEach(m => src.appendChild(m));   // hand the part maps back first
+  const weeks = buildWeeks(), pool = calendarRounds();
+  const iso = getStart(), dates = studyDates(iso, weeks.length * 5);
+  const todayN = studyDaysSoFar(iso) || 0;
+  const partStart = new Map();
+  pool.forEach((r, i) => { if (!partStart.has(r.entry.w.n)) partStart.set(r.entry.w.n, Math.floor(i / PER_WEEK)); });
+  host.innerHTML = weeks.map((wk, wi) => {
+    const first = dates[wi * 5], last = dates[wi * 5 + 4];
+    const range = first ? fmtDate(first) + " \u2013 " + fmtDate(last) : "";
+    const rows = [0, 1, 2, 3, 4].map(di => {
+      const idx = wi * 5 + di;
+      const chips = wk.review
+        ? [REVIEW_PLAN[di * 2], REVIEW_PLAN[di * 2 + 1]].filter(Boolean).map(([t, x]) =>
+            `<div class="rchip review"><span class="rc-l">Catch up, review, apply</span><span class="rc-t">${t}</span><span class="rc-x">${x}</span></div>`).join("")
+        : wk.rounds.slice(di * 2, di * 2 + 2).map(r =>
+            `<a class="rchip" data-k="d${r.entry.day.d}:${r.index}" href="#/day/${r.entry.slug}/r${r.index + 1}"><span class="rc-l">${dayLabel(r.entry.day.d)} \u00B7 round ${r.index + 1} of ${r.count}</span><span class="rc-t">${esc(r.el.dataset.title || "")}</span></a>`).join("");
+      if (!chips) return "";
+      return `<li class="cw-day${todayN && todayN - 1 === idx ? " is-today" : ""}"><div class="cw-dl"><b>${WEEKDAY[di]}</b><span>${dates[idx] ? fmtDate(dates[idx]) : ""}</span></div><div class="cw-rounds">${chips}</div></li>`;
+    }).join("");
+    const title = wk.review ? "Catch up, review, apply" : weekTitle(wk.rounds);
+    const note = wk.review ? '<p class="cw-note">No new lessons. If you are behind, this week is your slack: finish the rounds you skipped first, then work down this list. The warm-ups keep coming from the rounds you have finished.</p>' : "";
+    const progress = wk.review ? "" : `<div class="minitrack"><div class="cw-fill"></div></div><p class="cw-meta-count"></p>`;
+    return `<section class="cal-week" data-week="${wi}">
+      <div class="week-head"><h3>Week ${wi} \u00B7 ${esc(title)}</h3><span class="wmeta">${range}</span></div>
+      ${progress}${note}<div class="cw-maps"></div>
+      <ol class="cw-days">${rows}</ol></section>`;
+  }).join("");
+
+  // the part maps: each one opens the week in which its part begins
+  partStart.forEach((wi, n) => {
+    const map = src.querySelector(`.week-intro[data-week="${n}"]`);
+    const box = host.querySelector(`.cal-week[data-week="${wi}"] .cw-maps`);
+    if (!map || !box) return;
+    const part = WEEKS.find(x => x.n === n);
+    const d = document.createElement("details");
+    d.className = "cw-map";
+    d.innerHTML = `<summary>Part ${n} starts this week: ${part.title}. Read its map first (25 minutes)</summary>`;
+    if (todayN && Math.floor((todayN - 1) / 5) === wi) d.open = true;
+    d.appendChild(map);
+    box.appendChild(d);
+  });
+  updateDayMeta(weeks, pool);
+  refreshCalendar();
+}
+
+function refreshCalendar(){
+  document.querySelectorAll("#cal .rchip[data-k]").forEach(a => a.classList.toggle("is-done", !!state[a.dataset.k]));
+  document.querySelectorAll("#cal .cal-week").forEach(sec => {
+    const chips = sec.querySelectorAll(".rchip[data-k]");
+    if (!chips.length) return;
+    const n = Array.from(chips).filter(c => state[c.dataset.k]).length;
+    const fill = sec.querySelector(".cw-fill"), cnt = sec.querySelector(".cw-meta-count");
+    if (fill) fill.style.width = (n / chips.length * 100) + "%";
+    if (cnt) cnt.textContent = n + " of " + chips.length + " rounds done";
+  });
+}
+
+/* each lesson page says which weeks it is scheduled in */
+function updateDayMeta(weeks, pool){
+  DAYS.forEach(entry => {
+    const sec = document.querySelector(`.day-page[data-slug="${entry.slug}"]`);
+    const meta = sec && sec.querySelector(".day-meta");
+    if (!meta) return;
+    const ws = [];
+    pool.forEach((r, i) => { if (r.entry === entry) { const w = Math.floor(i / PER_WEEK); if (ws.indexOf(w) === -1) ws.push(w); } });
+    const base = meta.dataset.base || meta.textContent;
+    meta.dataset.base = base;
+    const where = !base ? "" : !ws.length ? "not in your schedule (you skipped the base layer)"
+      : ws.length === 1 ? "Week " + ws[0] : "Weeks " + ws[0] + " and " + ws[ws.length - 1];
+    meta.textContent = base && where ? base + " \u00B7 " + where : base;
+  });
+}
+
 function showToday(){
   const el = document.getElementById("today");
   const iso = getStart();
   const n = studyDaysSoFar(iso);
+  const weeks = buildWeeks();
   if (n === null || !ROUNDS.length) { el.hidden = true; return; }
   if (n === 0) {
     el.innerHTML = '<i class="tl">Starts </i><b>' + iso + "</b>";
     el.title = "Your start date. Change it on the Overview.";
-    el.href = "#/day/" + DAYS[0].slug;
+    el.href = "#/course";
     el.hidden = false;
     return;
   }
-  const r = ROUNDS[Math.min(ROUNDS.length - 1, (n - 1) * 2)];
-  el.innerHTML = '<i class="tl">Today \u00B7 </i><b>' + dayLabel(r.entry.day.d) + " \u00B7 round " + (r.index + 1) + "</b>";
-  el.title = "Study day " + n + ": at 5 study days a week and two 90-minute rounds a day, this is where you would be. Start date " + iso + ".";
-  el.href = "#/day/" + r.entry.slug;
+  const k = n - 1, wk = Math.floor(k / 5), day = WEEKDAY[k % 5];
+  const pool = calendarRounds();
+  if (wk >= weeks.length - 1) {
+    el.innerHTML = '<i class="tl">Today \u00B7 </i><b>Week ' + Math.min(wk, weeks.length - 1) + " \u00B7 catch up and review</b>";
+    el.title = "Past the last lesson: this is the catch-up and review week. Start date " + iso + ".";
+    el.href = "#/course";
+    el.hidden = false;
+    return;
+  }
+  const r = pool[Math.min(pool.length - 1, k * 2)];
+  el.innerHTML = '<i class="tl">Today \u00B7 </i><b>Week ' + wk + " \u00B7 " + day + " \u00B7 " + dayLabel(r.entry.day.d) + " \u00B7 round " + (r.index + 1) + "</b>";
+  el.title = "Study day " + n + " of your plan, from the start date " + iso + ". Five study days a week, two 90-minute rounds a day.";
+  el.href = "#/day/" + r.entry.slug + "/r" + (r.index + 1);
   el.hidden = false;
+}
+const skipInput = document.getElementById("skipbase");
+if (skipInput) {
+  skipInput.checked = skipBase();
+  skipInput.addEventListener("change", () => {
+    try { localStorage.setItem(SKIP_KEY, skipInput.checked ? "1" : "0"); } catch (e) {}
+    renderCalendar(); showToday(); facts();
+  });
 }
 if (startInput) {
   startInput.value = getStart() || "";
@@ -16038,20 +16219,24 @@ if (startInput) {
 showToday();
 
 /* the overview facts are counted from the pages, so they can never disagree with them */
-(function facts(){
+function facts(){
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  const rounds = ROUNDS.length;
+  const total = ROUNDS.length;
   const core = ROUNDS.filter(r => r.entry.w.n !== 0).length;
-  const days = n => Math.ceil(n / 2);
-  set("f-rounds", String(rounds));
-  set("f-days", String(days(rounds)));
-  set("f-weeks", String(Math.ceil(days(rounds) / 5)));
-  set("f-core-weeks", String(Math.ceil(days(core) / 5)));
-  set("m-rounds", String(rounds));
-  set("m-days", String(days(rounds)));
-  set("m-weeks", String(Math.ceil(days(rounds) / 5)));
-  set("m-core-weeks", String(Math.ceil(days(core) / 5)));
-})();
+  const calWeeks = buildWeeks().length;
+  const weeksFor = n => Math.ceil(n / PER_WEEK) + 1;            // content weeks + the review week
+  set("f-weeks", String(weeksFor(total)));
+  set("f-last-week", String(weeksFor(total) - 1));
+  set("c-last-week", String(calWeeks - 1));
+  set("m-rounds", String(calendarRounds().length));
+  set("m-days", String(Math.ceil(calendarRounds().length / 2)));
+  set("m-weeks", String(calWeeks));
+  set("m-last-week", String(calWeeks - 1));
+  set("m-core-weeks", String(weeksFor(core)));
+}
+renderCalendar();
+showToday();
+facts();
 
 /* ---------- copy a LOG.md entry ---------- */
 /* Mirrors the template at the top of LOG.md exactly, with the ticked tasks

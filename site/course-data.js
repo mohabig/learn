@@ -1,38 +1,49 @@
 /* ---------------------------------------------------------------------------
-   course-data.js — the single source of truth for the 30-day checklist.
+   course-data.js — the single source of truth for the course: its lessons, their
+   round counts and checklists, and the pace that lays them out over the weeks.
 
    Both the site (site/index.html) and the markdown plan
-   (ai-engineer-30-day-plan.md, via scripts/build_plan.py) read the day
-   titles, tasks and "Done when" lines from here. Edit this file, run
-   `make plan`, and the two stay in step.
+   (ai-engineer-30-day-plan.md, via scripts/build_plan.py) read everything here.
+   Edit this file, run `make plan`, and the two stay in step.
 
    It is a .js file rather than .json on purpose: the site has to work when
    index.html is opened straight off disk as a file:// URL, where fetch() of
    a sibling JSON file is blocked but a classic <script src> still loads.
-   Everything after the `=` is strict JSON so scripts/build_plan.py can parse
+   Everything after each `=` is strict JSON so scripts/build_plan.py can parse
    it without a JavaScript engine — keep it that way.
 
    Task text may contain the inline HTML the site renders (<b>, <code>,
    <i>) plus HTML entities; build_plan.py converts those to markdown.
 
-   Fields per week:
-     n        week number
-     title    week title
-     range    the day range, shown under the heading in the markdown plan
-     outcome  the one-sentence outcome for the week
-     note     optional preamble paragraph, used by the markdown plan only
-     days     the days in the week
+   COURSE_WEEKS is a list of PARTS (the file keeps its old name). A part is a
+   group of lessons with an outcome. Parts are not calendar weeks: the calendar
+   below deals the rounds of every lesson out ten to a week.
 
-   Fields per day:
-     d        day number as shown ("0.1", "7", "25–27" with an en dash)
+   Fields per part:
+     n        part number (0 is the optional base layer)
+     title    part title
+     range    the lesson range, shown under the heading
+     outcome  the one-sentence outcome for the part
+     note     optional preamble paragraph, used by the markdown plan only
+     days     the lessons in the part (the key keeps its old name)
+
+   Fields per lesson:
+     d        lesson number as shown ("0.1", "7", "25–27" with an en dash)
      t        title
+     short    a short name, used to title the calendar weeks
      tasks    checklist items, in order
      done     the "Done when" sentence, used verbatim in both outputs
-     lever    true to flag a high-leverage day
-     ship     true to flag a ship day
-     rounds   how many 90-minute rounds the day holds (the article in index.html has the same
+     lever    true to flag a high-leverage lesson
+     ship     true to flag a ship lesson
+     rounds   how many 90-minute rounds the lesson holds (the article in index.html has the same
               number of <section class="round"> blocks; tasks holds one item per round, then
               one "Teach it back" item)
+
+   COURSE_PACE.roundsPerWeek is how many rounds make a calendar week: five study days
+   of two rounds. The site and the plan both deal the rounds out that many to a week,
+   in course order, and then add one week for catching up.
+
+   COURSE_REVIEW is the last week, two items for each of its five days.
    --------------------------------------------------------------------------- */
 
 window.COURSE_WEEKS =
@@ -40,9 +51,9 @@ window.COURSE_WEEKS =
   {
     "n": 0,
     "title": "The base layer",
-    "range": "Days 0.1–0.5 · optional",
+    "range": "Lessons 0.1–0.5 · optional",
     "outcome": "I have the basics the rest of the course assumes, or I have checked that I already did.",
-    "note": "Take the check on the Overview first. Everything on it is taught here, so skip any day you already pass and do the ones you don't, in order. From zero, all five days take about a week and a half at 3 hours a day.",
+    "note": "Take the check on the Overview first. Everything on it is taught here, so skip any lesson you already pass and do the ones you don't, in order. From zero, all five lessons take about a week and a half at 3 hours a day.",
     "days": [
       {
         "d": "0.1",
@@ -55,7 +66,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain the shell loop, the three streams, and how errors flow in a pipeline, in your own words with no \"basically\""
         ],
         "done": "You can debug an install failure without panicking.",
-        "week": 0
+        "week": 0,
+        "short": "Terminal"
       },
       {
         "d": "0.2",
@@ -68,7 +80,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
         "done": "Fresh environment, one install command, and the CLI runs on the first try.",
-        "week": 0
+        "week": 0,
+        "short": "Python"
       },
       {
         "d": "0.3",
@@ -81,7 +94,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
         "done": "You can explain why the async version is faster, and both tests pass.",
-        "week": 0
+        "week": 0,
+        "short": "Errors, async, tests"
       },
       {
         "d": "0.4",
@@ -94,7 +108,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "You can open a provider's API reference and know where the auth goes.",
-        "week": 0
+        "week": 0,
+        "short": "HTTP, JSON, secrets"
       },
       {
         "d": "0.5",
@@ -107,14 +122,15 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "The word \"conflict\" no longer raises your pulse.",
-        "week": 0
+        "week": 0,
+        "short": "Git and docs"
       }
     ]
   },
   {
     "n": 1,
     "title": "Model fluency",
-    "range": "Days 1–7",
+    "range": "Lessons 1–7",
     "outcome": "I can make a model do what I want, reliably and cheaply — and prove exactly what it cost.",
     "days": [
       {
@@ -128,7 +144,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — the clocks:</b> first-token time and total time measured on every run, the temperature experiment written down, and a commit",
           "<b>Teach it back:</b> explain today out loud in your own words, with no “basically”"
         ],
-        "done": "You can say, to the cent, what one run of your tool costs — and why."
+        "done": "You can say, to the cent, what one run of your tool costs — and why.",
+        "short": "First calls"
       },
       {
         "d": "2",
@@ -141,7 +158,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — measurement:</b> three result files (v1, v2, split), a table showing accuracy and tokens, and a commit with evidence",
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can change a prompt and immediately see which of the 20 cases moved."
+        "done": "You can change a prompt and immediately see which of the 20 cases moved.",
+        "short": "Prompting"
       },
       {
         "d": "3",
@@ -156,7 +174,8 @@ window.COURSE_WEEKS =
         ],
         "done": "At least 95% of 50 real inputs parse into valid objects on the first or second attempt.",
         "lever": true,
-        "week": 1
+        "week": 1,
+        "short": "Structured output"
       },
       {
         "d": "4",
@@ -170,7 +189,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "You can say which documents belong in the prompt and which need retrieval.",
-        "ship": false
+        "ship": false,
+        "short": "Long context"
       },
       {
         "d": "5",
@@ -183,7 +203,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — measure P95:</b> 100 requests logged for latency, cache status, routing decision; compute P50 and P95 for all, hits, small model, and escalated",
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "You have a table of P50 and P95 latency by category, a response cache hit rate, and a routing escalation rate."
+        "done": "You have a table of P50 and P95 latency by category, a response cache hit rate, and a routing escalation rate.",
+        "short": "Cost and speed"
       },
       {
         "d": "6",
@@ -196,7 +217,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — degrade gracefully:</b> a five-rung ladder from fresh answer to cached to small model to partial to error message, with request id logged for each",
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "Every failure path returns something useful. The user gets an answer or a request id, never a stack trace."
+        "done": "Every failure path returns something useful. The user gets an answer or a request id, never a stack trace.",
+        "short": "Failure modes"
       },
       {
         "d": "7",
@@ -208,14 +230,15 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "A stranger can use it from a link, and read what it costs to run.",
-        "ship": true
+        "ship": true,
+        "short": "Ship #1"
       }
     ]
   },
   {
     "n": 2,
     "title": "Context engineering &amp; RAG",
-    "range": "Days 8–14",
+    "range": "Lessons 8–14",
     "outcome": "I can make a model answer from my data — and prove that retrieval got better, not just different.",
     "days": [
       {
@@ -229,7 +252,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — search types:</b> a complete RAG system in ~200 lines with numpy and a list, using exact search",
           "<b>Teach it back:</b> explain embeddings and retrieval out loud in your own words, with no \"basically\""
         ],
-        "done": "You can explain, without hand-waving, exactly what a vector database is doing for you."
+        "done": "You can explain, without hand-waving, exactly what a vector database is doing for you.",
+        "short": "Embeddings"
       },
       {
         "d": "9",
@@ -242,7 +266,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — deduplication:</b> stable IDs, content deduplication, incremental re-indexing",
           "<b>Teach it back:</b> explain ingestion and chunking out loud in your own words, with no \"basically\""
         ],
-        "done": "Re-running ingestion on a changed corpus updates only what changed."
+        "done": "Re-running ingestion on a changed corpus updates only what changed.",
+        "short": "Chunking"
       },
       {
         "d": "10",
@@ -256,7 +281,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "You have before-and-after recall numbers, not a feeling.",
-        "week": 2
+        "week": 2,
+        "short": "Retrieval"
       },
       {
         "d": "11",
@@ -270,7 +296,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
         "done": "You can write: &ldquo;hybrid plus rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set.&rdquo; That sentence is worth more in an interview than a month of tutorials.",
-        "lever": true
+        "lever": true,
+        "short": "Measuring retrieval"
       },
       {
         "d": "12",
@@ -284,7 +311,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "You can click any sentence in an answer through to the text it came from.",
-        "week": 2
+        "week": 2,
+        "short": "Grounded answers"
       },
       {
         "d": "13",
@@ -298,27 +326,29 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "Two users with different permissions get different answers to the same question.",
-        "week": 2
+        "week": 2,
+        "short": "RAG in production"
       },
       {
         "d": "14",
         "t": "Ship #2",
         "rounds": 2,
         "tasks": [
-          "<b>Round 1 — the numbers:</b> a README with six sections: what it does, the eval table from Day 11, architecture, cost and latency measured on the deployed service, known failure modes, and a live link",
+          "<b>Round 1 — the numbers:</b> a README with six sections: what it does, the eval table from Lesson 11, architecture, cost and latency measured on the deployed service, known failure modes, and a live link",
           "<b>Round 2 — ship it:</b> the service deployed with the index in a managed store; keys read from environment; demo corpus public and working; ingestion command documented",
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "The README leads with measured retrieval quality, not a feature list.",
         "ship": true,
-        "week": 2
+        "week": 2,
+        "short": "Ship #2"
       }
     ]
   },
   {
     "n": 3,
     "title": "Agents, tools and evals",
-    "range": "Days 15–21",
+    "range": "Lessons 15–21",
     "outcome": "My system can take actions — and I can prove it still works before I ship a change.",
     "days": [
       {
@@ -332,7 +362,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — error handling:</b> a SQL tool that validates arguments, catches errors, returns them as results, and truncates long output",
           "<b>Teach it back:</b> explain today out loud in your own words, with no 'basically'"
         ],
-        "done": "A tool that throws produces a recovery, not a crash."
+        "done": "A tool that throws produces a recovery, not a crash.",
+        "short": "Tool use"
       },
       {
         "d": "16",
@@ -345,7 +376,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — pipelines:</b> write the same task as both an agent loop and a three-call pipeline; compare time, cost, and reliability",
           "<b>Teach it back:</b> explain today out loud in your own words, with no 'basically'"
         ],
-        "done": "The agent can't loop forever, and you can say what it costs at worst."
+        "done": "The agent can't loop forever, and you can say what it costs at worst.",
+        "short": "The agent loop"
       },
       {
         "d": "17",
@@ -359,7 +391,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no basically"
         ],
         "done": "You can query your own corpus from inside a coding agent or desktop client.",
-        "week": 3
+        "week": 3,
+        "short": "MCP"
       },
       {
         "d": "18",
@@ -374,7 +407,8 @@ window.COURSE_WEEKS =
         ],
         "done": "You have a labelled taxonomy of how your own system fails, ranked by frequency.",
         "lever": true,
-        "week": 3
+        "week": 3,
+        "short": "Evals I"
       },
       {
         "d": "19",
@@ -388,7 +422,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "You have a harness that catches when you break something, because you broke it on purpose and watched it fail.",
-        "lever": true
+        "lever": true,
+        "short": "Evals II"
       },
       {
         "d": "20",
@@ -401,7 +436,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — attack it:</b> spend two hours red-teaming, log every attack, convert each success into an eval case",
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You have a document listing the attacks that worked and eval cases that stop them."
+        "done": "You have a document listing the attacks that worked and eval cases that stop them.",
+        "short": "Guardrails"
       },
       {
         "d": "21",
@@ -414,14 +450,15 @@ window.COURSE_WEEKS =
         ],
         "done": "Someone can read your README and reproduce your eval scores.",
         "ship": true,
-        "week": 3
+        "week": 3,
+        "short": "Ship #3"
       }
     ]
   },
   {
     "n": 4,
     "title": "Production and proof",
-    "range": "Days 22–30",
+    "range": "Lessons 22–30",
     "outcome": "Everything I built is observable, measured, deployed, and explained well enough to hire me on.",
     "days": [
       {
@@ -435,7 +472,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 — safety:</b> a redaction function catches emails, card numbers, keys, and environment values before they leave your code",
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can open a trace for any single request from the last week, and you know what the last one cost."
+        "done": "You can open a trace for any single request from the last week, and you know what the last one cost.",
+        "short": "Observability"
       },
       {
         "d": "23",
@@ -447,7 +485,8 @@ window.COURSE_WEEKS =
           "<b>Round 3 — the verdict:</b> a table comparing your best prompt, prompt plus retrieval, and a tuned model; three numbers per column; your judgment in writing",
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You can defend the choice with data — and the honest answer is usually \"prompt + retrieval won\", which is itself a senior signal."
+        "done": "You can defend the choice with data — and the honest answer is usually \"prompt + retrieval won\", which is itself a senior signal.",
+        "short": "Fine-tuning"
       },
       {
         "d": "24",
@@ -459,7 +498,8 @@ window.COURSE_WEEKS =
           "<b>Round 3 &mdash; self-hosting decision:</b> your break-even calculation and four-sentence judgment on when you would choose it",
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "You can say in two sentences when you would self-host and when you would not."
+        "done": "You can say in two sentences when you would self-host and when you would not.",
+        "short": "Open models"
       },
       {
         "d": "25–27",
@@ -469,7 +509,7 @@ window.COURSE_WEEKS =
           "<b>Round 1 — Scope and design:</b> a one-sentence product description, the domain you know, and three things you are explicitly <i>not</i> building",
           "<b>Round 2 — The spine:</b> a README with the problem, the six pieces of the architecture, and why you chose this shape",
           "<b>Round 3 — Agent or pipeline:</b> README updated with whether you are building a pipeline or an agent loop, the steps in order, and your reason",
-          "<b>Round 4 — Deploy on Day 25:</b> a deployed skeleton with retrieval, tracing wired before the first model call, questions answered with cited sources, and a public URL",
+          "<b>Round 4 — Deploy on capstone day 1:</b> a deployed skeleton with retrieval, tracing wired before the first model call, questions answered with cited sources, and a public URL",
           "<b>Round 5 — Retrieval:</b> hybrid search plus reranking working end-to-end, the top result with metadata passed to the model, answers that cite their sources, tested on ten real questions",
           "<b>Round 6 — Tools:</b> one tool that does something real, with a dry-run mode and a confirmation step, tested on five commands",
           "<b>Round 7 — Evals:</b> a golden set of twenty to thirty real cases from your own use, a harness that runs them all, a judge that scores each one, and failures grouped by cause",
@@ -477,7 +517,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain your capstone to a smart friend, from login to question to answer, five to seven sentences, with no gaps"
         ],
         "done": "It's deployed and you've used it yourself for something real.",
-        "ship": true
+        "ship": true,
+        "short": "Capstone"
       },
       {
         "d": "28",
@@ -490,7 +531,8 @@ window.COURSE_WEEKS =
           "<b>Round 4 &mdash; fix the top two:</b> before-and-after scores from the error analysis loop, top two fixes described, cases promoted to permanent evals",
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "Every number in the README came from a measurement, with the date and conditions beside it."
+        "done": "Every number in the README came from a measurement, with the date and conditions beside it.",
+        "short": "Harden and measure"
       },
       {
         "d": "29",
@@ -503,7 +545,8 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
         "done": "A stranger reads it and understands both what you built and why you built it that way.",
-        "lever": true
+        "lever": true,
+        "short": "Write-up"
       },
       {
         "d": "30",
@@ -515,8 +558,55 @@ window.COURSE_WEEKS =
           "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
         "done": "Someone who has never met you can tell, in 60 seconds, that you ship AI systems.",
-        "week": 4
+        "week": 4,
+        "short": "Get hired"
       }
     ]
   }
+];
+
+window.COURSE_PACE = {"roundsPerWeek": 10};
+
+window.COURSE_REVIEW =
+[
+  [
+    "Warm-up sweep",
+    "Redo the warm-up questions for every round you skipped or got wrong."
+  ],
+  [
+    "Read your error log",
+    "Group every mistake by its cause and write down the top three."
+  ],
+  [
+    "Rebuild one from memory",
+    "Pick the lesson you feel shakiest on and rebuild its tool with no hints."
+  ],
+  [
+    "Teach it back",
+    "Explain your best project out loud in five minutes. Record it, then listen."
+  ],
+  [
+    "Fix your top failure",
+    "Take the biggest failure your evals show, fix it, and run the evals again."
+  ],
+  [
+    "Numbers in every README",
+    "Cost per request, p95 latency and eval score, all from real measurements."
+  ],
+  [
+    "Finish the write-up",
+    "Publish the write-up from Lesson 29, with links to your repos."
+  ],
+  [
+    "Rewrite your résumé",
+    "Build it around shipped systems with numbers, as in Lesson 30."
+  ],
+  [
+    "Five targeted applications",
+    "Send five applications to places you chose on purpose."
+  ],
+  [
+    "Plan your next month",
+    "Choose depth or a domain, and write the plan into LOG.md."
+  ]
 ];
