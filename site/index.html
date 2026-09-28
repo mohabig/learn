@@ -578,7 +578,7 @@
       <a class="cta ghost" href="#/method">How you will learn</a>
       <div class="facts">
         <div class="fact"><b>3 h</b><span>a day, as two 90-minute rounds</span></div>
-        <div class="fact"><b><span id="f-weeks">12</span> wks</b><span>at 5 study days a week</span></div>
+        <div class="fact"><b><i id="f-weeks" style="font-style:normal">12</i> wks</b><span>at 5 study days a week</span></div>
         <div class="fact"><b>4</b><span>shipped, public projects</span></div>
         <div class="fact"><b>~$75</b><span>in API credits, in total</span></div>
       </div>
@@ -2462,8 +2462,8 @@
         <p>Every response starts with a three-digit number. The first digit is the family, and the family is the whole story. The other two digits are detail.</p>
         <p><code>2xx</code> means success. <code>200</code> means "here is something." <code>201</code> means "I created it." <code>204</code> means "I succeeded but have nothing to return."</p>
         <p><code>3xx</code> means "go somewhere else." Clients follow these redirects automatically, which is why a POST sometimes arrives as a GET.</p>
-        <p><code>4xx</code> means your request is wrong. Sending it again unchanged gets the same answer forever. <code>400</code> is malformed. <code>401</code> means the credentials are missing or bad. <code>403</code> means the credentials are valid but not allowed here. <code>404</code> means no such path. <code>429</code> means too many requests, and it is the only 4xx worth retrying, after waiting the time the server names.</p>
-        <p><code>5xx</code> means the server broke. <code>500</code> is internal error, <code>502</code> is a proxy that could not reach the real server, <code>503</code> is overloaded. These are worth retrying with a growing delay.</p>
+        <p><code>4xx</code> means your request is wrong. Sending it again unchanged gets the same answer forever. <code>400</code> is malformed. <code>401</code> means the credentials are missing or bad. <code>403</code> means the credentials are valid but not allowed here. <code>404</code> means no such path. It is often a typo in the base URL, not a missing record. <code>422</code> means the request is well formed but the fields are wrong. <code>429</code> means too many requests, and it is the only 4xx worth retrying, after waiting the time the server names.</p>
+        <p><code>5xx</code> means the server broke. <code>500</code> is internal error, <code>502</code> and <code>504</code> come from a proxy that could not reach the real server, or could not wait for it, and <code>503</code> is overloaded. These are worth retrying with a growing delay.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 180" role="img" aria-label="Success is green, your mistake is yellow, server mistake is red">
             <rect x="20" y="30" width="160" height="100" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
@@ -7311,6 +7311,7 @@
         <p>Reciprocal rank fusion throws scores away and uses only positions. For each document, add up <code>1 / (60 + rank)</code> across the lanes it appears in.</p>
         <p>Watch the numbers. Rank 1 scores 1/61 = 0.0164. Rank 5 scores 1/65 = 0.0154. Nearly identical.</p>
         <p>That flattening is the entire point. When first place and fifth place are worth nearly the same, appearing in <em>both</em> lists matters more than topping one. Which is exactly the behavior you want when the two lanes disagree about a document.</p>
+        <p>There is another way. You can squeeze each lane&rsquo;s scores into a 0-to-1 range inside the result set, then take a weighted sum, for example 0.6 dense plus 0.4 keyword. It is more tunable and more fragile. Wait until Day 11 can tell you it actually helped.</p>
         <p>So: fuse on rank, not on score, because ranks from two lanes are comparable and their raw scores never were.</p>
         <figure class="illus">
           <svg viewBox="0 0 640 200" role="img" aria-label="A short ruler from 0 to 1 for cosine, and a long unbounded ruler for BM25, showing that adding them lets the longer one win">
@@ -10751,184 +10752,425 @@
 </article>
 
 <article data-day="18">
-  <p class="day-lede">This is the highest-leverage day of the month, and it has almost no code in it. Nearly everyone ships on vibes. The people who can say "0.62 to 0.84 on a 40-case set" get hired. Today you learn how to know whether a change helped.</p>
+  <p class="day-lede">This is the highest-leverage day of the month, and it has almost no code in it. Nearly everyone ships on vibes. The people who get hired are the ones who can say "0.62 to 0.84 on a 40-case set." Today you learn how to know whether a change actually helped. By tonight you have a taxonomy of your own failures, ranked by how often each one happens.</p>
 
-  <div class="concept">
-    <h4>Why vibes fail on the third change</h4>
-    <p>You know the loop, because everybody does it. Tweak a prompt. Try three inputs. They look better. Ship.</p>
-    <p>Here is what three inputs cannot tell you: your change may have fixed those three cases and broken five others you did not try.</p>
-    <p>Do that ten times and quality performs a random walk while you feel productive. That is the part that stings — the feeling of progress is identical either way.</p>
-    <p>An eval breaks the loop with one number over a fixed set of cases. Change the prompt, rerun 40 cases, and watch 0.78 become 0.85. Or watch the total hold steady while one category quietly collapses. Neither fact is visible from three examples.</p>
-    <p>And unlike a feeling, a number survives being handed to someone else.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 640 220" role="img" aria-label="Above, quality wandering with no measurement; below, the same run scored on forty fixed cases so the drop is visible">
-        <text x="20" y="28" font-size="13" fill="var(--dg-muted)">Tweak, try three inputs, ship</text>
-        <polyline points="60,70 130,52 200,80 270,56 340,84 410,60 480,88" fill="none" stroke="var(--dg-accent2)" stroke-width="2"/>
-        <text x="500" y="76" font-size="13" fill="var(--dg-muted)">no number, no memory</text>
-        <line x1="20" y1="108" x2="620" y2="108" stroke="var(--dg-line)" stroke-width="1"/>
-        <text x="20" y="136" font-size="13" fill="var(--dg-muted)">Tweak, rerun the same 40 cases</text>
-        <polyline points="60,176 130,168 200,172 270,160 340,164 410,158 480,194" fill="none" stroke="var(--dg-accent)" stroke-width="2"/>
-        <circle cx="60" cy="176" r="5" fill="var(--dg-accent)"/>
-        <circle cx="130" cy="168" r="5" fill="var(--dg-accent)"/>
-        <circle cx="200" cy="172" r="5" fill="var(--dg-accent)"/>
-        <circle cx="270" cy="160" r="5" fill="var(--dg-accent)"/>
-        <circle cx="340" cy="164" r="5" fill="var(--dg-accent)"/>
-        <circle cx="410" cy="158" r="5" fill="var(--dg-accent)"/>
-        <circle cx="480" cy="194" r="7" fill="var(--dg-accent2)"/>
-        <text x="500" y="190" font-size="13" fill="var(--dg-ink)">you see the drop</text>
-        <text x="20" y="214" font-size="13" fill="var(--dg-muted)">Same work either way; only one of them tells you when you broke something.</text>
-      </svg>
-      <figcaption>Both lines wander. Only the measured one lets you notice, on the day it happens.</figcaption>
-    </figure>
-    <p>The cost of entry is one afternoon: forty cases in a file, and a script that scores them.</p>
-    <p>So: three examples tell you how you feel, and forty cases tell you what actually changed.</p>
-  </div>
+  <figure class="illus daymap">
+    <svg viewBox="0 0 640 170" role="img" aria-label="The four rounds of Day 18: the measurement problem, three tiers of evaluation, error analysis, and judge design, joined by arrows">
+      <use href="#i-scale" x="58" y="22" width="64" height="64"/>
+      <text x="90" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 1</text>
+      <text x="90" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">vibes fail</text>
+      <use href="#i-funnel" x="208" y="22" width="64" height="64"/>
+      <text x="240" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 2</text>
+      <text x="240" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">three tiers</text>
+      <use href="#i-search" x="358" y="22" width="64" height="64"/>
+      <text x="390" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 3</text>
+      <text x="390" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">read failures</text>
+      <use href="#i-eye" x="508" y="22" width="64" height="64"/>
+      <text x="540" y="116" text-anchor="middle" font-size="13" fill="var(--dg-muted)">Round 4</text>
+      <text x="540" y="135" text-anchor="middle" font-size="13" fill="var(--dg-ink)">judge design</text>
+      <line x1="132" y1="54" x2="198" y2="54" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
+      <line x1="282" y1="54" x2="348" y2="54" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
+      <line x1="432" y1="54" x2="498" y2="54" stroke="var(--dg-line)" stroke-width="2" marker-end="url(#arw)"/>
+      <text x="320" y="160" text-anchor="middle" font-size="13" fill="var(--dg-muted)">from gut feel to measurable proof</text>
+    </svg>
+    <figcaption>Four rounds: learn to measure instead of guess.</figcaption>
+  </figure>
 
-  <div class="concept">
-    <h4>Three tiers, cheapest first</h4>
-    <p>Not every check needs a model. Sort your checks into three tiers, and push each one as far down as it will go.</p>
-    <p><strong>Assertions</strong> are plain code. The output parses as JSON. Every claim carries a citation. No forbidden phrase appears. Latency stayed under 8 seconds. The agent used at most 6 steps.</p>
-    <p>They cost nothing, run in milliseconds, and never disagree with themselves — so they run on every commit. Most teams underuse this tier badly. A surprising share of "quality problems" turn out to be format problems that a regex catches.</p>
-    <p><strong>LLM-as-judge</strong> handles what code cannot check. Is this answer actually supported by the retrieved chunk? Is it responsive to the question? It costs cents per case, it is noisy, and you must validate it — which is the next concept.</p>
-    <p><strong>Human review</strong> is you, reading outputs. Slow, expensive, and the only source of ground truth there is. You do not scale it. You spend it on defining what "good" means, and on checking that the judge agrees with you.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 640 250" role="img" aria-label="A three-band pyramid: assertions at the base run constantly and cost nothing, a judge in the middle, human review at the top defines correctness">
-        <polygon points="160,210 480,210 440,160 200,160" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-        <text x="320" y="190" text-anchor="middle" font-size="14" fill="var(--dg-ink)">assertions in code</text>
-        <polygon points="200,160 440,160 400,110 240,110" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
-        <text x="320" y="142" text-anchor="middle" font-size="14" fill="var(--dg-ink)">judge model</text>
-        <polygon points="240,110 400,110 364,62 276,62" fill="none" stroke="var(--dg-ink)" stroke-width="2"/>
-        <text x="320" y="93" text-anchor="middle" font-size="14" fill="var(--dg-ink)">humans</text>
-        <text x="150" y="190" text-anchor="end" font-size="13" fill="var(--dg-muted)">every commit</text>
-        <text x="190" y="142" text-anchor="end" font-size="13" fill="var(--dg-muted)">nightly</text>
-        <text x="230" y="93" text-anchor="end" font-size="13" fill="var(--dg-muted)">weekly</text>
-        <text x="490" y="190" font-size="13" fill="var(--dg-muted)">free, milliseconds</text>
-        <text x="450" y="142" font-size="13" fill="var(--dg-muted)">cents per case</text>
-        <text x="410" y="93" font-size="13" fill="var(--dg-muted)">defines correct</text>
-      </svg>
-      <figcaption>Volume rises as you go down; cost per case rises as you go up.</figcaption>
-    </figure>
-    <p>So: assert everything code can see, judge only what it cannot, and spend your own eyes on deciding what correct means.</p>
-  </div>
+  <section class="round" data-title="Three examples cannot tell you anything">
+    <div class="learn">
+      <div class="concept">
+        <h4>Why vibes fail on the third change</h4>
+        <p>You know this loop. Tweak the prompt. Try three inputs. They look better. Ship.</p>
+        <p>Here is what three inputs cannot tell you: your change may have fixed those three cases and broken five others you did not try. Do that ten times and quality performs a random walk while you feel productive. The feeling of progress is identical whether you are moving forward or spinning in circles.</p>
+        <p>An eval breaks that loop with one number over a fixed set of cases. Change the prompt, rerun 40 cases, and watch 0.78 become 0.85. Or watch it hold steady while one category quietly collapses. Neither fact is visible from three examples. And unlike a feeling, a number survives being handed to someone else.</p>
+        <figure class="diagram">
+          <svg viewBox="0 0 640 220" role="img" aria-label="Above, quality wandering with no measurement; below, the same run scored on forty fixed cases so the drop is visible">
+            <text x="20" y="28" font-size="13" fill="var(--dg-muted)">Tweak, try three inputs, ship</text>
+            <polyline points="60,70 130,52 200,80 270,56 340,84 410,60 480,88" fill="none" stroke="var(--dg-accent2)" stroke-width="2"/>
+            <text x="500" y="66" font-size="13" fill="var(--dg-muted)">no number</text>
+            <text x="500" y="85" font-size="13" fill="var(--dg-muted)">no memory</text>
+            <line x1="20" y1="108" x2="620" y2="108" stroke="var(--dg-line)" stroke-width="1"/>
+            <text x="20" y="136" font-size="13" fill="var(--dg-muted)">Tweak, rerun the same 40 cases</text>
+            <polyline points="60,176 130,168 200,172 270,160 340,164 410,158 480,194" fill="none" stroke="var(--dg-accent)" stroke-width="2"/>
+            <circle cx="60" cy="176" r="5" fill="var(--dg-accent)"/>
+            <circle cx="130" cy="168" r="5" fill="var(--dg-accent)"/>
+            <circle cx="200" cy="172" r="5" fill="var(--dg-accent)"/>
+            <circle cx="270" cy="160" r="5" fill="var(--dg-accent)"/>
+            <circle cx="340" cy="164" r="5" fill="var(--dg-accent)"/>
+            <circle cx="410" cy="158" r="5" fill="var(--dg-accent)"/>
+            <circle cx="480" cy="194" r="7" fill="var(--dg-accent2)"/>
+            <text x="500" y="190" font-size="13" fill="var(--dg-ink)">you see the drop</text>
+            <text x="20" y="214" font-size="13" fill="var(--dg-muted)">Same work either way; only one of them tells you when you broke something.</text>
+          </svg>
+          <figcaption>Both lines wander. Only the measured one lets you notice, on the day it happens.</figcaption>
+        </figure>
+        <figure class="illus">
+          <svg viewBox="0 0 640 160" role="img" aria-label="A scale showing vibes on one side and measurement on the other">
+            <use href="#i-scale" x="280" y="30" width="80" height="80"/>
+            <use href="#i-person" x="40" y="60" width="56" height="56"/>
+            <text x="68" y="140" text-anchor="middle" font-size="12" fill="var(--dg-ink)">vibes</text>
+            <use href="#i-ruler" x="544" y="60" width="56" height="56"/>
+            <text x="572" y="140" text-anchor="middle" font-size="12" fill="var(--dg-ink)">data</text>
+            <text x="320" y="150" text-anchor="middle" font-size="12" fill="var(--dg-muted)">which side do you trust?</text>
+          </svg>
+          <figcaption>Vibes change with mood. Measured numbers stay the same across people and time.</figcaption>
+        </figure>
+        <p>The cost of entry is one afternoon: forty cases in a file, and a script that scores them.</p>
+        <p>So: three examples tell you how you feel, and forty cases tell you what actually changed.</p>
+        <dl class="words"><dt>eval</dt><dd>a set of test cases run repeatedly, so you can see whether a change helped</dd><dt>baseline</dt><dd>a score from the original system, which new scores are compared against</dd></dl>
+      </div>
+    </div>
 
-  <div class="concept">
-    <h4>Error analysis: the skill almost everyone skips</h4>
-    <p>This is the part that separates people who improve systems from people who fiddle with them.</p>
-    <p>Export 50 real failures. If nothing is labeled yet, take 50 random traces instead. Then read every one, start to finish. No skimming.</p>
-    <p>For each, write one sentence in your own words about what went wrong. "The right document was never retrieved." "The answer was correct but wrapped in an apology." "It invented a policy number."</p>
-    <p>Do not start from a fixed list of categories, and this matters more than it sounds. The categories you would have guessed are exactly the ones you already believe in, so a fixed list can only ever confirm you.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 640 180" role="img" aria-label="Fifty failures are read one by one, each gets a sentence in your own words, then the sentences that mean the same thing are grouped">
-        <text x="320" y="30" text-anchor="middle" font-size="13" fill="var(--dg-muted)">No categories until after you have read them</text>
-        <rect x="30" y="58" width="150" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-        <text x="105" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">50 failures,</text>
-        <text x="105" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">every one read</text>
-        <line x1="180" y1="88" x2="216" y2="88" stroke="var(--dg-line)" stroke-width="2"/>
-        <polygon points="216,82 230,88 216,94" fill="var(--dg-line)"/>
-        <rect x="240" y="58" width="170" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-        <text x="325" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">one sentence each,</text>
-        <text x="325" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">in your own words</text>
-        <line x1="410" y1="88" x2="446" y2="88" stroke="var(--dg-line)" stroke-width="2"/>
-        <polygon points="446,82 460,88 446,94" fill="var(--dg-line)"/>
-        <rect x="470" y="58" width="150" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
-        <text x="545" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">group the ones</text>
-        <text x="545" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">that match</text>
-        <text x="320" y="156" text-anchor="middle" font-size="13" fill="var(--dg-muted)">The categories you would have guessed are the ones you already believe.</text>
-      </svg>
-      <figcaption>Reading comes first; the labels have to come out of the failures, not out of your assumptions.</figcaption>
-    </figure>
-    <p>Then group the sentences that mean the same thing, and count each group.</p>
-    <p>The counts are the payoff, and they are usually a surprise. 22 retrieval misses. 9 formatting problems. 8 unnecessary refusals. 6 tone. 3 hallucinations.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 640 240" role="img" aria-label="Bar chart of failure clusters: twenty-two retrieval misses, nine wrong format, eight refusals, six tone, three hallucinations">
-        <text x="200" y="64" text-anchor="end" font-size="13" fill="var(--dg-ink)">retrieval miss</text>
-        <rect x="210" y="48" width="220" height="20" fill="var(--dg-accent)"/>
-        <text x="440" y="64" font-size="13" fill="var(--dg-ink)">22</text>
-        <text x="200" y="98" text-anchor="end" font-size="13" fill="var(--dg-ink)">wrong format</text>
-        <rect x="210" y="82" width="90" height="20" fill="var(--dg-line)"/>
-        <text x="310" y="98" font-size="13" fill="var(--dg-ink)">9</text>
-        <text x="200" y="132" text-anchor="end" font-size="13" fill="var(--dg-ink)">refused</text>
-        <rect x="210" y="116" width="80" height="20" fill="var(--dg-line)"/>
-        <text x="300" y="132" font-size="13" fill="var(--dg-ink)">8</text>
-        <text x="200" y="166" text-anchor="end" font-size="13" fill="var(--dg-ink)">tone</text>
-        <rect x="210" y="150" width="60" height="20" fill="var(--dg-line)"/>
-        <text x="280" y="166" font-size="13" fill="var(--dg-ink)">6</text>
-        <text x="200" y="200" text-anchor="end" font-size="13" fill="var(--dg-ink)">hallucination</text>
-        <rect x="210" y="184" width="30" height="20" fill="var(--dg-line)"/>
-        <text x="250" y="200" font-size="13" fill="var(--dg-ink)">3</text>
-        <text x="210" y="228" font-size="13" fill="var(--dg-muted)">You were about to spend a week on the shortest bar.</text>
-      </svg>
-      <figcaption>The counts, not your intuition, decide what you fix next.</figcaption>
-    </figure>
-    <p>Look at what just happened. You were about to spend a week on hallucinations. The chunking change is worth ten times more, and now you can prove that before doing the work instead of after.</p>
-    <p>Repeat this after every meaningful change. Each cluster becomes a named metric in tomorrow's harness.</p>
-    <p>So: read the failures, name them in your own words, and let the counts pick your next week of work.</p>
-  </div>
+    <div class="closebook">
+      <p><b>Close the page.</b> Without looking, answer these.</p>
+      <ol>
+        <li>Why does a change that fixes three test cases feel like progress?</li>
+        <li>What does an eval measure that three examples cannot?</li>
+      </ol>
+    </div>
 
-  <div class="concept">
-    <h4>Designing a judge, and catching it cheating</h4>
-    <p>A judge is a model call whose job is to grade an output. Its quality lives entirely in the question you ask it.</p>
-    <p>"Rate this answer 1 to 10" produces mush, because nobody — person or model — applies a ten-point scale consistently.</p>
-    <p>Ask something binary instead: "Is every factual claim supported by the quoted source? Answer yes or no, then quote the sentence that fails." Several narrow yes-or-no questions beat one broad score, every time. And where absolute quality is hard to pin down, use <strong>pairwise</strong> comparison — two answers, which one better satisfies the rubric?</p>
-    <p>Now the catch: judges have known biases, and you should expect all four.</p>
-    <p><strong>Position bias</strong>: in a pairwise test it favors whichever answer came first. Run every comparison in both orders and keep only the agreements; the rest are ties. <strong>Verbosity bias</strong>: longer answers score higher whether or not they are better. <strong>Self-preference</strong>: a model likes its own writing, so judge with a different model where you can. <strong>Leniency</strong>: without concrete failure examples in the rubric, nearly everything passes.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 640 200" role="img" aria-label="The same pair judged in both orders; the judge picks whichever answer is shown first, revealing position bias">
-        <rect x="20" y="30" width="70" height="30" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-        <text x="55" y="50" text-anchor="middle" font-size="13" fill="var(--dg-ink)">A</text>
-        <rect x="100" y="30" width="70" height="30" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
-        <text x="135" y="50" text-anchor="middle" font-size="13" fill="var(--dg-ink)">B</text>
-        <line x1="170" y1="45" x2="196" y2="45" stroke="var(--dg-line)" stroke-width="2"/>
-        <polygon points="196,39 210,45 196,51" fill="var(--dg-line)"/>
-        <rect x="210" y="30" width="90" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
-        <text x="255" y="50" text-anchor="middle" font-size="13" fill="var(--dg-ink)">judge</text>
-        <line x1="300" y1="45" x2="326" y2="45" stroke="var(--dg-line)" stroke-width="2"/>
-        <polygon points="326,39 340,45 326,51" fill="var(--dg-line)"/>
-        <text x="350" y="50" font-size="13" fill="var(--dg-ink)">A wins</text>
-        <rect x="20" y="90" width="70" height="30" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
-        <text x="55" y="110" text-anchor="middle" font-size="13" fill="var(--dg-ink)">B</text>
-        <rect x="100" y="90" width="70" height="30" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
-        <text x="135" y="110" text-anchor="middle" font-size="13" fill="var(--dg-ink)">A</text>
-        <line x1="170" y1="105" x2="196" y2="105" stroke="var(--dg-line)" stroke-width="2"/>
-        <polygon points="196,99 210,105 196,111" fill="var(--dg-line)"/>
-        <rect x="210" y="90" width="90" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
-        <text x="255" y="110" text-anchor="middle" font-size="13" fill="var(--dg-ink)">judge</text>
-        <line x1="300" y1="105" x2="326" y2="105" stroke="var(--dg-line)" stroke-width="2"/>
-        <polygon points="326,99 340,105 326,111" fill="var(--dg-line)"/>
-        <text x="350" y="110" font-size="13" fill="var(--dg-ink)">B wins</text>
-        <line x1="20" y1="145" x2="620" y2="145" stroke="var(--dg-line)" stroke-width="1"/>
-        <text x="20" y="172" font-size="13" fill="var(--dg-muted)">Same pair, opposite verdicts: the judge is scoring position, not quality.</text>
-      </svg>
-      <figcaption>If flipping the order flips the winner, the judge told you nothing about the answers.</figcaption>
-    </figure>
-    <p>Then validate the judge, because an unvalidated judge is only a second opinion with a price tag.</p>
-    <p>Hand-label 40 cases yourself. Run the judge on the same 40. Compute how often it agrees with you. Below about 80 percent the judge is noise: sharpen the rubric, add an example of a pass and one of a fail, and measure again.</p>
-    <p>Keep those labels. They are how you re-check the judge after a model upgrade, and that day arrives sooner than you expect.</p>
-    <p>So: ask small yes-or-no questions, expect the four biases, and never trust a judge you have not checked against your own labels.</p>
-  </div>
+    <div class="attempt">
+      <p class="goal"><b>Your goal:</b> design a 40-case eval for your system. Write out the 40 cases (questions or inputs), run your system on all of them, and record the results in a table.</p>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Pick a mix: some easy questions, some hard. Some that should work today, some that are known to fail. Vary the length and style.</p></details>
+      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>A CSV or markdown table with columns: ID, input, expected output type (or category), actual output, pass/fail. One row per case. Save it.</p></details>
+      <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
+        <ol>
+          <li>List 40 questions or inputs your system should handle.</li>
+          <li>For each, decide what a good answer should be: a type, a format, or a category.</li>
+          <li>Run your system on all 40 and record the output in a table.</li>
+          <li>Mark each one pass or fail based on whether it matches your expectations.</li>
+          <li>Count the passes and compute a baseline score (e.g., 32/40 = 0.80).</li>
+          <li>Save the table as <code>cases.csv</code> or <code>cases.md</code>.</li>
+        </ol>
+      </details>
+    </div>
 
-  <div class="walkthrough">
-    <h4>The build, step by step</h4>
-    <ol>
-      <li>Read Hamel Husain's eval and error-analysis writing at <a href="https://hamel.dev">hamel.dev</a>, start to finish. That is today's reading block.</li>
-      <li>Export 50 traces from your Day 16 agent and Week-2 RAG app: input, retrieved chunks, tool calls, output.</li>
-      <li>Read all 50 and write one plain-language note per failure. No categories yet.</li>
-      <li>Group the notes into clusters, count them, and sort. Write the counts in <code>LOG.md</code>.</li>
-      <li>For the top cluster, write the assertions that would have caught it in code.</li>
-      <li>Write a judge prompt for one property you cannot assert — groundedness is the usual first choice — with a binary question and two example failures.</li>
-      <li>Hand-label 40 cases yes or no yourself. Run the judge on the same 40 and compute the agreement rate.</li>
-      <li>Tighten the rubric until agreement clears 80 percent, and record that number next to the judge prompt.</li>
-    </ol>
-  </div>
+    <div class="traps">
+      <ul>
+        <li>Picking only cases you know will pass. You bake your current mistakes in as correct.</li>
+        <li>Changing the cases when a score drops. You only measure change if the cases stay the same.</li>
+      </ul>
+    </div>
 
-  <div class="gotchas">
-    <h4>Where people get stuck</h4>
-    <ul>
-      <li>Handing the 50 failures to a model to cluster instead of reading them. You get plausible categories and none of the intuition you came for.</li>
-      <li>Building the case set from outputs the system already produced. You bake its current mistakes in as the definition of correct.</li>
-      <li>Tune the prompt on the cases you evaluate on and your score only measures memory. Hold some back.</li>
-      <li>A judge that quietly grades style: it rewards polished writing, your score climbs, and the product gets worse.</li>
+    <ul class="recall-bank">
+      <li data-kind="recall"><p class="q">Why does tweaking and testing on three examples not tell you whether your change helped?</p><p class="a">You may fix those three and break five others you did not test. The feeling of progress is the same either way.</p></li>
+      <li data-kind="apply"><p class="q">You change a prompt and rerun your 40-case eval. The score goes from 0.80 to 0.82. What can you now say that you could not say after trying three examples?</p><p class="a">The change helped, at least on this set. It broke fewer cases than it fixed. The number survives being handed to someone else.</p></li>
     </ul>
+
+    <p class="tomorrow"><b>By tomorrow you can reproduce:</b> the 40 cases you chose, and your baseline score.</p>
+  </section>
+
+  <section class="round" data-title="Three tiers: push checks down">
+    <div class="learn">
+      <div class="concept">
+        <h4>Not every check needs a model</h4>
+        <p>Divide your checks into three tiers, and push each one as far down as it will go.</p>
+        <p><strong>Assertions</strong> are plain code. The output parses as JSON. Every claim carries a source. No forbidden word appears. Latency stayed under 8 seconds. The agent used at most 6 steps. They cost nothing, run in milliseconds, and never disagree with themselves. Run them on every commit. Most teams badly underuse this tier. A surprising share of "quality problems" are really format problems a regex catches.</p>
+        <p><strong>LLM-as-judge</strong> handles what code cannot see. Is this answer supported by the retrieved chunk? Is it responsive? It costs cents per case, it is noisy, and you must validate it. That is the next round.</p>
+        <p><strong>Human review</strong> is you reading outputs. Slow, expensive, the only source of ground truth. You do not scale it. You spend it on defining what "good" means, and on checking that the judge agrees with you.</p>
+        <figure class="illus">
+          <svg viewBox="0 0 640 160" role="img" aria-label="Three evaluation tiers: code checks are fast and cheap, judge models are moderate, humans are slow and expensive">
+            <use href="#i-check" x="40" y="40" width="56" height="56"/>
+            <text x="68" y="125" text-anchor="middle" font-size="12" fill="var(--dg-ink)">code</text>
+            <text x="68" y="140" text-anchor="middle" font-size="11" fill="var(--dg-muted)">free</text>
+            <use href="#i-robot" x="292" y="40" width="56" height="56"/>
+            <text x="320" y="125" text-anchor="middle" font-size="12" fill="var(--dg-ink)">judge</text>
+            <text x="320" y="140" text-anchor="middle" font-size="11" fill="var(--dg-muted)">cents</text>
+            <use href="#i-person" x="544" y="40" width="56" height="56"/>
+            <text x="572" y="125" text-anchor="middle" font-size="12" fill="var(--dg-ink)">human</text>
+            <text x="572" y="140" text-anchor="middle" font-size="11" fill="var(--dg-muted)">expensive</text>
+          </svg>
+          <figcaption>Push checks down the ladder: use code first, judge only what code cannot, spend human time defining correct.</figcaption>
+        </figure>
+        <figure class="diagram">
+          <svg viewBox="0 0 640 250" role="img" aria-label="A three-band pyramid: assertions at the base run constantly and cost nothing, a judge in the middle, human review at the top defines correctness">
+            <polygon points="160,210 480,210 440,160 200,160" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+            <text x="320" y="190" text-anchor="middle" font-size="14" fill="var(--dg-ink)">assertions in code</text>
+            <polygon points="200,160 440,160 400,110 240,110" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+            <text x="320" y="142" text-anchor="middle" font-size="14" fill="var(--dg-ink)">judge model</text>
+            <polygon points="240,110 400,110 364,62 276,62" fill="none" stroke="var(--dg-ink)" stroke-width="2"/>
+            <text x="320" y="93" text-anchor="middle" font-size="14" fill="var(--dg-ink)">humans</text>
+            <text x="150" y="190" text-anchor="end" font-size="13" fill="var(--dg-muted)">every commit</text>
+            <text x="190" y="142" text-anchor="end" font-size="13" fill="var(--dg-muted)">nightly</text>
+            <text x="230" y="93" text-anchor="end" font-size="13" fill="var(--dg-muted)">weekly</text>
+            <text x="490" y="190" font-size="13" fill="var(--dg-muted)">free, milliseconds</text>
+            <text x="450" y="142" font-size="13" fill="var(--dg-muted)">cents per case</text>
+            <text x="410" y="93" font-size="13" fill="var(--dg-muted)">defines correct</text>
+          </svg>
+          <figcaption>Volume rises as you go down; cost per case rises as you go up.</figcaption>
+        </figure>
+        <p>So: assert everything code can see, judge only what it cannot, and spend your own eyes on deciding what correct means.</p>
+        <dl class="words"><dt>assertion</dt><dd>a code check that passes or fails in milliseconds</dd><dt>LLM-as-judge</dt><dd>a model call that grades an output</dd></dl>
+      </div>
+    </div>
+
+    <div class="closebook">
+      <p><b>Close the page.</b> Answer without looking.</p>
+      <ol>
+        <li>Give an example of an assertion that does not need a model to check.</li>
+        <li>Why does every commit run assertions but human review runs weekly?</li>
+      </ol>
+    </div>
+
+    <div class="attempt">
+      <p class="goal"><b>Your goal:</b> write five assertions that your 40-case eval could check automatically. For each, write the check in plain language (you do not have to code it). Then pick one and actually write the code.</p>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Think about what a machine can see without calling a model. Format, length, cited sources, forbidden words, latency.</p></details>
+      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>Five assertions as plain language descriptions. Then code one: a function that takes an output and returns pass or fail.</p></details>
+      <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
+        <ol>
+          <li>List five things your system should always do that do not need a model to check.</li>
+          <li>For the first: "JSON output is valid" — write code. Try it on your 40 cases.</li>
+          <li>Count how many pass. Write that down.</li>
+          <li>Pick a second and code that too.</li>
+        </ol>
+      </details>
+    </div>
+
+    <div class="mixin"><p><b>Mix it in.</b> Look at your 40-case table from Round 1. Which assertions would catch the most failures?</p></div>
+
+    <div class="traps">
+      <ul>
+        <li>Using a model for checks that code can do. You burn money and slow down the loop.</li>
+        <li>Writing assertions so strict they fail on any variation. They need to pass on good cases that differ.</li>
+      </ul>
+    </div>
+
+    <ul class="recall-bank">
+      <li data-kind="recall"><p class="q">Give an example of an assertion and an example of something only a judge can check.</p><p class="a">Assertion: output is valid JSON. Judge: is this answer supported by the source text?</p></li>
+      <li data-kind="apply"><p class="q">You run assertions on your 40-case eval and 35 pass. A judge scores the same 40 and 32 pass. Why might the judge score be lower?</p><p class="a">Assertions check format and rules. A judge checks nuance and reasoning. Some outputs might be properly formatted but not actually good.</p></li>
+    </ul>
+
+    <p class="tomorrow"><b>By tomorrow you can reproduce:</b> three assertions you can check in code, and why the pyramid pushes checks down.</p>
+  </section>
+
+  <section class="round" data-title="Error analysis: read all 50 failures">
+    <div class="learn">
+      <div class="concept">
+        <h4>Do not let a model cluster your failures</h4>
+        <p>This is the skill that separates people who improve systems from people who fiddle with them. Export 50 real failures. If nothing is labeled yet, take 50 random traces instead. Read every one, start to finish. No skimming. No shortcuts.</p>
+        <p>For each, write one sentence in your own words about what went wrong. Not a category. Not a guess. Your own words. "The right document was never retrieved." "The answer was correct but wrapped in an apology." "It invented a policy number."</p>
+        <p>Do not start from a list of categories you guessed in advance. The categories you would have picked are exactly the ones you already believe in, so a fixed list only confirms what you already think. The labels have to come out of the failures, not out of your assumptions.</p>
+        <figure class="illus">
+          <svg viewBox="0 0 640 160" role="img" aria-label="A notebook of failures and a search icon representing reading and analysis">
+            <use href="#i-notebook" x="80" y="40" width="64" height="64"/>
+            <text x="112" y="130" text-anchor="middle" font-size="12" fill="var(--dg-ink)">read 50</text>
+            <line x1="160" y1="72" x2="200" y2="72" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="200,72 194,66 206,66" fill="var(--dg-line)"/>
+            <use href="#i-search" x="240" y="40" width="64" height="64"/>
+            <text x="272" y="130" text-anchor="middle" font-size="12" fill="var(--dg-ink)">label them</text>
+            <line x1="320" y1="72" x2="360" y2="72" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="360,72 354,66 366,66" fill="var(--dg-line)"/>
+            <use href="#i-graph" x="400" y="40" width="64" height="64"/>
+            <text x="432" y="130" text-anchor="middle" font-size="12" fill="var(--dg-ink)">count them</text>
+            <text x="320" y="155" text-anchor="middle" font-size="11" fill="var(--dg-muted)">let the numbers decide what to fix</text>
+          </svg>
+          <figcaption>Read first, label without bias, count second. The numbers choose your priority.</figcaption>
+        </figure>
+        <figure class="diagram">
+          <svg viewBox="0 0 640 180" role="img" aria-label="Fifty failures are read one by one, each gets a sentence in your own words, then the sentences that mean the same thing are grouped">
+            <text x="320" y="30" text-anchor="middle" font-size="13" fill="var(--dg-muted)">No categories until after you have read them</text>
+            <rect x="30" y="58" width="150" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+            <text x="105" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">50 failures,</text>
+            <text x="105" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">every one read</text>
+            <line x1="180" y1="88" x2="216" y2="88" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="216,82 230,88 216,94" fill="var(--dg-line)"/>
+            <rect x="240" y="58" width="170" height="60" rx="8" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+            <text x="325" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">one sentence each,</text>
+            <text x="325" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">in your own words</text>
+            <line x1="410" y1="88" x2="446" y2="88" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="446,82 460,88 446,94" fill="var(--dg-line)"/>
+            <rect x="470" y="58" width="150" height="60" rx="8" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+            <text x="545" y="82" text-anchor="middle" font-size="13" fill="var(--dg-ink)">group the ones</text>
+            <text x="545" y="102" text-anchor="middle" font-size="13" fill="var(--dg-ink)">that match</text>
+            <text x="320" y="156" text-anchor="middle" font-size="13" fill="var(--dg-muted)">The categories you would have guessed are the ones you already believe.</text>
+          </svg>
+          <figcaption>Reading comes first; the labels have to come out of the failures, not out of your assumptions.</figcaption>
+        </figure>
+        <p>Then group the sentences that mean the same thing, and count each group. The counts are the payoff, and they are usually a surprise. 22 retrieval misses. 9 formatting problems. 8 unnecessary refusals. 6 tone. 3 hallucinations. Look at what just happened: you were about to spend a week on hallucinations. The retrieval problem is worth ten times more.</p>
+        <figure class="diagram">
+          <svg viewBox="0 0 640 240" role="img" aria-label="Bar chart of failure clusters: twenty-two retrieval misses, nine wrong format, eight refusals, six tone, three hallucinations">
+            <text x="200" y="64" text-anchor="end" font-size="13" fill="var(--dg-ink)">retrieval miss</text>
+            <rect x="210" y="48" width="220" height="20" fill="var(--dg-accent)"/>
+            <text x="440" y="64" font-size="13" fill="var(--dg-ink)">22</text>
+            <text x="200" y="98" text-anchor="end" font-size="13" fill="var(--dg-ink)">wrong format</text>
+            <rect x="210" y="82" width="90" height="20" fill="var(--dg-line)"/>
+            <text x="310" y="98" font-size="13" fill="var(--dg-ink)">9</text>
+            <text x="200" y="132" text-anchor="end" font-size="13" fill="var(--dg-ink)">refused</text>
+            <rect x="210" y="116" width="80" height="20" fill="var(--dg-line)"/>
+            <text x="300" y="132" font-size="13" fill="var(--dg-ink)">8</text>
+            <text x="200" y="166" text-anchor="end" font-size="13" fill="var(--dg-ink)">tone</text>
+            <rect x="210" y="150" width="60" height="20" fill="var(--dg-line)"/>
+            <text x="280" y="166" font-size="13" fill="var(--dg-ink)">6</text>
+            <text x="200" y="200" text-anchor="end" font-size="13" fill="var(--dg-ink)">hallucination</text>
+            <rect x="210" y="184" width="30" height="20" fill="var(--dg-line)"/>
+            <text x="250" y="200" font-size="13" fill="var(--dg-ink)">3</text>
+            <text x="210" y="228" font-size="13" fill="var(--dg-muted)">You were about to spend a week on the shortest bar.</text>
+          </svg>
+          <figcaption>The counts, not your intuition, decide what you fix next.</figcaption>
+        </figure>
+        <p>So: read the failures, name them in your own words, and let the counts pick your next week of work.</p>
+        <p>Start by reading <a href="https://hamel.dev">Hamel Husain's writing on evals and error analysis at hamel.dev</a>, start to finish. That is today's reading block. It will show you what good error analysis looks like in practice.</p>
+        <dl class="words"><dt>error analysis</dt><dd>reading failures and labeling each one, then grouping the labels and counting</dd></dl>
+      </div>
+    </div>
+
+    <div class="closebook">
+      <p><b>Close the page.</b> Answer without looking.</p>
+      <ol>
+        <li>Why should you read all 50 failures before deciding what the categories are?</li>
+        <li>What does it mean if retrieval misses outnumber hallucinations by 7 times?</li>
+      </ol>
+    </div>
+
+    <div class="attempt">
+      <p class="goal"><b>Your goal:</b> export your 50 worst failures, read all of them, label each with one sentence in your own words, group the labels, count the groups, and write the results in a table.</p>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Export 50 traces from your system: input, context, output. Read every one. Write a short note for each. Then look at your notes and group similar ones.</p></details>
+      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>A markdown table with three columns: failure ID, your description, category. Then a summary table: category, count, sorted by count.</p></details>
+      <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
+        <ol>
+          <li>Export 50 failures (or 50 random traces, if unlabeled).</li>
+          <li>Read all 50 and write one sentence per failure about what went wrong.</li>
+          <li>Read your 50 sentences and mark similar ones with the same color or label.</li>
+          <li>Count each group.</li>
+          <li>Write a summary table: category, count. Sort by count descending. Write the counts in <code>LOG.md</code>.</li>
+        </ol>
+      </details>
+    </div>
+
+    <div class="mixin"><p><b>Mix it in.</b> Look at your error analysis clusters. Pick the top cluster. Write down three ways you could fix it. Which one would be cheapest?</p></div>
+
+    <div class="traps">
+      <ul>
+        <li>Handing the 50 failures to a model to cluster for you. You get plausible categories but no intuition.</li>
+        <li>Building the test set from outputs your system already produced. You bake its current mistakes in as correct.</li>
+        <li>Clustering before you read. You only confirm what you already believed.</li>
+      </ul>
+    </div>
+
+    <ul class="recall-bank">
+      <li data-kind="recall"><p class="q">Why must you read all 50 failures before creating the categories?</p><p class="a">The categories you would guess in advance are the ones you already believe. You only confirm yourself that way. The real patterns have to emerge from the data.</p></li>
+      <li data-kind="apply"><p class="q">Your error analysis shows 30 retrieval misses, 8 formatting errors, and 12 hallucinations. You have time to fix one category before shipping. Which one?</p><p class="a">Retrieval misses. It is worth 3 to 4 times more than the others. The counts decide the priority.</p></li>
+    </ul>
+
+    <p class="tomorrow"><b>By tomorrow you can reproduce:</b> the error clusters from your own failures, ranked by frequency.</p>
+  </section>
+
+  <section class="round" data-title="Designing a judge and catching it cheating">
+    <div class="learn">
+      <div class="concept">
+        <h4>A judge is only as good as the question you ask</h4>
+        <p>A judge is a model call that grades an output. Its entire quality lives in the question. "Rate this 1 to 10" produces mush, because nobody applies a ten-point scale consistently — not people, not models.</p>
+        <p>Ask something binary instead. "Is every factual claim supported by the quoted source? Answer yes or no, then cite the sentence that fails." Several narrow yes-or-no questions beat one broad score, every time. And where absolute quality is hard to pin down, use <em>pairwise</em> comparison: two answers, which one better satisfies the rubric? Do not ask for a score.</p>
+        <p>Now the catch: judges have four known biases, and you should expect all of them.</p>
+        <p><strong>Position bias</strong>: a judge favors whichever answer came first. Run every comparison in both orders and keep only the agreements. The rest are ties.</p>
+        <p><strong>Verbosity bias</strong>: longer answers score higher whether or not they are better.</p>
+        <p><strong>Self-preference</strong>: a model likes its own writing. Judge with a different model where you can.</p>
+        <p><strong>Leniency</strong>: without concrete failure examples in the rubric, nearly everything passes.</p>
+        <figure class="illus">
+          <svg viewBox="0 0 640 160" role="img" aria-label="A scale showing a judge on one side and a person on the other, balancing">
+            <use href="#i-scale" x="280" y="30" width="80" height="80"/>
+            <use href="#i-robot" x="80" y="60" width="56" height="56"/>
+            <text x="108" y="140" text-anchor="middle" font-size="12" fill="var(--dg-ink)">judge</text>
+            <use href="#i-person" x="496" y="60" width="56" height="56"/>
+            <text x="524" y="140" text-anchor="middle" font-size="12" fill="var(--dg-ink)">you</text>
+            <text x="320" y="155" text-anchor="middle" font-size="11" fill="var(--dg-muted)">they must agree 80 percent of the time</text>
+          </svg>
+          <figcaption>Validate the judge against your own labels. If they disagree too often, the judge is just noise.</figcaption>
+        </figure>
+        <figure class="diagram">
+          <svg viewBox="0 0 640 200" role="img" aria-label="The same pair judged in both orders; the judge picks whichever answer is shown first, revealing position bias">
+            <rect x="20" y="30" width="70" height="30" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+            <text x="55" y="50" text-anchor="middle" font-size="13" fill="var(--dg-ink)">A</text>
+            <rect x="100" y="30" width="70" height="30" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+            <text x="135" y="50" text-anchor="middle" font-size="13" fill="var(--dg-ink)">B</text>
+            <line x1="170" y1="45" x2="196" y2="45" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="196,39 210,45 196,51" fill="var(--dg-line)"/>
+            <rect x="210" y="30" width="90" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+            <text x="255" y="50" text-anchor="middle" font-size="13" fill="var(--dg-ink)">judge</text>
+            <line x1="300" y1="45" x2="326" y2="45" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="326,39 340,45 326,51" fill="var(--dg-line)"/>
+            <text x="350" y="50" font-size="13" fill="var(--dg-ink)">A wins</text>
+            <rect x="20" y="90" width="70" height="30" rx="5" fill="var(--dg-wash2)" stroke="var(--dg-accent2)"/>
+            <text x="55" y="110" text-anchor="middle" font-size="13" fill="var(--dg-ink)">B</text>
+            <rect x="100" y="90" width="70" height="30" rx="5" fill="var(--dg-wash)" stroke="var(--dg-accent)"/>
+            <text x="135" y="110" text-anchor="middle" font-size="13" fill="var(--dg-ink)">A</text>
+            <line x1="170" y1="105" x2="196" y2="105" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="196,99 210,105 196,111" fill="var(--dg-line)"/>
+            <rect x="210" y="90" width="90" height="30" rx="5" fill="none" stroke="var(--dg-line)"/>
+            <text x="255" y="110" text-anchor="middle" font-size="13" fill="var(--dg-ink)">judge</text>
+            <line x1="300" y1="105" x2="326" y2="105" stroke="var(--dg-line)" stroke-width="2"/>
+            <polygon points="326,99 340,105 326,111" fill="var(--dg-line)"/>
+            <text x="350" y="110" font-size="13" fill="var(--dg-ink)">B wins</text>
+            <line x1="20" y1="145" x2="620" y2="145" stroke="var(--dg-line)" stroke-width="1"/>
+            <text x="20" y="172" font-size="13" fill="var(--dg-muted)">Same pair, opposite verdicts: the judge is scoring position, not quality.</text>
+          </svg>
+          <figcaption>If flipping the order flips the winner, the judge told you nothing about the answers.</figcaption>
+        </figure>
+        <p>Then validate the judge, because an unvalidated judge is only a second opinion with a price tag. Hand-label 40 cases yourself. Run the judge on the same 40. How often does it agree with you? Below 80 percent and it is noise. Sharpen the rubric, add an example of pass and fail, and measure again.</p>
+        <p>Keep those labels. They are how you re-check the judge after a model upgrade, and that day arrives sooner than you expect.</p>
+        <p>So: ask small yes-or-no questions, expect the four biases, and never trust a judge you have not checked against your own labels.</p>
+        <dl class="words"><dt>pairwise comparison</dt><dd>asking a judge which of two answers better satisfies a rubric, instead of giving each a score</dd><dt>position bias</dt><dd>the tendency to favor whatever was presented first</dd></dl>
+      </div>
+    </div>
+
+    <div class="closebook">
+      <p><b>Close the page.</b> Answer without looking.</p>
+      <ol>
+        <li>Why does "rate this 1 to 10" produce mush?</li>
+        <li>What is position bias, and how do you catch it?</li>
+      </ol>
+    </div>
+
+    <div class="attempt">
+      <p class="goal"><b>Your goal:</b> write one judge prompt for one property of your output, validate it against 40 hand-labeled cases, and report the agreement rate. Then tighten it until it clears 80 percent.</p>
+      <details class="hint"><summary>Hint 1 &mdash; a nudge</summary><p>Pick one thing a model can reasonably judge. Groundedness (is it supported?) is a good first choice. Write the rubric as a binary yes-or-no question, not a score.</p></details>
+      <details class="hint"><summary>Hint 2 &mdash; the shape of the answer</summary><p>One rubric with a binary question. An example of a yes and an example of a no. Then 40 hand-labeled cases. Run the judge on all 40 and compute agreement (matches / 40).</p></details>
+      <details class="hint"><summary>Still stuck after 10 minutes? The step by step</summary>
+        <ol>
+          <li>Pick one property: groundedness, responsiveness, format, tone, length.</li>
+          <li>Write a binary question: "Is every factual claim supported by a source?" Yes or no.</li>
+          <li>Write one example that is clearly yes. Write one that is clearly no.</li>
+          <li>Hand-label 40 cases: yes or no, based on your rubric.</li>
+          <li>Run the judge on the same 40 with your rubric and examples.</li>
+          <li>Count agreements and compute: agreements / 40.</li>
+          <li>If below 80%, refine the rubric, add more examples, and repeat.</li>
+        </ol>
+      </details>
+    </div>
+
+    <div class="mixin"><p><b>Mix it in.</b> Look at your judge prompt. Is it asking for a score or a yes/no? Could you make it more specific?</p></div>
+
+    <div class="traps">
+      <ul>
+        <li>A judge prompt that quietly grades style: it rewards polished writing, your score climbs, and the product gets worse.</li>
+        <li>Never validating the judge. An unvalidated judge is just expensive noise.</li>
+        <li>Tuning on the same 40 cases you judge with. Then your score only measures memory, not quality.</li>
+      </ul>
+    </div>
+
+    <ul class="recall-bank">
+      <li data-kind="recall"><p class="q">What is position bias and how do you catch it in a pairwise judge?</p><p class="a">The judge favors whichever answer came first. Run every comparison in both orders. If flipping the order flips the winner, the judge has position bias.</p></li>
+      <li data-kind="apply"><p class="q">You write a groundedness judge: "Is every factual claim supported by a source?" You validate it on 40 cases and get 70% agreement with your labels. What should you do?</p><p class="a">The judge is below 80%, so it is still noisy. Sharpen the rubric or add more concrete examples of pass and fail, then revalidate.</p></li>
+    </ul>
+
+    <p class="tomorrow"><b>By tomorrow you can reproduce:</b> one validated judge, a rubric for it, and its agreement rate with your own labels.</p>
+  </section>
+
+  <div class="teachback">
+    <h4>Teach it back</h4>
+    <p>Explain to a smart friend why shipping on vibes fails and measurement works. Start from a concrete moment: you tweak something and try three examples. What can go wrong? Use four to six sentences.</p>
+    <p class="watch">Watch for the words &ldquo;basically&rdquo;, &ldquo;something happens here&rdquo; and &ldquo;you just&rdquo;. Each one marks a gap. Go back to that spot in the page, fill the gap, and explain again.</p>
+  </div>
+
+  <div class="ladder">
+    <h4>Where are you on the ladder?</h4>
+    <p>From vibes to numbers to deeper understanding.</p>
+    <ol>
+      <li data-level="recognition">I know evals are a thing and that numbers beat feelings.</li>
+      <li data-level="recall">I can explain why 40 cases tell you more than 3, and the three tiers of evaluation.</li>
+      <li data-level="application">I can design a 40-case eval, run error analysis on failures, and write assertions that code can check.</li>
+      <li data-level="creation">I can build a complete eval harness with assertions, error taxonomy, and a validated judge, and use it to drive changes.</li>
+    </ol>
   </div>
 </article>
 

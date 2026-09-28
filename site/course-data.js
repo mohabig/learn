@@ -364,14 +364,17 @@ window.COURSE_WEEKS =
       {
         "d": "18",
         "t": "Evals I — the discipline",
-        "lever": true,
+        "rounds": 4,
         "tasks": [
-          "Why evals beat vibes; the three tiers — assertions, LLM-as-judge, human review",
-          "<b>Error analysis, the actual skill:</b> dump 50 failures, read all of them, label them, cluster them, and let the clusters tell you what to fix. Most teams skip this and optimise the wrong thing.",
-          "Judge design: rubrics, pairwise comparison, position bias, and validating the judge against human labels",
-          "Read Hamel Husain's writing on evals today, start to finish"
+          "<b>Round 1 — vibes fail:</b> design a 40-case eval, run your system on all of them, and record a baseline score",
+          "<b>Round 2 — three tiers:</b> write five assertions that code can check without a model, then code one and count passes",
+          "<b>Round 3 — error analysis:</b> export 50 failures, read all of them, label each one, group the labels, and sort by frequency",
+          "<b>Round 4 — judge design:</b> write one judge prompt, validate it on 40 hand-labeled cases, and tighten it until agreement clears 80 percent",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no basically"
         ],
-        "done": "You have a labelled taxonomy of how your own system fails, ranked by frequency."
+        "done": "You have a labelled taxonomy of how your own system fails, ranked by frequency.",
+        "lever": true,
+        "week": 3
       },
       {
         "d": "19",

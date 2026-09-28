@@ -111,7 +111,7 @@ Add orchestration (LangGraph, LlamaIndex, Pydantic AI) only when you have hit th
 <!-- Generated from site/course-data.js by scripts/build_plan.py — do not edit
      this region by hand. Edit the data file and run `make plan`. -->
 
-> **The whole course is 116 rounds** of 90 minutes: about 58 study days, or about 12 weeks at 3 hours a day and 5 days a week. Skip Week 0 if you already have the basics and it is about 11 weeks.
+> **The whole course is 120 rounds** of 90 minutes: about 60 study days, or about 12 weeks at 3 hours a day and 5 days a week. Skip Week 0 if you already have the basics and it is about 11 weeks.
 
 ## Week 0 — The base layer
 *Days 0.1–0.5 · optional*
@@ -353,10 +353,13 @@ Take the check on the Overview first. Everything on it is taught here, so skip a
 - [ ] **Done when:** You can query your own corpus from inside a coding agent or desktop client.
 
 ### Day 18 — Evals I — the discipline ⭐
-- [ ] Why evals beat vibes; the three tiers — assertions, LLM-as-judge, human review
-- [ ] **Error analysis, the actual skill:** dump 50 failures, read all of them, label them, cluster them, and let the clusters tell you what to fix. Most teams skip this and optimise the wrong thing.
-- [ ] Judge design: rubrics, pairwise comparison, position bias, and validating the judge against human labels
-- [ ] Read Hamel Husain's writing on evals today, start to finish
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — vibes fail:** design a 40-case eval, run your system on all of them, and record a baseline score
+- [ ] **Round 2 — three tiers:** write five assertions that code can check without a model, then code one and count passes
+- [ ] **Round 3 — error analysis:** export 50 failures, read all of them, label each one, group the labels, and sort by frequency
+- [ ] **Round 4 — judge design:** write one judge prompt, validate it on 40 hand-labeled cases, and tighten it until agreement clears 80 percent
+- [ ] **Teach it back:** explain today out loud in your own words, with no basically
 - [ ] **Done when:** You have a labelled taxonomy of how your own system fails, ranked by frequency.
 
 ### Day 19 — Evals II — build the harness ⭐
