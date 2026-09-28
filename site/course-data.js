@@ -30,6 +30,9 @@
      done     the "Done when" sentence, used verbatim in both outputs
      lever    true to flag a high-leverage day
      ship     true to flag a ship day
+     rounds   how many 90-minute rounds the day holds (the article in index.html has the same
+              number of <section class="round"> blocks; tasks holds one item per round, then
+              one "Teach it back" item)
    --------------------------------------------------------------------------- */
 
 window.COURSE_WEEKS =
@@ -38,19 +41,21 @@ window.COURSE_WEEKS =
     "n": 0,
     "title": "The base layer",
     "range": "Days 0.1–0.5 · optional",
-    "outcome": "I have the foundations the 30 days assume — or I've confirmed I already did.",
-    "note": "Run the Day 0 gate first. Everything it checks is taught here — skip any day you already pass, and do the ones you don't, in order. All five from zero is the 3–5 days the gate warned you about, at the normal daily rhythm.",
+    "outcome": "I have the basics the rest of the course assumes, or I have checked that I already did.",
+    "note": "Take the check on the Overview first. Everything on it is taught here, so skip any day you already pass and do the ones you don't, in order. From zero, all five days take about a week and a half at 3 hours a day.",
     "days": [
       {
         "d": "0.1",
         "t": "The terminal",
+        "rounds": 3,
         "tasks": [
-          "Navigate and manipulate files from the shell: paths, flags, pipes, redirection",
-          "Read error messages top to bottom; <code>--help</code> and <code>man</code> before a search engine",
-          "Understand <code>PATH</code> and environment variables — where \"command not found\" comes from",
-          "<b>Build:</b> a drill — create a project tree, search it with <code>grep</code>/<code>find</code>, break an install on purpose and fix it"
+          "<b>Round 1 — the shell loop:</b> navigate using <code>pwd</code>, <code>cd</code>, and <code>ls</code>; create files with spaces in the name; try one command without quotes and one with quotes",
+          "<b>Round 2 — streams and pipes:</b> build a pipeline that searches, sorts, counts, and filters results; use redirection to save output and errors to different files",
+          "<b>Round 3 — PATH and errors:</b> break a command by removing its directory from PATH; read the error message from the top; identify the failure type and fix it",
+          "<b>Teach it back:</b> explain the shell loop, the three streams, and how errors flow in a pipeline, in your own words with no \"basically\""
         ],
-        "done": "You can debug an install failure without panicking."
+        "done": "You can debug an install failure without panicking.",
+        "week": 0
       },
       {
         "d": "0.2",
@@ -107,14 +112,15 @@ window.COURSE_WEEKS =
       {
         "d": "1",
         "t": "First-principles calls",
+        "rounds": 4,
         "tasks": [
-          "Set up the repo, a <code>uv</code> env, API keys in env vars — never in code",
-          "Raw SDK: messages, system prompt, temperature, <code>max_tokens</code>, stop sequences",
-          "Count input and output tokens; compute the exact cost of a call",
-          "Measure latency: time-to-first-token vs total",
-          "<b>Build:</b> a CLI that takes a URL or file and returns a structured summary"
+          "<b>Round 1 — the workbench:</b> one folder under git, one <code>uv</code> environment, your key in <code>.env</code> (ignored by git), and one working call that prints a reply",
+          "<b>Round 2 — tokens and the call:</b> a command-line tool that turns a URL or file into capped text and asks for a title, three bullets and one question",
+          "<b>Round 3 — the bill:</b> cost printed to the cent on every run, plus the stop reason, logged for five different inputs",
+          "<b>Round 4 — the clocks:</b> first-token time and total time measured on every run, the temperature experiment written down, and a commit",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no “basically”"
         ],
-        "done": "You can state, to the cent, what one run of your CLI costs — and why."
+        "done": "You can say, to the cent, what one run of your tool costs — and why."
       },
       {
         "d": "2",
@@ -130,13 +136,17 @@ window.COURSE_WEEKS =
       {
         "d": "3",
         "t": "Structured output",
-        "lever": true,
+        "rounds": 4,
         "tasks": [
-          "JSON schema / tool-based structured output, with Pydantic models as the contract",
-          "Validation, retry-on-invalid, repair prompts, streaming partial JSON",
-          "<b>Build:</b> an extractor turning messy text — invoices, emails, résumés, job posts — into typed objects"
+          "<b>Round 1 — why JSON fails:</b> pick a document type, write a tiny JSON Schema, make one call with schema enforcement, get back valid JSON",
+          "<b>Round 2 — Pydantic models:</b> write a Pydantic model with 6–12 fields, use it to parse one real example, show it does all three jobs",
+          "<b>Round 3 — validate and repair:</b> add a validation loop, repair once on failure with the error message, cap at two attempts, log every field that fails",
+          "<b>Round 4 — the full build:</b> extract 50 real inputs, log results, iterate until 95% parse first or second attempt, test edge cases, commit",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "At least 95% of 50 real inputs parse into valid objects on the first or second attempt."
+        "done": "At least 95% of 50 real inputs parse into valid objects on the first or second attempt.",
+        "lever": true,
+        "week": 1
       },
       {
         "d": "4",
@@ -152,13 +162,15 @@ window.COURSE_WEEKS =
       {
         "d": "5",
         "t": "Cost, latency, streaming",
+        "rounds": 4,
         "tasks": [
-          "Stream tokens end-to-end (SSE) from a FastAPI endpoint to a client",
-          "Model routing: cheap model first, escalate on low confidence or failure",
-          "Prompt caching plus a response cache — then measure the hit rate",
-          "<b>Build:</b> a streaming API endpoint with caching"
+          "<b>Round 1 — stream end-to-end:</b> a streaming endpoint that yields chunks as SSE events, with a client that measures time to first chunk and last chunk",
+          "<b>Round 2 — two caches:</b> a response cache keyed on input + params, plus prompt caching enabled, both logged, with a 30% hit rate test",
+          "<b>Round 3 — route cheap first:</b> small model first with a mechanical check, escalate on failure, log which path each request took",
+          "<b>Round 4 — measure P95:</b> 100 requests logged for latency, cache status, routing decision; compute P50 and P95 for all, hits, small model, and escalated",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "You have a table of p50/p95 latency and cost per request, cached vs uncached."
+        "done": "You have a table of P50 and P95 latency by category, a response cache hit rate, and a routing escalation rate."
       },
       {
         "d": "6",
@@ -173,13 +185,14 @@ window.COURSE_WEEKS =
       {
         "d": "7",
         "t": "Ship #1",
-        "ship": true,
+        "rounds": 2,
         "tasks": [
-          "Deploy the tool publicly",
-          "README: what it does, architecture, cost per request, p95 latency",
-          "Take a half day off — burnout on Day 19 costs more than a Sunday does"
+          "<b>Round 1 — four things change:</b> live URL with key in secret store, rate limit set, spend ceiling set, tested from a different network",
+          "<b>Round 2 — tell it with numbers:</b> README with six sections and a table of real runs from the live URL",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "A stranger can use it from a link, and read what it costs to run."
+        "done": "A stranger can use it from a link, and read what it costs to run.",
+        "ship": true
       }
     ]
   },
@@ -212,24 +225,30 @@ window.COURSE_WEEKS =
       {
         "d": "10",
         "t": "Retrieval that actually works",
+        "rounds": 4,
         "tasks": [
-          "Move into a real vector store",
-          "Hybrid search (BM25 + dense) — and why pure vector search fails on names, IDs and rare terms",
-          "Metadata filters, MMR/diversity, reranking, query rewriting and multi-query",
-          "<b>Build:</b> upgrade yesterday's pipeline to hybrid plus a reranker"
+          "<b>Round 1 — vector store:</b> your chunks live in a real database with metadata and identifiers, and re-running ingestion updates instead of duplicating",
+          "<b>Round 2 — hybrid search:</b> both dense and BM25 search working on the same corpus, and ten queries where keyword wins",
+          "<b>Round 3 — fusion:</b> top fifty results fused by reciprocal rank, then reranked to five, with the reranker timing logged",
+          "<b>Round 4 — build it:</b> the full hybrid pipeline called as one function, before-and-after recall numbers on five test queries",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no \"basically\""
         ],
-        "done": "You have before/after recall numbers, not a feeling."
+        "done": "You have before-and-after recall numbers, not a feeling.",
+        "week": 2
       },
       {
         "d": "11",
         "t": "Retrieval evaluation",
-        "lever": true,
+        "rounds": 4,
         "tasks": [
-          "Hand-build a golden set: 30–50 questions with known correct source chunks",
-          "Metrics: recall@k, MRR, faithfulness/groundedness, answer relevance",
-          "Ragas or a hand-rolled harness — understanding the metric is the point"
+          "<b>Round 1 &mdash; build truth:</b> a <code>golden.jsonl</code> file holding 40 questions with their labeled chunk identifiers, including five questions the corpus cannot answer",
+          "<b>Round 2 &mdash; measure retrieval:</b> a runner that scores recall@k at k of 1, 5, 10, 20 for three retrievers in one table",
+          "<b>Round 3 &mdash; position matters:</b> add MRR to the table and run faithfulness over 20 answers with a judge model",
+          "<b>Round 4 &mdash; the sentence:</b> the complete harness, table of all metrics, ten worst failures labeled, and one sentence you can defend",
+          "<b>Teach it back:</b> explain today out loud in your own words, with no &ldquo;basically&rdquo;"
         ],
-        "done": "You can write: \"hybrid + rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set.\" That sentence is worth more in an interview than a month of tutorials."
+        "done": "You can write: &ldquo;hybrid plus rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set.&rdquo; That sentence is worth more in an interview than a month of tutorials.",
+        "lever": true
       },
       {
         "d": "12",

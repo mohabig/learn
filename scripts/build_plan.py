@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Regenerate the per-day sections of ai-engineer-30-day-plan.md.
 
-The day titles, checklist tasks and "Done when" lines have one home:
-site/course-data.js. The website reads it with a <script src>; this script
+The day titles, round counts, checklist tasks and "Done when" lines have one
+home: site/course-data.js. The website reads it with a <script src>; this script
 reads the same file and rewrites the markdown plan's day region from it, so
 the two cannot drift apart again.
 
@@ -77,8 +77,24 @@ def day_label(d):
     return ("Days " if ("–" in d or "-" in d) else "Day ") + d
 
 
+def pace(weeks):
+    """Round / study-day / week totals, so the plan's headline numbers cannot drift."""
+    total = sum(d.get("rounds", 0) for w in weeks for d in w["days"])
+    core = sum(d.get("rounds", 0) for w in weeks if w["n"] != 0 for d in w["days"])
+    days = lambda n: -(-n // 2)          # two 90-minute rounds make one 3-hour study day
+    return total, days(total), -(-days(total) // 5), -(-days(core) // 5)
+
+
 def render(weeks):
     out = [BANNER, ""]
+    total, study_days, wks, core_wks = pace(weeks)
+    if total:
+        out += [
+            "> **The whole course is %d rounds** of 90 minutes: about %d study days, or about %d weeks at "
+            "3 hours a day and 5 days a week. Skip Week 0 if you already have the basics and it is about %d weeks."
+            % (total, study_days, wks, core_wks),
+            "",
+        ]
     for week in weeks:
         out.append("## Week %s — %s" % (week["n"], to_markdown(week["title"])))
         if week.get("range"):
@@ -94,6 +110,10 @@ def render(weeks):
             if day.get("lever"):
                 heading += " ⭐"
             out.append(heading)
+            if day.get("rounds"):
+                n = day["rounds"]
+                out.append("*%d rounds of 90 minutes · about %d study day%s*" % (n, -(-n // 2), "" if n <= 2 else "s"))
+                out.append("")
             for task in day["tasks"]:
                 out.append("- [ ] %s" % to_markdown(task))
             if day.get("done"):
@@ -138,12 +158,13 @@ def main(argv=None):
     days = sum(len(w["days"]) for w in weeks)
     tasks = sum(len(d["tasks"]) for w in weeks for d in w["days"])
     dones = sum(1 for w in weeks for d in w["days"] if d.get("done"))
+    rounds = pace(weeks)[0]
 
     if args.check:
         if updated == current:
             print(
-                "%s is up to date with %s (%d weeks, %d days, %d tasks, %d done-when lines)."
-                % (PLAN.name, DATA.name, len(weeks), days, tasks, dones)
+                "%s is up to date with %s (%d weeks, %d days, %d rounds, %d tasks, %d done-when lines)."
+                % (PLAN.name, DATA.name, len(weeks), days, rounds, tasks, dones)
             )
             return 0
         diff = difflib.unified_diff(
@@ -166,8 +187,8 @@ def main(argv=None):
 
     PLAN.write_text(updated, encoding="utf-8")
     print(
-        "Wrote %s from %s: %d weeks, %d days, %d tasks, %d done-when lines."
-        % (PLAN.name, DATA.name, len(weeks), days, tasks, dones)
+        "Wrote %s from %s: %d weeks, %d days, %d rounds, %d tasks, %d done-when lines."
+        % (PLAN.name, DATA.name, len(weeks), days, rounds, tasks, dones)
     )
     return 0
 
