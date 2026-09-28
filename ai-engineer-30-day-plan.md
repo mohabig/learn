@@ -1,18 +1,15 @@
-# The 80/20 AI Engineer — a 30-Day Plan
+# The 80/20 AI Engineer — a 3-month plan
 
-> Start date: 2026-08-29 · Target: employable AI engineer in 30 days
+> Start date: 2026-09-28 · Target: employable AI engineer in 3 months · 13 weeks, Week 0 to Week 12, at 3 hours a day
 > Method: find the ~20% of the field that produces ~80% of real-world results, and build in it every single day.
 
 ---
 
-## 0. The reframe that saves you six months
+## 0. The reframe that saves you months
 
 **An AI engineer builds products on top of foundation models they did not train.**
 
-That single sentence deletes most of the curriculum people think they need. You are not
-becoming a researcher or an ML engineer. You are becoming the person who can take a
-model that already exists and turn it into a system that is reliable, fast, cheap, safe,
-and measurably good.
+That one sentence cuts out most of what people think they need to learn. You are not becoming a researcher or an ML engineer. You are becoming the person who takes a model that already exists and turns it into something that is reliable, fast, cheap, safe, and measurably good.
 
 ### The 20% that produces 80% of the value
 
@@ -35,14 +32,13 @@ and measurably good.
 - Reading the arXiv firehose
 - Framework tourism — evaluating six agent frameworks before writing any code
 
-None of this is worthless. All of it is a worse use of your next 30 days than the list above.
-Revisit it in month 3, when you have a shipped system telling you which gap actually hurts.
+None of this is worthless. All of it is a worse use of your next three months than the list above. Come back to it in month four, when you have a shipped system that tells you what actually needs fixing.
 
 ---
 
-## 1. Day 0 gate — prerequisites
+## 1. The check before you start
 
-You need these *before* Day 1. Be honest; the plan assumes them.
+You need these before Lesson 1. Be honest about them; the plan assumes you have them.
 
 - [ ] **Python**: functions, classes, type hints, `async`/`await` basics, virtualenvs, `pytest`
 - [ ] **HTTP & JSON**: REST, status codes, headers, auth tokens, env vars and secret hygiene
@@ -50,35 +46,46 @@ You need these *before* Day 1. Be honest; the plan assumes them.
 - [ ] **Terminal comfort**: you can debug an install failure without panicking
 - [ ] **Reading docs**: you'd rather read the provider's API reference than watch a tutorial
 
-Missing two or more? Start with Week 0 below — everything the gate checks is taught
-there, and you take only the days you're missing. Starting this plan without Python
-fluency is the single most common way it fails.
+Missing two or more? Start with the base layer, Lessons 0.1 to 0.5, which fill Week 0 and half of Week 1 in the schedule below. Everything this check covers is taught there. Take only the lessons you don't pass, in order. Already have the basics? Leave the base layer out and every week after it moves up. Starting this plan without Python is the single most common way it fails.
 
-**Budget:** ~$50–100 of API credits across the 30 days. Iterate on small/cheap models,
-verify on frontier models. Track spend from Day 1 — it's part of the curriculum.
+**Budget:** ~$50–100 of API credits across the three months. Iterate on small/cheap models, verify on frontier models. Track spend from Lesson 1. It's part of the curriculum.
 
 ---
 
 ## 2. Ground rules (these matter more than the syllabus)
 
-1. **75% building, 25% reading.** Never read two days in a row without shipping code.
-2. **Every day ends with a commit.** No exceptions, even if the day went badly.
-3. **Timebox at 45 minutes.** Stuck longer than that? Ship the ugly version, note the debt, move on.
-4. **One repo per weekly project, public.** Four public repos by Day 30.
-5. **Write down numbers.** Cost per request, p95 latency, eval score. Numbers are what make you credible.
+1. **75% building, 25% reading.** Never read two rounds in a row without shipping code.
+2. **Every study day ends with a commit.** No exceptions, even if it went badly.
+3. **Stuck for 10 minutes? Open a hint. Stuck for 45? Ship the ugly version.** Write down what is missing and move on.
+4. **One repo per weekly ship, public.** Four public repos by the end.
+5. **Write down numbers.** Cost per request, latency, eval score. Numbers are what make you credible.
 6. **No framework until you feel the pain it solves.** Raw SDK first for a full week. You'll understand every abstraction you later adopt.
-7. **Full-time pace = 5–6 h/day.** Part-time (2–3 h/day) works too — see §8, it becomes ~55–60 days in the same order. Don't reorder it.
+7. **The error log is how you learn from mistakes.** Every round, four questions: what did you get wrong, why, which idea were you missing, how will you spot it next time. It takes two minutes. It removes a whole family of future mistakes.
+8. **Keep `LOG.md`.** Six lines a day: built, worked, surprised me, still fuzzy, mistakes I studied, numbers. It becomes your Lesson 29 write-up.
+9. **The second round makes the first one stick.** Sleep between the second and third rounds. That is not a break from the method. That is when your brain files things away.
 
-### Daily rhythm (5–6 h)
+### One round: 90 minutes
 
-| Block | Time | What |
-|-------|------|------|
-| Read | 45 min | The day's concept, from primary docs. Not YouTube. |
-| Build | 3 h | The day's deliverable. |
-| Break it | 45 min | Adversarial pass — what input makes this fail? |
-| Log | 30 min | Commit + 5 bullet notes in `LOG.md`: what worked, what surprised you, what's still fuzzy. |
+| Minutes | Part | What you do |
+|---------|------|-------------|
+| 10 | Warm-up | Answer questions from earlier rounds, from memory. Write an answer before you open the check. |
+| 25 | Learn | One or two small ideas, with a picture. Read once. Then close the page and say it back. |
+| 40 | Try | Build the thing before you read the steps. Three hints wait, and you open them one at a time. Being stuck here is the point. |
+| 10 | Mistakes | Four questions in your error log. Check your work against the traps listed for the round. |
+| 5 | Tomorrow | Read the one sentence that says what you must be able to rebuild tomorrow. Then stop. |
 
-That `LOG.md` becomes your Day 29 write-up. Start it on Day 1.
+Two rounds make one study day: 90 minutes, a break, 90 minutes. Sleep comes after the second round, before the third.
+
+### The learning loop
+
+1. Draw a rough map first, just once.
+2. Learn one small chunk.
+3. Close it, then rebuild it from memory.
+4. Do something hard with it, right away.
+5. Study your mistakes.
+6. Explain it simply.
+7. Come back after longer gaps.
+8. Mix related problems.
 
 ---
 
@@ -88,15 +95,14 @@ That `LOG.md` becomes your Day 29 write-up. Start it on Day 1.
 |-------|--------|------|
 | Language | Python 3.11+, `uv` for envs | Node/TS is equally valid if that's your strength |
 | Model provider | One primary (Anthropic or OpenAI), one secondary | The secondary teaches you portability |
-| API access | Raw provider SDK | No LangChain in Week 1. Seriously. |
+| API access | Raw provider SDK | No LangChain in Part 1. Seriously. |
 | Service | FastAPI | Streaming, async, easy deploy |
 | Vector store | pgvector, Qdrant, or Chroma locally | Any of them. Do not spend a day comparing. |
-| Tracing/evals | Langfuse **or** LangSmith **or** Braintrust | Pick one on Day 22 and commit |
+| Tracing/evals | Langfuse **or** LangSmith **or** Braintrust | Pick one in Lesson 22 and commit |
 | UI | Streamlit (or Next.js if you're already a frontend dev) | The UI is not the point |
 | Deploy | Render / Fly.io / Railway / Vercel | Whatever deploys in under 20 minutes |
 
-Add orchestration (LangGraph, LlamaIndex, Pydantic AI) **only** when you have personally
-hit the problem it solves. That moment arrives around Day 16 for most people.
+Add orchestration (LangGraph, LlamaIndex, Pydantic AI) only when you have hit the problem it solves. That happens around Lesson 16 for most people.
 
 ---
 
@@ -105,253 +111,491 @@ hit the problem it solves. That moment arrives around Day 16 for most people.
 <!-- Generated from site/course-data.js by scripts/build_plan.py — do not edit
      this region by hand. Edit the data file and run `make plan`. -->
 
-## Week 0 — The base layer
-*Days 0.1–0.5 · optional*
+> **The whole course is 120 rounds** of 90 minutes: about 60 study days, laid out as 13 weeks (Week 0 to Week 12) at 3 hours a day and 5 days a week. The last week has no new lessons: it is for catching up, reviewing and applying. Leave out the basics (Lessons 0.1 to 0.5) and it is 12 weeks.
 
-**Outcome: "I have the foundations the 30 days assume — or I've confirmed I already did."**
+## The 13 weeks
 
-Run the Day 0 gate first. Everything it checks is taught here — skip any day you already pass, and do the ones you don't, in order. All five from zero is the 3–5 days the gate warned you about, at the normal daily rhythm.
+Each week is five study days, and each study day is two 90-minute rounds. The rounds of every lesson are dealt out in order, so a lesson can start in one week and finish in the next. In the site each round links to its lesson; here it is written out.
 
-### Day 0.1 — The terminal
-- [ ] Navigate and manipulate files from the shell: paths, flags, pipes, redirection
-- [ ] Read error messages top to bottom; `--help` and `man` before a search engine
-- [ ] Understand `PATH` and environment variables — where "command not found" comes from
-- [ ] **Build:** a drill — create a project tree, search it with `grep`/`find`, break an install on purpose and fix it
-- [ ] **Done when:** You can debug an install failure without panicking.
+### Week 0 — Terminal · Python · Errors, async, tests
 
-### Day 0.2 — Python, the parts you'll use
-- [ ] Functions, modules and imports, classes where they earn their place, comprehensions
-- [ ] Type hints — and why they pay off the moment Pydantic arrives in Week 1
-- [ ] Isolated environments with `uv`: create, install, freeze, delete
-- [ ] **Build:** a small typed CLI that reads any text file and reports words, lines, and the ten most common tokens
-- [ ] **Done when:** Fresh environment, one install command, and the CLI runs on the first try.
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 0.1 · round 1 of 3: the shell loop | Lesson 0.1 · round 2 of 3: streams and pipes |
+| Tue | Lesson 0.1 · round 3 of 3: PATH and errors | Lesson 0.2 · round 1 of 3: functions and modules |
+| Wed | Lesson 0.2 · round 2 of 3: containers and loops | Lesson 0.2 · round 3 of 3: types and environment |
+| Thu | Lesson 0.3 · round 1 of 3: errors and cleanup | Lesson 0.3 · round 2 of 3: async and concurrency |
+| Fri | Lesson 0.3 · round 3 of 3: tests that work | Lesson 0.4 · round 1 of 3: HTTP basics |
 
-### Day 0.3 — Errors, async, and tests
-- [ ] Exceptions raised and caught narrowly; context managers for cleanup
-- [ ] `async`/`await`: what the event loop does, why it helps I/O and not math
-- [ ] `pytest` basics: test functions, asserts, running one file
-- [ ] **Build:** a downloader fetching ten URLs concurrently, with tests for the success and failure paths
-- [ ] **Done when:** You can explain why the async version is faster, and both tests pass.
+### Week 1 — HTTP, JSON, secrets · Git and docs · First calls
 
-### Day 0.4 — HTTP, JSON, and secrets
-- [ ] Request anatomy: method, path, headers, body; the status-code families
-- [ ] JSON in and out of Python; where auth lives — bearer tokens and API keys
-- [ ] Secret hygiene: env vars, `.env`, `.gitignore` — why keys never go in code
-- [ ] **Build:** call a real public API with the key from an env var, handling 404 and 429 explicitly
-- [ ] **Done when:** You can open a provider's API reference and know where the auth goes.
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 0.4 · round 2 of 3: status codes and JSON | Lesson 0.4 · round 3 of 3: secrets safe |
+| Tue | Lesson 0.5 · round 1 of 3: commits and branches | Lesson 0.5 · round 2 of 3: merging and conflicts |
+| Wed | Lesson 0.5 · round 3 of 3: reading docs | Lesson 1 · round 1 of 4: the workbench |
+| Thu | Lesson 1 · round 2 of 4: tokens and the call | Lesson 1 · round 3 of 4: the bill |
+| Fri | Lesson 1 · round 4 of 4: the clocks | Lesson 2 · round 1 of 4: contracts |
 
-### Day 0.5 — Git, GitHub, and reading docs
-- [ ] Commits as snapshots; branch, push, pull, and what a PR actually is
-- [ ] Create a merge conflict on purpose and resolve it
-- [ ] Documentation as a skill: reference vs guide; finding the answer faster than a video could
-- [ ] **Build:** a practice repo with a branch, a PR, and one resolved conflict
-- [ ] **Done when:** The word "conflict" no longer raises your pulse.
+### Week 2 — Prompting · Structured output · Long context
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 2 · round 2 of 4: examples | Lesson 2 · round 3 of 4: versioning |
+| Tue | Lesson 2 · round 4 of 4: measurement | Lesson 3 · round 1 of 4: why JSON fails |
+| Wed | Lesson 3 · round 2 of 4: Pydantic models | Lesson 3 · round 3 of 4: validate and repair |
+| Thu | Lesson 3 · round 4 of 4: the full build | Lesson 4 · round 1 of 4: input |
+| Fri | Lesson 4 · round 2 of 4: budgeting | Lesson 4 · round 3 of 4: citations |
+
+### Week 3 — Cost and speed · Failure modes
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 4 · round 4 of 4: measurement | Lesson 5 · round 1 of 4: stream end-to-end |
+| Tue | Lesson 5 · round 2 of 4: two caches | Lesson 5 · round 3 of 4: route cheap first |
+| Wed | Lesson 5 · round 4 of 4: measure P95 | Lesson 6 · round 1 of 4: name the failure |
+| Thu | Lesson 6 · round 2 of 4: retry smart | Lesson 6 · round 3 of 4: stay idempotent |
+| Fri | Lesson 6 · round 4 of 4: degrade gracefully | Lesson 7 · round 1 of 2: four things change |
+
+### Week 4 — Embeddings · Chunking
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 7 · round 2 of 2: tell it with numbers | Lesson 8 · round 1 of 4: embeddings |
+| Tue | Lesson 8 · round 2 of 4: similarity | Lesson 8 · round 3 of 4: dimensions |
+| Wed | Lesson 8 · round 4 of 4: search types | Lesson 9 · round 1 of 4: parsing |
+| Thu | Lesson 9 · round 2 of 4: chunking | Lesson 9 · round 3 of 4: structure |
+| Fri | Lesson 9 · round 4 of 4: deduplication | Lesson 10 · round 1 of 4: vector store |
+
+### Week 5 — Retrieval · Measuring retrieval · Grounded answers
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 10 · round 2 of 4: hybrid search | Lesson 10 · round 3 of 4: fusion |
+| Tue | Lesson 10 · round 4 of 4: build it | Lesson 11 · round 1 of 4:  |
+| Wed | Lesson 11 · round 2 of 4:  | Lesson 11 · round 3 of 4:  |
+| Thu | Lesson 11 · round 4 of 4:  | Lesson 12 · round 1 of 4: grounding |
+| Fri | Lesson 12 · round 2 of 4: refusing | Lesson 12 · round 3 of 4: dates |
+
+### Week 6 — RAG in production · Ship #2 · Tool use
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 12 · round 4 of 4: ordering | Lesson 13 · round 1 of 4: permissions |
+| Tue | Lesson 13 · round 2 of 4: freshness | Lesson 13 · round 3 of 4: versions |
+| Wed | Lesson 13 · round 4 of 4: the budget | Lesson 14 · round 1 of 2: the numbers |
+| Thu | Lesson 14 · round 2 of 2: ship it | Lesson 15 · round 1 of 4: a tool is text |
+| Fri | Lesson 15 · round 2 of 4: the round trip | Lesson 15 · round 3 of 4: parallel calls |
+
+### Week 7 — The agent loop · MCP
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 15 · round 4 of 4: error handling | Lesson 16 · round 1 of 4: the loop |
+| Tue | Lesson 16 · round 2 of 4: termination | Lesson 16 · round 3 of 4: memory |
+| Wed | Lesson 16 · round 4 of 4: pipelines | Lesson 17 · round 1 of 4: the problem |
+| Thu | Lesson 17 · round 2 of 4: three things | Lesson 17 · round 3 of 4: the risks |
+| Fri | Lesson 17 · round 4 of 4: build one | Lesson 18 · round 1 of 4: vibes fail |
+
+### Week 8 — Evals I · Evals II · Guardrails
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 18 · round 2 of 4: three tiers | Lesson 18 · round 3 of 4: error analysis |
+| Tue | Lesson 18 · round 4 of 4: judge design | Lesson 19 · round 1 of 4: five parts |
+| Wed | Lesson 19 · round 2 of 4: measure the noise | Lesson 19 · round 3 of 4: make it fast |
+| Thu | Lesson 19 · round 4 of 4: test the test | Lesson 20 · round 1 of 4: how it works |
+| Fri | Lesson 20 · round 2 of 4: three legs | Lesson 20 · round 3 of 4: what holds |
+
+### Week 9 — Ship #3 · Observability · Fine-tuning
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 20 · round 4 of 4: attack it | Lesson 21 · round 1 of 2: what readers believe |
+| Tue | Lesson 21 · round 2 of 2: proof with numbers | Lesson 22 · round 1 of 4: traces |
+| Wed | Lesson 22 · round 2 of 4: dashboards | Lesson 22 · round 3 of 4: feedback |
+| Thu | Lesson 22 · round 4 of 4: safety | Lesson 23 · round 1 of 3: what changes |
+| Fri | Lesson 23 · round 2 of 3: when to use | Lesson 23 · round 3 of 3: the verdict |
+
+### Week 10 — Open models · Capstone
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lesson 24 · round 1 of 3:  | Lesson 24 · round 2 of 3:  |
+| Tue | Lesson 24 · round 3 of 3:  | Lessons 25–27 · round 1 of 8: Scope and design |
+| Wed | Lessons 25–27 · round 2 of 8: The spine | Lessons 25–27 · round 3 of 8: Agent or pipeline |
+| Thu | Lessons 25–27 · round 4 of 8: Deploy on capstone day 1 | Lessons 25–27 · round 5 of 8: Retrieval |
+| Fri | Lessons 25–27 · round 6 of 8: Tools | Lessons 25–27 · round 7 of 8: Evals |
+
+### Week 11 — Harden and measure · Write-up · Get hired
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | Lessons 25–27 · round 8 of 8: Auth and ship | Lesson 28 · round 1 of 4:  |
+| Tue | Lesson 28 · round 2 of 4:  | Lesson 28 · round 3 of 4:  |
+| Wed | Lesson 28 · round 4 of 4:  | Lesson 29 · round 1 of 3: build your case |
+| Thu | Lesson 29 · round 2 of 3: measure claims | Lesson 29 · round 3 of 3: ship it |
+| Fri | Lesson 30 · round 1 of 2: what you shipped | Lesson 30 · round 2 of 2: your next move |
+
+### Week 12 — Catch up, review, apply
+
+No new lessons. If you are behind, this week is your slack: finish the rounds you skipped first, then work down this list.
+
+| Day | Round 1 | Round 2 |
+|-----|---------|---------|
+| Mon | **Warm-up sweep.** Redo the warm-up questions for every round you skipped or got wrong. | **Read your error log.** Group every mistake by its cause and write down the top three. |
+| Tue | **Rebuild one from memory.** Pick the lesson you feel shakiest on and rebuild its tool with no hints. | **Teach it back.** Explain your best project out loud in five minutes. Record it, then listen. |
+| Wed | **Fix your top failure.** Take the biggest failure your evals show, fix it, and run the evals again. | **Numbers in every README.** Cost per request, p95 latency and eval score, all from real measurements. |
+| Thu | **Finish the write-up.** Publish the write-up from Lesson 29, with links to your repos. | **Rewrite your résumé.** Build it around shipped systems with numbers, as in Lesson 30. |
+| Fri | **Five targeted applications.** Send five applications to places you chose on purpose. | **Plan your next month.** Choose depth or a domain, and write the plan into LOG.md. |
 
 ---
 
-## Week 1 — Model fluency
-*Days 1–7*
+## The lessons
+
+### Part 0 — The base layer
+*Lessons 0.1–0.5 · optional*
+
+**Outcome: "I have the basics the rest of the course assumes, or I have checked that I already did."**
+
+Take the check on the Overview first. Everything on it is taught here, so skip any lesson you already pass and do the ones you don't, in order. From zero, all five lessons take about a week and a half at 3 hours a day.
+
+#### Lesson 0.1 — The terminal
+*3 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — the shell loop:** navigate using `pwd`, `cd`, and `ls`; create files with spaces in the name; try one command without quotes and one with quotes
+- [ ] **Round 2 — streams and pipes:** build a pipeline that searches, sorts, counts, and filters results; use redirection to save output and errors to different files
+- [ ] **Round 3 — PATH and errors:** break a command by removing its directory from PATH; read the error message from the top; identify the failure type and fix it
+- [ ] **Teach it back:** explain the shell loop, the three streams, and how errors flow in a pipeline, in your own words with no "basically"
+- [ ] **Done when:** You can debug an install failure without panicking.
+
+#### Lesson 0.2 — Python, the parts you'll use
+*3 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — functions and modules:** two functions in one file, import and use them in another
+- [ ] **Round 2 — containers and loops:** a function using `Counter` and a comprehension to find the top words
+- [ ] **Round 3 — types and environment:** full type hints on all functions, mypy passes, rebuild from scratch
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** Fresh environment, one install command, and the CLI runs on the first try.
+
+#### Lesson 0.3 — Errors, async, and tests
+*3 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — errors and cleanup:** a function that fetches URLs, catches errors narrowly, and returns them as data
+- [ ] **Round 2 — async and concurrency:** rewrite the fetcher as async, time both versions, watch sync vs. async
+- [ ] **Round 3 — tests that work:** write tests for success and failure, mark them async, and run pytest
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** You can explain why the async version is faster, and both tests pass.
+
+#### Lesson 0.4 — HTTP, JSON, and secrets
+*3 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — HTTP basics:** an HTTP request and response as plain text, with method, headers, blank line, and body
+- [ ] **Round 2 — status codes and JSON:** a script that branches on status code and parses `r.json()` from the response
+- [ ] **Round 3 — secrets safe:** a script that reads the API key from `.env`, not committed, and passes it in a header
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
+- [ ] **Done when:** You can open a provider's API reference and know where the auth goes.
+
+#### Lesson 0.5 — Git, GitHub, and reading docs
+*3 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — commits and branches:** a practice repo with three commits on main and one branch with its own commits
+- [ ] **Round 2 — merging and conflicts:** cause a merge conflict on purpose, resolve it by hand, and use `git merge --abort`
+- [ ] **Round 3 — reading docs:** read a reference page, then a tutorial, then check the changelog and answer a question
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
+- [ ] **Done when:** The word "conflict" no longer raises your pulse.
+
+### Part 1 — Model fluency
+*Lessons 1–7*
 
 **Outcome: "I can make a model do what I want, reliably and cheaply — and prove exactly what it cost."**
 
-### Day 1 — First-principles calls
-- [ ] Set up the repo, a `uv` env, API keys in env vars — never in code
-- [ ] Raw SDK: messages, system prompt, temperature, `max_tokens`, stop sequences
-- [ ] Count input and output tokens; compute the exact cost of a call
-- [ ] Measure latency: time-to-first-token vs total
-- [ ] **Build:** a CLI that takes a URL or file and returns a structured summary
-- [ ] **Done when:** You can state, to the cent, what one run of your CLI costs — and why.
+#### Lesson 1 — First-principles calls
+*4 rounds of 90 minutes · about 2 study days*
 
-### Day 2 — Prompting that survives contact with users
-- [ ] Few-shot examples, task decomposition, explicit output contracts, negative instructions
-- [ ] When step-by-step reasoning helps, and when it just burns tokens
-- [ ] Prompts live in versioned files, not f-strings scattered through the code
-- [ ] **Build:** a prompt module plus a 20-case input file you can run any prompt across
+- [ ] **Round 1 — the workbench:** one folder under git, one `uv` environment, your key in `.env` (ignored by git), and one working call that prints a reply
+- [ ] **Round 2 — tokens and the call:** a command-line tool that turns a URL or file into capped text and asks for a title, three bullets and one question
+- [ ] **Round 3 — the bill:** cost printed to the cent on every run, plus the stop reason, logged for five different inputs
+- [ ] **Round 4 — the clocks:** first-token time and total time measured on every run, the temperature experiment written down, and a commit
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** You can say, to the cent, what one run of your tool costs — and why.
+
+#### Lesson 2 — Prompting that survives contact with users
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — contracts:** a prompt with a tight output contract and three carefully chosen examples that return consistent structure across five test inputs
+- [ ] **Round 2 — examples:** one failing case fixed either by decomposing into two calls or by turning off reasoning; measured comparison
+- [ ] **Round 3 — versioning:** prompt module with loader, 20-case test file, and runner that produces result files with version strings
+- [ ] **Round 4 — measurement:** three result files (v1, v2, split), a table showing accuracy and tokens, and a commit with evidence
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
 - [ ] **Done when:** You can change a prompt and immediately see which of the 20 cases moved.
 
-### Day 3 — Structured output ⭐
-- [ ] JSON schema / tool-based structured output, with Pydantic models as the contract
-- [ ] Validation, retry-on-invalid, repair prompts, streaming partial JSON
-- [ ] **Build:** an extractor turning messy text — invoices, emails, résumés, job posts — into typed objects
+#### Lesson 3 — Structured output ⭐
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — why JSON fails:** pick a document type, write a tiny JSON Schema, make one call with schema enforcement, get back valid JSON
+- [ ] **Round 2 — Pydantic models:** write a Pydantic model with 6–12 fields, use it to parse one real example, show it does all three jobs
+- [ ] **Round 3 — validate and repair:** add a validation loop, repair once on failure with the error message, cap at two attempts, log every field that fails
+- [ ] **Round 4 — the full build:** extract 50 real inputs, log results, iterate until 95% parse first or second attempt, test edge cases, commit
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
 - [ ] **Done when:** At least 95% of 50 real inputs parse into valid objects on the first or second attempt.
 
-### Day 4 — Long context and multimodal
-- [ ] Images and PDFs as input; document understanding with no retrieval pipeline at all
-- [ ] Context-window budgeting; prompt caching and what it does to cost
-- [ ] When stuffing the whole document into the prompt beats RAG — more often than people admit
-- [ ] **Build:** PDF in, structured cited summary out
+#### Lesson 4 — Long context and multimodal
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — input:** extract text from a PDF per page, print character counts, identify scanned pages
+- [ ] **Round 2 — budgeting:** count document tokens, plan the window (output reserve, document size, spare room), verify cache hits
+- [ ] **Round 3 — citations:** summarizer with findings (claim, page, quote), verify every quote with string search, report pass rate
+- [ ] **Round 4 — measurement:** results table (tokens, cost, pass rate for 20 documents), cache performance table, commit evidence
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
 - [ ] **Done when:** You can say which documents belong in the prompt and which need retrieval.
 
-### Day 5 — Cost, latency, streaming
-- [ ] Stream tokens end-to-end (SSE) from a FastAPI endpoint to a client
-- [ ] Model routing: cheap model first, escalate on low confidence or failure
-- [ ] Prompt caching plus a response cache — then measure the hit rate
-- [ ] **Build:** a streaming API endpoint with caching
-- [ ] **Done when:** You have a table of p50/p95 latency and cost per request, cached vs uncached.
+#### Lesson 5 — Cost, latency, streaming
+*4 rounds of 90 minutes · about 2 study days*
 
-### Day 6 — Failure modes
-- [ ] Hallucination, truncation, refusal, rate limits, timeouts, provider outages
-- [ ] Retries with exponential backoff and jitter, idempotency, circuit breaking, degraded responses
-- [ ] **Build:** harden yesterday's service, then break it on purpose — bad keys, huge inputs, cut network
-- [ ] **Done when:** Every failure path returns something useful instead of a stack trace.
+- [ ] **Round 1 — stream end-to-end:** a streaming endpoint that yields chunks as SSE events, with a client that measures time to first chunk and last chunk
+- [ ] **Round 2 — two caches:** a response cache keyed on input + params, plus prompt caching enabled, both logged, with a 30% hit rate test
+- [ ] **Round 3 — route cheap first:** small model first with a mechanical check, escalate on failure, log which path each request took
+- [ ] **Round 4 — measure P95:** 100 requests logged for latency, cache status, routing decision; compute P50 and P95 for all, hits, small model, and escalated
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** You have a table of P50 and P95 latency by category, a response cache hit rate, and a routing escalation rate.
 
-### Day 7 — Ship #1
-- [ ] Deploy the tool publicly
-- [ ] README: what it does, architecture, cost per request, p95 latency
-- [ ] Take a half day off — burnout on Day 19 costs more than a Sunday does
+#### Lesson 6 — Failure modes
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — name the failure:** a classifier function that takes an exception or status code and returns retryable, not_retryable, or not_an_error, used everywhere a call might fail
+- [ ] **Round 2 — retry smart:** exponential backoff (1, 2, 4, 8 seconds) with jitter, honoring `retry-after`, capped by latency budget not attempt count
+- [ ] **Round 3 — stay idempotent:** accept an idempotency key, check if it exists before running work, store and return cached results for known keys
+- [ ] **Round 4 — degrade gracefully:** a five-rung ladder from fresh answer to cached to small model to partial to error message, with request id logged for each
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** Every failure path returns something useful. The user gets an answer or a request id, never a stack trace.
+
+#### Lesson 7 — Ship #1
+*2 rounds of 90 minutes · about 1 study day*
+
+- [ ] **Round 1 — four things change:** live URL with key in secret store, rate limit set, spend ceiling set, tested from a different network
+- [ ] **Round 2 — tell it with numbers:** README with six sections and a table of real runs from the live URL
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
 - [ ] **Done when:** A stranger can use it from a link, and read what it costs to run.
 
----
-
-## Week 2 — Context engineering & RAG
-*Days 8–14*
+### Part 2 — Context engineering & RAG
+*Lessons 8–14*
 
 **Outcome: "I can make a model answer from my data — and prove that retrieval got better, not just different."**
 
-### Day 8 — Embeddings from scratch, no database
-- [ ] Embeddings, cosine similarity, dimensionality, exact vs approximate nearest neighbour
-- [ ] **Build:** a complete RAG system in ~200 lines with numpy and a list. No vector database.
-- [ ] **Done when:** You can explain, without hand-waving, exactly what a vector DB is doing for you.
+#### Lesson 8 — Embeddings from scratch, no database
+*4 rounds of 90 minutes · about 2 study days*
 
-### Day 9 — Ingestion and chunking
-- [ ] Parsing PDF, HTML, Markdown, code — the parsing is usually the hard part, not the AI
-- [ ] Chunk size and overlap; structural vs semantic chunking; keeping headings with their content
-- [ ] Metadata, stable document IDs, dedupe, incremental re-indexing
-- [ ] **Build:** an ingestion pipeline over a corpus you genuinely care about
+- [ ] **Round 1 — embeddings:** embed three texts with the same model and save to a numpy array
+- [ ] **Round 2 — similarity:** normalize all embeddings, compute dot products, and measure your model's scale
+- [ ] **Round 3 — dimensions:** truncate embeddings to 256 and 64 dimensions and see how similarity scores change
+- [ ] **Round 4 — search types:** a complete RAG system in ~200 lines with numpy and a list, using exact search
+- [ ] **Teach it back:** explain embeddings and retrieval out loud in your own words, with no "basically"
+- [ ] **Done when:** You can explain, without hand-waving, exactly what a vector database is doing for you.
+
+#### Lesson 9 — Ingestion and chunking
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — parsing:** one parser for your corpus format and read 20 outputs to find the two worst problems
+- [ ] **Round 2 — chunking:** chunk by token count with overlap and print the token distribution
+- [ ] **Round 3 — structure:** chunk structurally on heading boundaries, prepend breadcrumbs, store metadata
+- [ ] **Round 4 — deduplication:** stable IDs, content deduplication, incremental re-indexing
+- [ ] **Teach it back:** explain ingestion and chunking out loud in your own words, with no "basically"
 - [ ] **Done when:** Re-running ingestion on a changed corpus updates only what changed.
 
-### Day 10 — Retrieval that actually works
-- [ ] Move into a real vector store
-- [ ] Hybrid search (BM25 + dense) — and why pure vector search fails on names, IDs and rare terms
-- [ ] Metadata filters, MMR/diversity, reranking, query rewriting and multi-query
-- [ ] **Build:** upgrade yesterday's pipeline to hybrid plus a reranker
-- [ ] **Done when:** You have before/after recall numbers, not a feeling.
+#### Lesson 10 — Retrieval that actually works
+*4 rounds of 90 minutes · about 2 study days*
 
-### Day 11 — Retrieval evaluation ⭐
-- [ ] Hand-build a golden set: 30–50 questions with known correct source chunks
-- [ ] Metrics: recall@k, MRR, faithfulness/groundedness, answer relevance
-- [ ] Ragas or a hand-rolled harness — understanding the metric is the point
-- [ ] **Done when:** You can write: "hybrid + rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set." That sentence is worth more in an interview than a month of tutorials.
+- [ ] **Round 1 — vector store:** your chunks live in a real database with metadata and identifiers, and re-running ingestion updates instead of duplicating
+- [ ] **Round 2 — hybrid search:** both dense and BM25 search working on the same corpus, and ten queries where keyword wins
+- [ ] **Round 3 — fusion:** top fifty results fused by reciprocal rank, then reranked to five, with the reranker timing logged
+- [ ] **Round 4 — build it:** the full hybrid pipeline called as one function, before-and-after recall numbers on five test queries
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
+- [ ] **Done when:** You have before-and-after recall numbers, not a feeling.
 
-### Day 12 — Generation over retrieved context
-- [ ] Inline citations, grounding, refusing to answer outside the corpus
-- [ ] Conflicting sources, stale sources, context ordering and lost-in-the-middle
-- [ ] **Build:** answers where every claim links back to its source chunk
+#### Lesson 11 — Retrieval evaluation ⭐
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — build truth:** a `golden.jsonl` file holding 40 questions with their labeled chunk identifiers, including five questions the corpus cannot answer
+- [ ] **Round 2 — measure retrieval:** a runner that scores recall@k at k of 1, 5, 10, 20 for three retrievers in one table
+- [ ] **Round 3 — position matters:** add MRR to the table and run faithfulness over 20 answers with a judge model
+- [ ] **Round 4 — the sentence:** the complete harness, table of all metrics, ten worst failures labeled, and one sentence you can defend
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** You can write: “hybrid plus rerank moved recall@5 from 0.62 to 0.84 on a 40-question golden set.” That sentence is worth more in an interview than a month of tutorials.
+
+#### Lesson 12 — Generation over retrieved context
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — grounding:** chunks tagged S1 to S5, model answers with tags, every tag checked against the pack and retried on failure
+- [ ] **Round 2 — refusing:** a gate that refuses on low reranker scores, calibrated on your golden set, and a refusal prompt the model can produce
+- [ ] **Round 3 — dates:** chunk headers with source, section, and date, a tie-break rule in the prompt, tested on conflicting sources
+- [ ] **Round 4 — ordering:** chunks ordered by reranker score best-first, question repeated at the end, tested in both orders
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
 - [ ] **Done when:** You can click any sentence in an answer through to the text it came from.
 
-### Day 13 — RAG in production
-- [ ] Freshness and re-index strategy; permissions and multi-tenancy — whose documents can this user see?
-- [ ] Index versioning and rollback; cost per query
-- [ ] Latency budget across embed → search → rerank → generate
-- [ ] **Build:** add auth and per-user document scoping
+#### Lesson 13 — RAG in production
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — permissions:** two users with different access ask the same question and get different answers; the access filter is derived from the session, never from the request body
+- [ ] **Round 2 — freshness:** a reconciliation job lists source documents, lists indexed documents, and deletes the difference
+- [ ] **Round 3 — versions:** build a second index with a different configuration, test both against the golden set, and flip the alias to point at the winner, then flip back
+- [ ] **Round 4 — the budget:** measure each stage: embed, search, rerank, generate; calculate P50 and P95 latency over 20+ queries; record cost per query
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
 - [ ] **Done when:** Two users with different permissions get different answers to the same question.
 
-### Day 14 — Ship #2
-- [ ] Deploy the RAG app
-- [ ] README carries the Day 11 eval table
-- [ ] Treat this one carefully — it's usually the strongest portfolio piece of the month
+#### Lesson 14 — Ship #2
+*2 rounds of 90 minutes · about 1 study day*
+
+- [ ] **Round 1 — the numbers:** a README with six sections: what it does, the eval table from Lesson 11, architecture, cost and latency measured on the deployed service, known failure modes, and a live link
+- [ ] **Round 2 — ship it:** the service deployed with the index in a managed store; keys read from environment; demo corpus public and working; ingestion command documented
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
 - [ ] **Done when:** The README leads with measured retrieval quality, not a feature list.
 
----
-
-## Week 3 — Agents, tools and evals
-*Days 15–21*
+### Part 3 — Agents, tools and evals
+*Lessons 15–21*
 
 **Outcome: "My system can take actions — and I can prove it still works before I ship a change."**
 
-### Day 15 — Tool use
-- [ ] Tool definitions, JSON schemas, tool choice, parallel tool calls
-- [ ] Feeding results — and errors — back into the conversation
-- [ ] **Build:** a four-tool assistant (search, calculator, SQL query, file write) with no framework
+#### Lesson 15 — Tool use
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — a tool is text:** four tool definitions by hand, each with a name, description, and JSON Schema
+- [ ] **Round 2 — the round trip:** a simple loop that does the four steps once, sending a tool request and getting a result back
+- [ ] **Round 3 — parallel calls:** detect two independent tool calls, run them at the same time, return both results in one message
+- [ ] **Round 4 — error handling:** a SQL tool that validates arguments, catches errors, returns them as results, and truncates long output
+- [ ] **Teach it back:** explain today out loud in your own words, with no 'basically'
 - [ ] **Done when:** A tool that throws produces a recovery, not a crash.
 
-### Day 16 — The agent loop
-- [ ] Plan → act → observe → repeat; termination conditions, step limits, budget limits
-- [ ] Memory: short-term conversation vs long-term store; context compaction
-- [ ] **When an agent is the wrong answer:** if you can draw the flowchart, write the flowchart — a deterministic pipeline with three LLM calls is cheaper, faster and testable
-- [ ] **Build:** a bounded agent that completes a genuinely multi-step task
+#### Lesson 16 — The agent loop
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — the loop:** a simple `while` loop that sends, parses, runs a tool if needed, and appends
+- [ ] **Round 2 — termination:** the loop now with four ceilings: steps, budget, wall-clock time, and no-progress rule
+- [ ] **Round 3 — memory:** the loop with compaction: when the message list gets long, summarize and keep only the last two steps
+- [ ] **Round 4 — pipelines:** write the same task as both an agent loop and a three-call pipeline; compare time, cost, and reliability
+- [ ] **Teach it back:** explain today out loud in your own words, with no 'basically'
 - [ ] **Done when:** The agent can't loop forever, and you can say what it costs at worst.
 
-### Day 17 — MCP and integrations
-- [ ] Model Context Protocol: servers, tools, resources, transports — and why a standard tool interface matters
-- [ ] **Build:** an MCP server exposing your week-2 RAG as a tool, connected to a real client
+#### Lesson 17 — MCP and integrations
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — the problem:** explain why connecting N applications to M tools requires multiplication, and how MCP changes it to addition
+- [ ] **Round 2 — three things:** design a server for your corpus: name the tools, resources, and prompts it will expose
+- [ ] **Round 3 — the risks:** audit your server design for security: what files does it read, what secrets does it need, what harm could it do?
+- [ ] **Round 4 — build one:** an MCP server exposing your Week-2 search as a tool and your document list as a resource, registered in a real client
+- [ ] **Teach it back:** explain today out loud in your own words, with no basically
 - [ ] **Done when:** You can query your own corpus from inside a coding agent or desktop client.
 
-### Day 18 — Evals I — the discipline ⭐
-- [ ] Why evals beat vibes; the three tiers — assertions, LLM-as-judge, human review
-- [ ] **Error analysis, the actual skill:** dump 50 failures, read all of them, label them, cluster them, and let the clusters tell you what to fix. Most teams skip this and optimise the wrong thing.
-- [ ] Judge design: rubrics, pairwise comparison, position bias, and validating the judge against human labels
-- [ ] Read Hamel Husain's writing on evals today, start to finish
+#### Lesson 18 — Evals I — the discipline ⭐
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — vibes fail:** design a 40-case eval, run your system on all of them, and record a baseline score
+- [ ] **Round 2 — three tiers:** write five assertions that code can check without a model, then code one and count passes
+- [ ] **Round 3 — error analysis:** export 50 failures, read all of them, label each one, group the labels, and sort by frequency
+- [ ] **Round 4 — judge design:** write one judge prompt, validate it on 40 hand-labeled cases, and tighten it until agreement clears 80 percent
+- [ ] **Teach it back:** explain today out loud in your own words, with no basically
 - [ ] **Done when:** You have a labelled taxonomy of how your own system fails, ranked by frequency.
 
-### Day 19 — Evals II — build the harness ⭐
-- [ ] Dataset → runner → judge → metrics → regression gate, wired into CI
-- [ ] Per-commit scores; a regression fails the build
-- [ ] **Build:** `make eval` that runs against your agent and your RAG app
-- [ ] **Done when:** Deliberately worsening a prompt turns your CI red.
+#### Lesson 19 — Evals II — build the harness ⭐
+*4 rounds of 90 minutes · about 2 study days*
 
-### Day 20 — Guardrails and security
-- [ ] **Prompt injection**, especially through retrieved documents and tool output — the number-one real-world AI security issue
-- [ ] Data exfiltration paths, PII handling, output validation, allow-listed actions
-- [ ] Sandboxed tool execution, human-in-the-loop for irreversible actions, rate limiting
-- [ ] **Do:** spend two hours red-teaming your own Day 16 agent, and write down what worked
-- [ ] **Done when:** You have a document listing the attacks that worked and what you changed.
+- [ ] **Round 1 — five parts:** 40-case dataset, runner that records everything per case, one results file
+- [ ] **Round 2 — measure the noise:** run three times unchanged, measure the wobble, set the threshold outside it, commit baseline.json
+- [ ] **Round 3 — make it fast:** smoke set on 15 cases with assertions only, full set on 40 with the judge, cache by prompt hash, concurrent runs
+- [ ] **Round 4 — test the test:** break the system on purpose, watch the eval fail and the gate block it, revert, confirm it passes
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
+- [ ] **Done when:** You have a harness that catches when you break something, because you broke it on purpose and watched it fail.
 
-### Day 21 — Ship #3
-- [ ] Public repo: agent, tools, eval suite, CI
-- [ ] README includes a "How I evaluate this" section
+#### Lesson 20 — Guardrails and security
+*4 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — how it works:** list your tools, mark which ones read private data, accept untrusted input, and send data outward
+- [ ] **Round 2 — three legs:** identify dangerous tools, see which legs you can remove
+- [ ] **Round 3 — what holds:** for each dangerous tool, add an allow-list, sandbox, user scoping, and output validation
+- [ ] **Round 4 — attack it:** spend two hours red-teaming, log every attack, convert each success into an eval case
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
+- [ ] **Done when:** You have a document listing the attacks that worked and eval cases that stop them.
+
+#### Lesson 21 — Ship #3
+*2 rounds of 90 minutes · about 1 study day*
+
+- [ ] **Round 1 — what readers believe:** public repo with clean structure, eval suite working, CI gate blocking bad changes, README with evaluation section
+- [ ] **Round 2 — proof with numbers:** README includes five numbers with denominators and dates, failure cluster analysis, spend ceiling set, fresh clone works in one command
+- [ ] **Teach it back:** explain today out loud in your own words, with no \"basically\"
 - [ ] **Done when:** Someone can read your README and reproduce your eval scores.
 
----
-
-## Week 4 — Production and proof
-*Days 22–30*
+### Part 4 — Production and proof
+*Lessons 22–30*
 
 **Outcome: "Everything I built is observable, measured, deployed, and explained well enough to hire me on."**
 
-### Day 22 — Observability
-- [ ] Trace every model call: inputs, outputs, tokens, cost, latency, tool calls, retries
-- [ ] Dashboards for cost per day and p95 latency; capture user feedback signals
-- [ ] Log safely — no secrets, no unredacted PII
-- [ ] **Build:** instrument all three shipped projects with one tracing tool
-- [ ] **Done when:** You can open a trace for any single request from the last week.
+#### Lesson 22 — Observability
+*4 rounds of 90 minutes · about 2 study days*
 
-### Day 23 — Fine-tuning, in exactly one day
-- [ ] When it genuinely wins: fixed style or format, latency and cost at high volume, a narrow repeated task
-- [ ] When it loses: knowledge injection (that's RAG), fast-changing data, small datasets, anything you haven't first tried to solve with a good prompt
-- [ ] **Do:** run one small SFT/LoRA job on a hosted service and compare it head-to-head against your best prompt
-- [ ] **Done when:** You can defend the choice with data — and the honest answer is usually "prompt + RAG won", which is itself a senior signal.
+- [ ] **Round 1 — traces:** every request has a trace id; every step is a span with model name, tokens, cost, latency, and stop reason
+- [ ] **Round 2 — dashboards:** cost per day with alarm at 3x normal, and p50/p95 latency per endpoint
+- [ ] **Round 3 — feedback:** thumbs up and thumbs down buttons keyed by trace id, so a score is also a diagnosis
+- [ ] **Round 4 — safety:** a redaction function catches emails, card numbers, keys, and environment values before they leave your code
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
+- [ ] **Done when:** You can open a trace for any single request from the last week, and you know what the last one cost.
 
-### Day 24 — Open models and serving
-- [ ] Run a model locally (Ollama or llama.cpp); quantisation tradeoffs
-- [ ] vLLM, batching, KV cache — conceptually, not as an ops project
-- [ ] When self-hosting is right: privacy and compliance, extreme volume, latency floors
-- [ ] Timebox this hard. It's the biggest rabbit hole in the plan.
-- [ ] **Done when:** You can say, in two sentences, when you'd self-host and when you wouldn't.
+#### Lesson 23 — Fine-tuning, in exactly one day
+*3 rounds of 90 minutes · about 2 study days*
 
-### Days 25–27 — Capstone
-- [ ] One product using everything: retrieval + tools/agent + evals + tracing + auth + deploy
-- [ ] Scope rule: something **you would personally use every week**
-- [ ] Shapes that work: an assistant over your own domain's documents with actions attached; a workflow replacing a recurring manual task; an internal tool for a niche you know well
-- [ ] Ship at the end of Day 27. No extensions.
+- [ ] **Round 1 — what changes:** LoRA trains small matrices, not the whole model; tuning shapes behavior, not knowledge
+- [ ] **Round 2 — when to use:** tuning wins at fixed format and high volume; it loses at knowledge, changing data, and small datasets
+- [ ] **Round 3 — the verdict:** a table comparing your best prompt, prompt plus retrieval, and a tuned model; three numbers per column; your judgment in writing
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
+- [ ] **Done when:** You can defend the choice with data — and the honest answer is usually "prompt + retrieval won", which is itself a senior signal.
+
+#### Lesson 24 — Open models and serving
+*3 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — weights on your machine:** a local model running, with memory and tokens-per-second measured
+- [ ] **Round 2 — quantization trade-off:** scores from your golden set on hosted, 8-bit local, and 4-bit local
+- [ ] **Round 3 — self-hosting decision:** your break-even calculation and four-sentence judgment on when you would choose it
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** You can say in two sentences when you would self-host and when you would not.
+
+#### Lessons 25–27 — Capstone
+*8 rounds of 90 minutes · about 4 study days*
+
+- [ ] **Round 1 — Scope and design:** a one-sentence product description, the domain you know, and three things you are explicitly *not* building
+- [ ] **Round 2 — The spine:** a README with the problem, the six pieces of the architecture, and why you chose this shape
+- [ ] **Round 3 — Agent or pipeline:** README updated with whether you are building a pipeline or an agent loop, the steps in order, and your reason
+- [ ] **Round 4 — Deploy on capstone day 1:** a deployed skeleton with retrieval, tracing wired before the first model call, questions answered with cited sources, and a public URL
+- [ ] **Round 5 — Retrieval:** hybrid search plus reranking working end-to-end, the top result with metadata passed to the model, answers that cite their sources, tested on ten real questions
+- [ ] **Round 6 — Tools:** one tool that does something real, with a dry-run mode and a confirmation step, tested on five commands
+- [ ] **Round 7 — Evals:** a golden set of twenty to thirty real cases from your own use, a harness that runs them all, a judge that scores each one, and failures grouped by cause
+- [ ] **Round 8 — Auth and ship:** login and per-user scoping, every failure path with a clear error message, README with real metrics (cost, latency, eval score), deployed and used for a task you actually needed
+- [ ] **Teach it back:** explain your capstone to a smart friend, from login to question to answer, five to seven sentences, with no gaps
 - [ ] **Done when:** It's deployed and you've used it yourself for something real.
 
-### Day 28 — Harden and measure
-- [ ] Load test it; record cost per user, p95 latency, eval scores on the golden set, error rate
-- [ ] Write a failure playbook: what breaks, how you'd know, what you'd do
-- [ ] Fix the top two failure modes your evals surface
-- [ ] **Done when:** Every number in the README came from a measurement, not an estimate.
+#### Lesson 28 — Harden and measure
+*4 rounds of 90 minutes · about 2 study days*
 
-### Day 29 — Write it up ⭐
-- [ ] Problem → architecture diagram → key tradeoffs → what failed and why → eval results → cost and latency
-- [ ] **The highest-leverage day of the month.** Hiring managers cannot see your skill; they can see whether you reason about tradeoffs. Most candidates ship code with no story — ship the story.
+- [ ] **Round 1 — load testing:** a ramp showing p50, p95, p99 and error rate at 1, 5, 10, 25 and 50 concurrent users, with the knee marked
+- [ ] **Round 2 — the four numbers:** cost per user, p95 latency broken down by span, eval score on deployed, error rate split by cause
+- [ ] **Round 3 — failure playbook:** at least six rows showing what breaks, how you would know, what you would do, with alarms for gaps
+- [ ] **Round 4 — fix the top two:** before-and-after scores from the error analysis loop, top two fixes described, cases promoted to permanent evals
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
+- [ ] **Done when:** Every number in the README came from a measurement, with the date and conditions beside it.
+
+#### Lesson 29 — Write it up ⭐
+*3 rounds of 90 minutes · about 2 study days*
+
+- [ ] **Round 1 — build your case:** read `LOG.md` and sort every number and surprise into six piles under the six section headings
+- [ ] **Round 2 — measure claims:** draw the architecture diagram, list three to five tradeoffs with the cost of each, and list three failures or approaches you tried and rejected
+- [ ] **Round 3 — ship it:** assemble the six sections, publish on a stable link, link from your four READMEs and resume, send to two readers, and commit
+- [ ] **Teach it back:** explain today out loud in your own words, with no "basically"
 - [ ] **Done when:** A stranger reads it and understands both what you built and why you built it that way.
 
-### Day 30 — Position yourself
-- [ ] Rewrite résumé and LinkedIn around shipped systems with numbers, not tools listed
-- [ ] Drill the 15 questions until you can answer them cold
-- [ ] Choose the next 30 days: depth (evals, retrieval quality, inference optimisation) or a domain (legal, health, devtools, finance)
-- [ ] Start talking to people: one public write-up, one open-source PR to AI tooling, five targeted applications
+#### Lesson 30 — Position yourself
+*2 rounds of 90 minutes · about 1 study day*
+
+- [ ] **Round 1 — what you shipped:** resume rewritten as four bullets with systems instead of tools, each with one number and a link, LinkedIn profile updated the same way, fifteen question answers recorded
+- [ ] **Round 2 — your next move:** next 30 days written in `LOG.md` with depth or breadth choice, deliverable, and date, three public actions taken (write-up published, PR opened, messages sent)
+- [ ] **Teach it back:** explain today out loud in your own words, with no “basically”
 - [ ] **Done when:** Someone who has never met you can tell, in 60 seconds, that you ship AI systems.
 
 <!-- END GENERATED DAYS -->
@@ -360,7 +604,7 @@ Run the Day 0 gate first. Everything it checks is taught here — skip any day y
 
 ## 4. The 15 questions you must be able to answer cold
 
-If a question here makes you uncomfortable, that's your next study session.
+If a question here makes you uncomfortable, that is your next study session.
 
 1. RAG vs fine-tuning vs a longer prompt — how do you choose?
 2. How do you chunk documents, and why that size?
@@ -380,75 +624,67 @@ If a question here makes you uncomfortable, that's your next study session.
 
 ---
 
-## 5. Portfolio bar (what "done" looks like on Day 30)
+## 5. Portfolio bar (what done looks like)
 
-Four public repos — three weekly ships plus the capstone. Each README contains:
+Four public repos. Three are weekly ships, one is the capstone. Each README contains:
 
 - The problem, in one paragraph, for a non-expert
 - An architecture diagram (a Mermaid block is fine)
-- **Eval results with numbers**
+- Eval results with numbers
 - Cost per request and p95 latency
 - Known failure modes and what you'd do with another week
 - A live link
 
-Plus one write-up (Day 29) that a stranger can read and conclude: *this person has actually shipped.*
+Plus one write-up that a stranger can read and conclude: this person has actually shipped.
 
 ---
 
-## 6. Weekly checkpoints
+## 6. Checkpoints
 
 | End of | You can... | Red flag if... |
 |--------|-----------|----------------|
-| Week 1 | State the cost and p95 latency of any call you make; get reliable structured output | You're still copy-pasting into a chat UI to test prompts |
-| Week 2 | Improve retrieval and *measure* the improvement | You have a RAG demo but no golden set |
-| Week 3 | Fail your own CI by making the prompt worse | Your agent works "usually" and you can't quantify "usually" |
-| Week 4 | Explain every architectural tradeoff you made and why | Your README is `pip install -r requirements.txt` |
+| Part 1 (Lessons 1–7) | State the cost and p95 latency of any call you make; get reliable structured output | You are still copy-pasting into a chat UI to test prompts |
+| Part 2 (Lessons 8–14) | Improve retrieval and measure the improvement | You have a RAG demo but no golden set |
+| Part 3 (Lessons 15–21) | Fail your own CI by making the prompt worse | Your agent works "usually" and you cannot quantify "usually" |
+| Part 4 (Lessons 22–30) | Explain every architectural tradeoff you made and why | Your README is `pip install -r requirements.txt` |
 
 ---
 
-## 7. The short resource list (one per category — resist adding more)
+## 7. The short resource list (one per category, resist adding more)
 
 - **Book:** *AI Engineering* — Chip Huyen (O'Reilly). The one book that matches this job title.
 - **Provider docs:** your primary provider's API docs, read properly, including the prompting and tool-use guides. `docs.claude.com` / `platform.openai.com`.
 - **Evals:** Hamel Husain — `hamel.dev`. Read the eval and error-analysis posts twice.
 - **Field awareness:** Simon Willison — `simonwillison.net`. Best signal-to-noise on what actually changed this week.
 - **RAG evaluation:** Ragas docs — `docs.ragas.io`.
-- **Tracing:** Langfuse / LangSmith / Braintrust docs — whichever you picked.
+- **Tracing:** Langfuse / LangSmith / Braintrust docs. Whichever you picked.
 - **Protocol:** MCP spec — `modelcontextprotocol.io`.
 - **Cookbooks:** your provider's official cookbook repo, for patterns you can lift directly.
 
-That's the list. Adding a ninth resource does not make you an AI engineer faster; it's the
-most comfortable way to avoid building.
+That is the list. Adding a ninth resource does not make you faster. It is the most comfortable way to avoid building.
 
 ---
 
 ## 8. Variants
 
-### Part-time (2–3 h/day, ~55–60 days)
-Same order, same deliverables. Do one day's *reading* block in the evening and the *build*
-block the next session. Protect the ship days (7, 14, 21, 27) — they're where the learning consolidates.
+### 1–2 hours a day (about 5–6 months)
+One round a day. Same order, same rounds, about twice as many weeks. Keep the warm-ups and protect the ship lessons (7, 14, 21, 25–27). That is where the learning locks in.
 
-### If you only have 10 days
-Days 1, 2, 3, 5 → 8, 9, 10, 11 → 15, 18/19 merged. You get: reliable structured output,
-a measured RAG system, tool use, and an eval harness. Skip agents-in-depth, fine-tuning,
-open models, and the capstone. Ship one project instead of four.
+### 5–6 hours a day (about 7 weeks)
+Three or four rounds a day. Same order, same rounds. Do not skip the sleep between rounds: put the second half of the day after a real break, and finish with the mistakes log. This pace only works if you have no other work.
 
-### If you already write production backend code
-Compress Week 1 to three days (Days 2, 3, 5) and spend the recovered time on Days 11, 18,
-and 19. Evals and retrieval quality are where experienced engineers still have the biggest gap.
+### Only 10 study days
+Lessons 1, 2, 3, 5 → 8, 9, 10, 11 → 15, 18/19 merged. You get: reliable structured output, a measured RAG system, tool use, and an eval harness. Skip agents-in-depth, fine-tuning, open models, and the capstone. Ship one project instead of four.
+
+### Already a backend developer
+Squeeze Part 1 into Lessons 2, 3 and 5, and spend the time you saved on Lessons 11, 18 and 19. Evals and retrieval quality are where experienced engineers still have the biggest gap.
 
 ---
 
 ## 9. Honest expectations
 
-Thirty focused days gets you to **junior-to-mid AI engineer, employable, with proof** —
-someone who can own an LLM feature end to end. It does not make you a senior AI engineer;
-that comes from production incidents, real users, and scale, which take months you can't
-compress. Anyone selling the second outcome in 30 days is selling something.
+Three months of focused work gets you to **junior-to-mid AI engineer, employable, with proof** — someone who can own an LLM feature end to end. It does not make you a senior engineer. That comes from production incidents, real users, and scale, which take time you cannot compress. Anyone selling that second outcome in three months is selling something.
 
-What this plan really buys you is the thing that compounds: you'll have shipped four
-systems, measured them, and broken them on purpose. From there, every new model release
-and every new tool is a small delta on a foundation you already own — instead of another
-thing you feel behind on.
+What this plan really buys you is the thing that compounds: you will have shipped four systems, measured them, and broken them on purpose. From there, every new model release is a small change on top of a foundation you already own, instead of one more thing you feel behind on.
 
-Start today. Day 1 is a CLI that summarizes a file. Go.
+Start today. Lesson 1 is a CLI that summarizes a file. Go.
