@@ -70,18 +70,36 @@ async function runTests() {
   await new Promise((resolve) => server.listen(PORT, "127.0.0.1", resolve));
   console.log(`Local test server running on http://127.0.0.1:${PORT}`);
 
-  // Launch Chrome
-  const chrome = spawn(CHROME_PATH, [
+  // Launch Chrome. On CI (Linux runners) the sandbox cannot start under the
+  // restricted user namespaces, and /dev/shm is small, so relax both there only.
+  const chromeArgs = [
     "--headless=new",
     "--remote-debugging-port=9222",
     "--user-data-dir=/tmp/test-chrome-e2e-profile",
     "--no-first-run",
     "--no-default-browser-check"
-  ], { stdio: "ignore" });
+  ];
+  if (process.env.CI) {
+    chromeArgs.push("--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
+  }
+  const chrome = spawn(CHROME_PATH, chromeArgs, { stdio: ["ignore", "ignore", "pipe"] });
+
+  // Keep Chrome's own error output so a failed start explains itself.
+  let chromeStderr = "";
+  let chromeExit = null;
+  chrome.stderr.on("data", (c) => {
+    chromeStderr = (chromeStderr + c).slice(-4000);
+  });
+  chrome.on("error", (err) => {
+    chromeExit = `could not start ${CHROME_PATH}: ${err.message}`;
+  });
+  chrome.on("exit", (code, signal) => {
+    chromeExit = `exited early (code ${code}, signal ${signal})`;
+  });
 
   try {
     let versionData = null;
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 150 && !chromeExit; i++) {
       try {
         versionData = await new Promise((resolve, reject) => {
           const req = http.get("http://127.0.0.1:9222/json/version", (res) => {
@@ -99,7 +117,11 @@ async function runTests() {
     }
 
     if (!versionData || !versionData.webSocketDebuggerUrl) {
-      throw new Error("Could not connect to Chrome DevTools Protocol after 5 seconds");
+      const why = chromeExit ? `Chrome ${chromeExit}` : "no answer after about 30 seconds";
+      throw new Error(
+        `Could not connect to Chrome DevTools Protocol (${why}). ` +
+          `Chrome path: ${CHROME_PATH}. Chrome stderr: ${chromeStderr.trim() || "(empty)"}`
+      );
     }
 
     const ws = new WebSocket(versionData.webSocketDebuggerUrl);
